@@ -34,11 +34,14 @@ public class DestroyBlockGoal extends BreakBlockGoal {
         delay = 0;
         BlockPos mob_pos = mob.blockPosition();
         double dist = Double.MAX_VALUE;
-        // 24*24*24
+
         List<BlockPos> positions = Tactics.World.findBlocks(level, block,
                 mob_pos.getX() - range, mob_pos.getY() + y, mob_pos.getZ() - range,
                 mob_pos.getX() + range, mob_pos.getY() + y, mob_pos.getZ() + range);
 
+        // update y before return
+        ++ y;
+        if(y > range) y = -range;
         if(positions.isEmpty()) return false;
         // priority to the closest block
         for(var pos: positions) {
@@ -49,11 +52,9 @@ public class DestroyBlockGoal extends BreakBlockGoal {
                 mine.bp_vec3 = pos.getCenter();
             }
         }
-        ++ y;
-        if(y > range) y = -range;
         // this cannot be null but the ide warns
         // move and check distance
-        Path p = mob.getNavigation().createPath(mine.bp, 2);
+        Path p = mob.getNavigation().createPath(mine.bp, 1);
         if(p != null && p.canReach()) {
             mob.getNavigation().moveTo(p, 1);
         } else return false;

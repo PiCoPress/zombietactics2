@@ -58,7 +58,7 @@ public class Tactics {
                 for(int y = y1; y <= y2; ++ y) {
                     for(int z = z1; z <= z2; ++ z) {
                         point.set(x, y, z);
-                        if(level.getBlockState(point).getBlock() == block || block == null) {
+                        if(level.getBlockState(point).is(block) || block == null) {
                             list.add(point.immutable());
                         }
                     }
