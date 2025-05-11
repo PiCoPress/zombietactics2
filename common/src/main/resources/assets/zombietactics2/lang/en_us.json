@@ -31,6 +31,8 @@
     "zombietactics2.midnightconfig.strict_mine.tooltip": "Zombies can only mine blocks if zombies have little movement",
     "zombietactics2.midnightconfig.break_chest": "Break chest",
     "zombietactics2.midnightconfig.break_chest.tooltip": "Zombies can break chests",
+    "zombietactics2.midnightconfig.find_chest_range": "Find chest range",
+    "zombietactics2.midnightconfig.find_chest_range.tooltip": "The range of finding chests",
 
     "zombietactics2.midnightconfig.category.Climbing": "Climbing",
     "zombietactics2.midnightconfig.do_climb": "Do climbing",

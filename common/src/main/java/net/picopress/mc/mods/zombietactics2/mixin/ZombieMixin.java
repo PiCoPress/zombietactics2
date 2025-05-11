@@ -148,15 +148,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
                 return s.getTier().getAttackDamageBonus() > my_weapon.getTier().getAttackDamageBonus();
             } else return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
         } else if(item instanceof ArmorItem armor) { // selecting an armor
-            Item ii;
-            for(var x: this.getArmorSlots()) {
-                ii = x.getItem();
-                if(ii instanceof ArmorItem my_armor) {
-                    if(my_armor.getEquipmentSlot() == armor.getEquipmentSlot()) {
-                        if(my_armor.getDefense() < armor.getDefense()) return true;
-                        else break;
-                    }
-                } else if(x.is(Items.AIR)) return true; // if I don't have any armor
+            ItemStack slot = this.getItemBySlot(armor.getEquipmentSlot());
+            if(slot.is(Items.AIR)) return true; // if I don't have an armor
+            else if(slot.getItem() instanceof ArmorItem my_armor) {
+                return armor.getDefense() > my_armor.getDefense();
             }
         }
         return false;
@@ -296,7 +291,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         if(Config.canFloat) this.goalSelector.addGoal(5, new SelectiveFloatGoal(this));
         if(Config.canFly) this.goalSelector.addGoal(10, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST));
+        if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, 8));
 
         this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombie_tactics$target_priority, this, false));
         this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Object)this, Config.aggressiveSpeed, true));

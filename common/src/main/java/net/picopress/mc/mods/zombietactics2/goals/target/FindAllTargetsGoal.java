@@ -157,7 +157,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                     target = amogus;
                 }
             }
-            //System.out.println(mob.getId() + ": " + mob.canPickUpLoot());
+
             // set target
             if(target != null) mob.setTarget(target);
             imposters.clear();

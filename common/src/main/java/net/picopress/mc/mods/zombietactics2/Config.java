@@ -42,7 +42,8 @@ public class Config {
             climbLimitTicks = 120,
             followRange = 40,
             accuracy = 1,
-            pickupRange = 8;
+            pickupRange = 8,
+            findChest = 12;
 
     // debugging
     public static boolean showNodes = false,
