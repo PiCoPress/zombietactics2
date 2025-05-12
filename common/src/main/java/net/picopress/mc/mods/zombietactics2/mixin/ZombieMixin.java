@@ -1,6 +1,5 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.minecraft.world.level.block.Blocks;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
@@ -10,8 +9,10 @@ import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -31,13 +32,17 @@ import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -81,16 +86,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
             zombieTactics$climbedCount = 0;
         }
         super.checkFallDamage(y, onGround, state, pos);
-    }
-
-    @Override
-    public boolean wantsToPickUp(ServerLevel sl, @NotNull ItemStack stack) {
-        if(Tactics.isSword(stack)) {
-            if(stack.getDamageValue() > this.getMainHandItem().getDamageValue()) return true;
-        } else if(Tactics.Armor.isArmor(stack)) {
-            if(Objects.requireNonNull(Tactics.Armor.getArmorMaterial(stack)).defense().get(Tactics.Armor.getArmorType(stack)) > this.getArmorValue()) return true;
-        }
-        return super.wantsToPickUp(sl, stack);
     }
 
     @Override
@@ -149,20 +144,35 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return super.getAttributeValue(attribute);
     }
 
+    // what the fuck 1.21.5 item system is sucking
     @Override
-    public boolean wantsToPickUp(@NotNull ItemStack stack) {
+    public boolean wantsToPickUp(ServerLevel sl, @NotNull ItemStack stack) {
         Item item = stack.getItem();
+
         // selecting a weapon
-        if(item instanceof TieredItem s) {
-            Item my = this.getMainHandItem().getItem();
-            if(my instanceof TieredItem my_weapon) {
-                return s.getTier().getAttackDamageBonus() > my_weapon.getTier().getAttackDamageBonus();
-            } else return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
-        } else if(item instanceof ArmorItem armor) { // selecting an armor
-            ItemStack slot = this.getItemBySlot(armor.getEquipmentSlot());
+        if(stack.is(ItemTags.WEAPON_ENCHANTABLE)) {
+            ItemStack my = this.getMainHandItem();
+
+            if(my.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                var my_weapon = Tactics.getItemAttr(my, "attack_damage");
+                var other = Tactics.getItemAttr(stack, "attack_damage");
+
+                if(my_weapon == null || other == null) return false; // null check
+                return my_weapon.amount() < other.amount();
+            } else
+                return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
+        } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting an armor
+            ItemStack slot = this.getItemBySlot(Objects.requireNonNull(item.components().get(DataComponents.EQUIPPABLE)).slot());
+
             if(slot.is(Items.AIR)) return true; // if I don't have an armor
-            else if(slot.getItem() instanceof ArmorItem my_armor) {
-                return armor.getDefense() > my_armor.getDefense();
+            else if(slot.getItem().components().has(DataComponents.EQUIPPABLE)) {
+                var dropped = Tactics.getItemAttr(stack, "armor_toughness");
+                var equipped = Tactics.getItemAttr(slot, "armor_toughness");
+
+                // and the both have to not be null
+                if(dropped != null && equipped != null) {
+                    return equipped.amount() < dropped.amount();
+                } else System.out.println("what the fuck [mine: " + equipped + ", other:" + dropped);
             }
         }
         return false;
@@ -224,8 +234,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
         cir.setReturnValue(cir.getReturnValue().add(Attributes.FLYING_SPEED, Config.flySpeed));
     }
 
-    @Inject(method="hurt", at=@At("HEAD"))
-    public void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method="hurtServer", at=@At("HEAD"))
+    public void hurt(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity who = source.getEntity();
         // new blacklist
         if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombie_tactics$target_class.contains(who.getClass())) {
@@ -309,7 +319,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         this.goalSelector.addGoal(7, new MoveThroughVillageGoal(this, 1.0, false, 4, this::canBreakDoors));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers(ZombifiedPiglin.class));
         this.goalSelector.addGoal(1, zombie_tactics$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
-        this.goalSelector.addGoal(5, new GoToWantedItemGoal(this, this::wantsToPickUp));
+        this.goalSelector.addGoal(5, new GoToWantedItemGoal(this, (item) -> wantsToPickUp(Tactics.getSl(this), item)));
     }
 
     static {

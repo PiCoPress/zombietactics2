@@ -1,6 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.profiling.metrics.MetricCategory;
 import net.minecraft.world.level.pathfinder.*;
@@ -19,7 +20,7 @@ public abstract class PathFinderMixin {
     @Final @Shadow private final BinaryHeap openSet = new BinaryHeap();
     @Final @Shadow private final Node[] neighbors = new Node[32];
     @Mutable @Final @Shadow private final NodeEvaluator nodeEvaluator;
-    @Mutable @Final @Shadow private final int maxVisitedNodes;
+    @Shadow private int maxVisitedNodes;
 
     @Shadow
     private Path reconstructPath(Node node, BlockPos pos, boolean bl) {
@@ -52,7 +53,8 @@ public abstract class PathFinderMixin {
      * @reason optimization
      */
     @Overwrite
-    private @Nullable Path findPath(ProfilerFiller profiler, Node node, Map<Target, BlockPos> targetPos, float maxRange, int accuracy, float searchDepthMultiplier) {
+    private @Nullable Path findPath(Node node, Map<Target, BlockPos> targetPos, float maxRange, int accuracy, float searchDepthMultiplier) {
+        ProfilerFiller profiler = Profiler.get();
         profiler.push("find_path");
         profiler.markForCharting(MetricCategory.PATH_FINDING);
         Set<Target> set = targetPos.keySet();

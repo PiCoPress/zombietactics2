@@ -26,7 +26,6 @@ public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final List<LivingEntity> imposters = new ArrayList<>();
-    private final int[] priorities;
     private final ServerLevel serverlevel;
     private TargetingConditions targetingConditions;
     private int delay;
@@ -40,9 +39,7 @@ public class FindAllTargetsGoal extends TargetGoal {
         super(mob, mustSee);
         setFlags(EnumSet.of(Flag.TARGET));
         list = targets.stream().toList();
-        this.priorities = priorities;
         serverlevel = getServerLevel(mob);
-        list = targets;
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
     }
@@ -70,8 +67,8 @@ public class FindAllTargetsGoal extends TargetGoal {
             if(Config.findTargetType == FindTargetType.SIMPLE) {
                 LivingEntity target;
                 var clazz = list.get(idx);
-                if (clazz != Player.class && clazz != ServerPlayer.class) {
-                    target = serverlevel.getNearestEntity(clazz, targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
+                if (clazz.getA() != Player.class && clazz.getA() != ServerPlayer.class) {
+                    target = serverlevel.getNearestEntity(clazz.getA(), targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
                 } else {
                     target = serverlevel.getNearestPlayer(targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ());
                 }
@@ -85,7 +82,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // query targets
                 var imposter2 = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                     for(var sus: list)
-                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t))
+                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverlevel, mob, t))
                             return true;
 
                     return false;

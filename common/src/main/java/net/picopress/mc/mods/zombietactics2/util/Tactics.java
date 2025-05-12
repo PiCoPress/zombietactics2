@@ -2,7 +2,13 @@ package net.picopress.mc.mods.zombietactics2.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -21,12 +27,46 @@ public class Tactics {
     public static final BlockPos UNIT_FRONT = new BlockPos(0, 0, 1);
 
     public static Rotation getRelativeRotation(Mob mob) {
-        Vec3i norm = mob.getNearestViewDirection().getNormal();
+        Vec3i norm = mob.getNearestViewDirection().getUnitVec3i();
         int x = norm.getX(), z = norm.getZ();
         if(x == 0 && z == 1) return Rotation.NONE;
         else if(x == 0 && z == -1) return Rotation.CLOCKWISE_180;
         else if(x == -1 && z == 0) return Rotation.CLOCKWISE_90;
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
+    }
+
+    // for 1.21.5 or maybe later
+    // 1.21.5 has changed the way to get item properties
+    // for example, ArmorItem and SwordItem were disappeared
+    public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
+        ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
+        if(component == null) return null;
+
+        List<ItemAttributeModifiers.Entry> list = component.modifiers();
+        ItemAttributeModifiers.Entry entry = null;
+        for(var attr: list) {
+            if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
+                entry = attr;
+                break;
+            }
+        }
+        if(entry == null) return null;
+        return entry.modifier();
+    }
+
+    // default namespace
+    static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
+        return getItemAttr(stack, path, "minecraft");
+    }
+
+    public static ServerLevel getSl(Mob mob) {
+        var stuff = mob.getServer();
+        return stuff != null? stuff.getLevel(mob.level().dimension()): null; // I'm not in the server
+    }
+
+    // alias
+    public static ServerLevel getServerLevel(Mob mob) {
+        return getSl(mob);
     }
 
     public static class World {
