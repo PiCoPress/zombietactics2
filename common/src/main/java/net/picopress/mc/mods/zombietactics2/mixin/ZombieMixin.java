@@ -1,6 +1,5 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.minecraft.world.level.block.Blocks;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
@@ -33,6 +32,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -145,6 +145,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         if(item instanceof TieredItem s) {
             Item my = this.getMainHandItem().getItem();
             if(my instanceof TieredItem my_weapon) {
+                // these don't indicate the base attack damage
                 return s.getTier().getAttackDamageBonus() > my_weapon.getTier().getAttackDamageBonus();
             } else return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
         } else if(item instanceof ArmorItem armor) { // selecting an armor
@@ -167,7 +168,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     public void push(@NotNull Entity entity) {
         if(zombie_tactics$bdg != null && Config.zombiesClimbing && entity instanceof Zombie &&
                 (horizontalCollision || Config.hyperClimbing) && !((Plane)zombie_tactics$bdg).zombie_tactics$getBool(0)) {
-            if(zombieTactics$climbedCount < 120) {
+            if(zombieTactics$climbedCount < Config.climbLimitTicks) {
                 final Vec3 v = getDeltaMovement();
                 // climb with random error
                 if(Config.randomlyClimb)

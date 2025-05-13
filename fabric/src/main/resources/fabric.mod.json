@@ -25,10 +25,10 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.10",
-    "minecraft": "~1.21.1",
+    "minecraft": "1.21.1",
     "java": "21",
-    "architectury": ">=13.0.8",
-    "midnightlib": ">=1.6.9",
+    "architectury": ">=13.0.0",
+    "midnightlib": ">=1.6.5",
     "modmenu": ">=11",
     "fabric-api": "*"
   },

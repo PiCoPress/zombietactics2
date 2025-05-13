@@ -35,15 +35,15 @@ public abstract class ServerLevelMixin extends Level {
     @Inject(method = "tick", at = @At("TAIL"))
     public void tick(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
         // run if FindTargetType is not LINEAR
-        if(Config.findTargetType != FindTargetType.LINEAR && Config.findTargetType != FindTargetType.SIMPLE) {
+        if(Config.findTargetType == FindTargetType.INTENSIVE) {
             ++ zombie_tactics$duration;
-            if(zombie_tactics$duration > 10) {
+            if(zombie_tactics$duration > 20) {
                 zombie_tactics$duration = 0;
                 while(true) {
                     boolean mark = true;
                     int idx = 0;
                     for(var cp: FindAllTargetsGoal.cache_path) {
-                        if(! cp.getA().isAlive()) {
+                        if(!cp.getA().isAlive()) {
                             mark = false;
                             break;
                         }

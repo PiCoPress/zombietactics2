@@ -19,7 +19,7 @@ public class FabricConfig extends MidnightConfig {
     public static final String DEBUG = "Debug";
 
     // category shuffled because I sorted it to the types
-    // which is better?
+    // which is the better?
     @Entry(category=MINING) public static boolean do_mine = Config.mineBlocks;
     @Entry(category=MINING, min=0) public static double mining_speed = Config.break_speed;
     @Entry(category=MINING, min=0) public static double max_hardness = Config.maxHardness;

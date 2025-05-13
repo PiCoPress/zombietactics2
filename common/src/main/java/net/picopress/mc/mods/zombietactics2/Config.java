@@ -4,6 +4,7 @@ import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 
 // just define configurations
 // balance patch
+// if usage count is less than 5, it is never used
 public class Config {
     public static boolean mineBlocks = true,
             targetAnimals = true,

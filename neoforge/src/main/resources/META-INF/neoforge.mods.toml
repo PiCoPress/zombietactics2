@@ -28,7 +28,7 @@ side = "BOTH"
 [[dependencies.zombietactics2]]
 modId = "architectury"
 type = "required"
-versionRange = "[13.0.8,)"
+versionRange = "[13,)"
 ordering = "AFTER"
 side = "BOTH"
 
