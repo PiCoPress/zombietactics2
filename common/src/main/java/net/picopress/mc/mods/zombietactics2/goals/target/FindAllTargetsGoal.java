@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.goals.target;
 
+import net.minecraft.server.level.ServerLevel;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
@@ -13,6 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
+import org.jetbrains.annotations.Nullable;
 import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ public class FindAllTargetsGoal extends TargetGoal {
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final List<LivingEntity> imposters = new ArrayList<>();
     private TargetingConditions targetingConditions;
+    @Nullable private final ServerLevel serverLevel;
     private int delay;
     private int idx;
     private Task task;
@@ -37,6 +41,7 @@ public class FindAllTargetsGoal extends TargetGoal {
         super(mob, mustSee);
         setFlags(EnumSet.of(Flag.TARGET));
         list = targets;
+        serverLevel = Tactics.getServerLevel(mob);
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
     }
@@ -55,6 +60,8 @@ public class FindAllTargetsGoal extends TargetGoal {
 
     @Override
     public void tick() {
+        // I am server
+        if(serverLevel == null) return;
         if(task == Task.IDLE) {
             ++ delay;
             if(Config.findTargetType == FindTargetType.SIMPLE && delay > 4) task = Task.SEARCH;
@@ -65,9 +72,9 @@ public class FindAllTargetsGoal extends TargetGoal {
                 LivingEntity target;
                 var clazz = list.get(idx);
                 if (clazz.getA() != Player.class && clazz.getA() != ServerPlayer.class) {
-                    target = mob.level().getNearestEntity(clazz.getA(), targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
+                    target = serverLevel.getNearestEntity(clazz.getA(), targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
                 } else {
-                    target = mob.level().getNearestPlayer(targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ());
+                    target = serverLevel.getNearestPlayer(targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ());
                 }
                 if(mob.getTarget() == null || target != null && mob.getTarget() != null && mob.distanceToSqr(target) < mob.distanceToSqr(mob.getTarget())) {
                     mob.setTarget(target);
@@ -79,7 +86,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // query targets
                 var imposter2 = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                     for(var sus: list)
-                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t))
+                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverLevel, mob, t))
                             return true;
 
                     return false;

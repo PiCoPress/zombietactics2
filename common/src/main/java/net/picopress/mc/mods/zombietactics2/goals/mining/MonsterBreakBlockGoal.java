@@ -77,7 +77,8 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
         // found path but a zombie stuck
         LivingEntity liv = zombie.getTarget();
         PathNavigation nav = zombie.getNavigation();
-        if(nav.isDone() && liv != null && nav.getPath() != null && !nav.getPath().canReach()) {
+        if(liv != null) nav.createPath(liv, 0);
+        if(nav.isDone() && liv != null && nav.getPath() != null) {
             if(zombie.isWithinMeleeAttackRange(liv) && zombie.hasLineOfSight(liv)) return false;
 
             // why is the path null even though it can reach a target?

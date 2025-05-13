@@ -1,6 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.profiling.metrics.MetricCategory;
 import net.minecraft.world.level.pathfinder.*;
@@ -19,13 +20,13 @@ public abstract class PathFinderMixin {
     @Final @Shadow private final BinaryHeap openSet = new BinaryHeap();
     @Final @Shadow private final Node[] neighbors = new Node[32];
     @Mutable @Final @Shadow private final NodeEvaluator nodeEvaluator;
-    @Mutable @Final @Shadow private final int maxVisitedNodes;
+    @Mutable @Shadow private final int maxVisitedNodes;
 
     @Shadow
     private Path reconstructPath(Node node, BlockPos pos, boolean bl) {
         return null;
     }
-    
+
     public PathFinderMixin(NodeEvaluator nodeEvaluator, int maxVisitedNodes) {
         this.nodeEvaluator = nodeEvaluator;
         this.maxVisitedNodes = maxVisitedNodes;
@@ -38,7 +39,7 @@ public abstract class PathFinderMixin {
     @Overwrite
     private float getBestH(Node node, Set<Target> targets) {
         float f = Float.MAX_VALUE;
-        
+
         for(Target target: targets) {
             float g = node.distanceToSqr(target);
             target.updateBest(g, node);
@@ -46,15 +47,16 @@ public abstract class PathFinderMixin {
         }
         return f * 3 / 2;
     }
-    
+
     /**
      * @author picopress
      * @reason optimization
      */
     @Overwrite
-    private @Nullable Path findPath(ProfilerFiller profiler, Node node, Map<Target, BlockPos> targetPos, float maxRange, int accuracy, float searchDepthMultiplier) {
-        profiler.push("find_path");
-        profiler.markForCharting(MetricCategory.PATH_FINDING);
+    private @Nullable Path findPath(Node node, Map<Target, BlockPos> targetPos, float maxRange, int accuracy, float searchDepthMultiplier) {
+        ProfilerFiller profilerFiller = Profiler.get();
+        profilerFiller.push("find_path");
+        profilerFiller.markForCharting(MetricCategory.PATH_FINDING);
         Set<Target> set = targetPos.keySet();
         List<Target> target_list = Lists.newArrayListWithExpectedSize(set.size());
         int j = (int)(this.maxVisitedNodes * searchDepthMultiplier);
@@ -93,7 +95,7 @@ public abstract class PathFinderMixin {
                     float f = node2.distanceToSqr(node3);
                     float g = node2.g + f + node3.costMalus;
                     node3.walkedDistance = node2.walkedDistance + f;
-                    if(node3.walkedDistance < maxRange && (!node3.inOpenSet() || g < node3.g)) {
+                    if(node3.walkedDistance < range2 && (!node3.inOpenSet() || g < node3.g)) {
                         node3.cameFrom = node2;
                         node3.g = g;
                         node3.h = this.getBestH(node3, set);
@@ -109,7 +111,7 @@ public abstract class PathFinderMixin {
         }
 
         Optional<Path> optional = !target_list.isEmpty()? target_list.stream().map((tg) -> this.reconstructPath(tg.getBestNode(), targetPos.get(tg), true)).min(Comparator.comparingInt(path -> path != null? path.getNodeCount(): 0)): set.stream().map((x) -> this.reconstructPath(x.getBestNode(), targetPos.get(x), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
-        profiler.pop();
+        profilerFiller.pop();
         return optional.orElse(null);
     }
 }
