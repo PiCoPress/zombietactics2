@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.goals.mining;
 
+import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.goals.BreakBlockGoal;
 
@@ -10,19 +11,21 @@ import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 
 // destroy specific block
 public class DestroyBlockGoal extends BreakBlockGoal {
     private final Block block;
     private int delay = 0;
-    private int y = -6;
+    private int y;
     private final int range;
 
     public DestroyBlockGoal(Mob mob, Block block, int range) {
-        super(mob, 5, 0.2, false);
+        super(mob, Config.hardnessMultiplier, Config.break_speed, false);
         this.block = block;
         this.range = range;
+        y = -range;
         setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE));
     }
 
@@ -52,12 +55,12 @@ public class DestroyBlockGoal extends BreakBlockGoal {
                 mine.bp_vec3 = pos.getCenter();
             }
         }
-        // this cannot be null but the ide warns
-        // move and check distance
+        // this cannot be null, but the ide warns
+        // move and check Manhattan distance
         Path p = mob.getNavigation().createPath(mine.bp, 1);
-        if(p != null && p.canReach()) {
+        if(p != null && p.getEndNode() != null && p.getEndNode().distanceManhattan(mine.bp) < 3) {
             mob.getNavigation().moveTo(p, 1);
         } else return false;
-        return mob.distanceToSqr(mine.bp_vec3) < 4;
+        return Tactics.World.ManhattanDistance(Objects.requireNonNull(mine.bp), mob.blockPosition()) < 3;
     }
 }

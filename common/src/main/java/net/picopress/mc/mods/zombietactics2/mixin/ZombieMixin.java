@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
@@ -37,12 +38,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
+
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -144,7 +146,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return super.getAttributeValue(attribute);
     }
 
-    // what the fuck 1.21.5 item system is sucking
     @Override
     public boolean wantsToPickUp(ServerLevel sl, @NotNull ItemStack stack) {
         Item item = stack.getItem();
@@ -161,10 +162,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
                 return my_weapon.amount() < other.amount();
             } else
                 return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
-        } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting an armor
+        } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting armor
             ItemStack slot = this.getItemBySlot(Objects.requireNonNull(item.components().get(DataComponents.EQUIPPABLE)).slot());
 
-            if(slot.is(Items.AIR)) return true; // if I don't have an armor
+            if(slot.is(Items.AIR)) return true; // if I don't have armor
             else if(slot.getItem().components().has(DataComponents.EQUIPPABLE)) {
                 var dropped = Tactics.getItemAttr(stack, "armor_toughness");
                 var equipped = Tactics.getItemAttr(slot, "armor_toughness");
@@ -188,7 +189,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     public void push(@NotNull Entity entity) {
         if(zombie_tactics$bdg != null && Config.zombiesClimbing && entity instanceof Zombie &&
                 (horizontalCollision || Config.hyperClimbing) && !((Plane)zombie_tactics$bdg).zombie_tactics$getBool(0)) {
-            if(zombieTactics$climbedCount < 120) {
+            if(zombieTactics$climbedCount < Config.climbLimitTicks) {
                 final Vec3 v = getDeltaMovement();
                 // climb with random error
                 if(Config.randomlyClimb)
@@ -235,9 +236,9 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Inject(method="hurtServer", at=@At("HEAD"))
-    public void hurt(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    public void hurtServer(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity who = source.getEntity();
-        // new blacklist
+        // new target list
         if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombie_tactics$target_class.contains(who.getClass())) {
             zombie_tactics$target_priority.add(new Pair<>(mob.getClass(), 3));
             zombie_tactics$target_class.add(mob.getClass());
@@ -281,7 +282,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     // Healing zombie
     @Inject(method="doHurtTarget", at=@At("TAIL"))
-    public void doHurtTargetTail(ServerLevel sl, Entity ent, CallbackInfoReturnable<Boolean> ci) {
+    public void doHurtTargetTail(ServerLevel sl,Entity ent, CallbackInfoReturnable<Boolean> ci) {
         if(ent instanceof LivingEntity) {
             if(this.getHealth() <= this.getMaxHealth())
                 this.heal((float)Config.healAmount);
@@ -303,7 +304,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
      */
     @Overwrite
     public void addBehaviourGoals() {
-        // inserting new instance of Pair in HashSet is not a good idea
+        // inserting a new instance of Pair in HashSet is not a good idea
         if(Config.targetAnimals && !zombie_tactics$target_class.contains(Animal.class)) {
             zombie_tactics$target_priority.add(new Pair<>(Animal.class, 5));
             zombie_tactics$target_class.add(Animal.class);

@@ -19,7 +19,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 @Mixin(MeleeAttackGoal.class)
 public abstract class MeleeAttackGoalMixin extends Goal {
     // Why are there too many unused private fields?
-    // So, just expose them
+    // So, let them expose
     @Shadow private int attackInterval = 20;
     @Mutable @Final @Shadow private double speedModifier;
     @Mutable @Final @Shadow private boolean followingTargetEvenIfNotSeen;
@@ -44,7 +44,7 @@ public abstract class MeleeAttackGoalMixin extends Goal {
 
     @WrapWithCondition(method="tick", at=@At(value="INVOKE", target="Lnet/minecraft/world/entity/ai/control/LookControl;setLookAt(Lnet/minecraft/world/entity/Entity;FF)V"))
     public boolean modifyLookControl(LookControl instance, Entity entity, float deltaYaw, float deltaPitch) {
-        // if I am not a zombie which is mining
+        // if I am not a zombie is mining
         return !(mob instanceof Zombie z && ((Plane)z).zombie_tactics$getBool(0));
     }
 }

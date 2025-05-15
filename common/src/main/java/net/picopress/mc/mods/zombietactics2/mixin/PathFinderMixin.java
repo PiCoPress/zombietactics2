@@ -20,13 +20,13 @@ public abstract class PathFinderMixin {
     @Final @Shadow private final BinaryHeap openSet = new BinaryHeap();
     @Final @Shadow private final Node[] neighbors = new Node[32];
     @Mutable @Final @Shadow private final NodeEvaluator nodeEvaluator;
-    @Shadow private int maxVisitedNodes;
+    @Mutable @Shadow private final int maxVisitedNodes;
 
     @Shadow
     private Path reconstructPath(Node node, BlockPos pos, boolean bl) {
         return null;
     }
-    
+
     public PathFinderMixin(NodeEvaluator nodeEvaluator, int maxVisitedNodes) {
         this.nodeEvaluator = nodeEvaluator;
         this.maxVisitedNodes = maxVisitedNodes;
@@ -39,7 +39,7 @@ public abstract class PathFinderMixin {
     @Overwrite
     private float getBestH(Node node, Set<Target> targets) {
         float f = Float.MAX_VALUE;
-        
+
         for(Target target: targets) {
             float g = node.distanceToSqr(target);
             target.updateBest(g, node);
@@ -47,18 +47,18 @@ public abstract class PathFinderMixin {
         }
         return f * 3 / 2;
     }
-    
+
     /**
      * @author picopress
      * @reason optimization
      */
     @Overwrite
     private @Nullable Path findPath(Node node, Map<Target, BlockPos> targetPos, float maxRange, int accuracy, float searchDepthMultiplier) {
-        ProfilerFiller profiler = Profiler.get();
-        profiler.push("find_path");
-        profiler.markForCharting(MetricCategory.PATH_FINDING);
+        ProfilerFiller profilerFiller = Profiler.get();
+        profilerFiller.push("find_path");
+        profilerFiller.markForCharting(MetricCategory.PATH_FINDING);
         Set<Target> set = targetPos.keySet();
-        List<Target> list = Lists.newArrayListWithExpectedSize(set.size());
+        List<Target> target_list = Lists.newArrayListWithExpectedSize(set.size());
         int j = (int)(this.maxVisitedNodes * searchDepthMultiplier);
         int i = 0;
 
@@ -80,14 +80,14 @@ public abstract class PathFinderMixin {
             node2.closed = true;
 
             for(Target target: set) {
-                if (node2.distanceManhattan(target) <= accuracy) {
+                if(node2.distanceManhattan(target) <= accuracy) {
                     target.setReached();
-                    list.add(target);
+                    target_list.add(target);
                 }
             }
 
-            if (!list.isEmpty()) break;
-            if (node2.distanceToSqr(node) < range2) {
+            if(!target_list.isEmpty()) break;
+            if(node2.distanceToSqr(node) < range2) {
                 int k = this.nodeEvaluator.getNeighbors(this.neighbors, node2);
 
                 for(int l = 0; l < k; ++ l) {
@@ -95,11 +95,11 @@ public abstract class PathFinderMixin {
                     float f = node2.distanceToSqr(node3);
                     float g = node2.g + f + node3.costMalus;
                     node3.walkedDistance = node2.walkedDistance + f;
-                    if (node3.walkedDistance < maxRange && (!node3.inOpenSet() || g < node3.g)) {
+                    if(node3.walkedDistance < range2 && (!node3.inOpenSet() || g < node3.g)) {
                         node3.cameFrom = node2;
                         node3.g = g;
                         node3.h = this.getBestH(node3, set);
-                        if (node3.inOpenSet()) {
+                        if(node3.inOpenSet()) {
                             this.openSet.changeCost(node3, node3.g + node3.h);
                         } else {
                             node3.f = node3.g + node3.h;
@@ -110,8 +110,8 @@ public abstract class PathFinderMixin {
             }
         }
 
-        Optional<Path> optional = !list.isEmpty()? list.stream().map((tg) -> this.reconstructPath(tg.getBestNode(), targetPos.get(tg), true)).min(Comparator.comparingInt(path -> path != null? path.getNodeCount(): 0)): set.stream().map((x) -> this.reconstructPath(x.getBestNode(), targetPos.get(x), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
-        profiler.pop();
+        Optional<Path> optional = !target_list.isEmpty()? target_list.stream().map((tg) -> this.reconstructPath(tg.getBestNode(), targetPos.get(tg), true)).min(Comparator.comparingInt(path -> path != null? path.getNodeCount(): 0)): set.stream().map((x) -> this.reconstructPath(x.getBestNode(), targetPos.get(x), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
+        profilerFiller.pop();
         return optional.orElse(null);
     }
 }

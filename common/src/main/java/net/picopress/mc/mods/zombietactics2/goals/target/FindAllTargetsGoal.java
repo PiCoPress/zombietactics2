@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.goals.target;
 
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
@@ -14,6 +15,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 
+import org.jetbrains.annotations.Nullable;
+
 import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
@@ -26,8 +29,8 @@ public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final List<LivingEntity> imposters = new ArrayList<>();
-    private final ServerLevel serverlevel;
     private TargetingConditions targetingConditions;
+    @Nullable private final ServerLevel serverLevel;
     private int delay;
     private int idx;
     private Task task;
@@ -38,8 +41,8 @@ public class FindAllTargetsGoal extends TargetGoal {
     public FindAllTargetsGoal(List<Pair<Class<? extends LivingEntity>, Integer>> targets, Mob mob, boolean mustSee) {
         super(mob, mustSee);
         setFlags(EnumSet.of(Flag.TARGET));
-        list = targets.stream().toList();
-        serverlevel = getServerLevel(mob);
+        list = targets;
+        serverLevel = Tactics.getServerLevel(mob);
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
     }
@@ -58,6 +61,8 @@ public class FindAllTargetsGoal extends TargetGoal {
 
     @Override
     public void tick() {
+        // I am server
+        if(serverLevel == null) return;
         if(task == Task.IDLE) {
             ++ delay;
             if(Config.findTargetType == FindTargetType.SIMPLE && delay > 4) task = Task.SEARCH;
@@ -68,9 +73,9 @@ public class FindAllTargetsGoal extends TargetGoal {
                 LivingEntity target;
                 var clazz = list.get(idx);
                 if (clazz.getA() != Player.class && clazz.getA() != ServerPlayer.class) {
-                    target = serverlevel.getNearestEntity(clazz.getA(), targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
+                    target = serverLevel.getNearestEntity(clazz.getA(), targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
                 } else {
-                    target = serverlevel.getNearestPlayer(targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ());
+                    target = serverLevel.getNearestPlayer(targetingConditions, mob, mob.getX(), mob.getEyeY(), mob.getZ());
                 }
                 if(mob.getTarget() == null || target != null && mob.getTarget() != null && mob.distanceToSqr(target) < mob.distanceToSqr(mob.getTarget())) {
                     mob.setTarget(target);
@@ -82,7 +87,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // query targets
                 var imposter2 = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                     for(var sus: list)
-                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverlevel, mob, t))
+                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverLevel, mob, t))
                             return true;
 
                     return false;
@@ -98,7 +103,7 @@ public class FindAllTargetsGoal extends TargetGoal {
             LivingEntity target = null;
             int minimumCost = Integer.MAX_VALUE;
 
-            // calculate the cost for each of imposters
+            // calculate the cost for each of the imposters
             for(var amogus: imposters) {
                 BlockPos delta = me.subtract(amogus.blockPosition());
                 int score = 0;

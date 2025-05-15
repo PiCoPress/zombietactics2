@@ -83,8 +83,7 @@ public class Tactics {
             return list;
         }
 
-
-        // if block is null, return all blocks in the AABB
+        // if a block is null, return all blocks in the AABB
         public static List<BlockPos> findBlocks(Level level, AABB aabb, @Nullable Block block) {
             return findBlocks(level, block,
                     (int)aabb.minX, (int)aabb.minY, (int)aabb.minZ,
@@ -105,6 +104,10 @@ public class Tactics {
                 }
             }
             return list;
+        }
+
+        public static int ManhattanDistance(BlockPos p1, BlockPos p2) {
+            return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY()) + Math.abs(p1.getZ() - p2.getZ());
         }
     }
 }

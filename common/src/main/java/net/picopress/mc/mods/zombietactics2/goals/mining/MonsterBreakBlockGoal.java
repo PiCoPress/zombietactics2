@@ -74,9 +74,10 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
             if(!Config.canFly) return false;
         }
 
-        // found path but a zombie stuck
+        // found a path but a zombie stuck
         LivingEntity liv = zombie.getTarget();
         PathNavigation nav = zombie.getNavigation();
+        if(liv != null) nav.createPath(liv, 0);
         if(nav.isDone() && liv != null && nav.getPath() != null && !nav.getPath().canReach()) {
             if(zombie.isWithinMeleeAttackRange(liv) && zombie.hasLineOfSight(liv)) return false;
 
@@ -93,8 +94,8 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
 
             for(BlockPos pos: set) {
                 // checkBlock method is able to change 'zombie' variable
-                // So 'temp' cannot be determined as valid object
-                // select relative block position
+                // So 'temp' cannot be determined as a valid object
+                // selects relative block position
                 BlockPos temp = zombie.blockPosition().offset(pos.rotate(getRelativeRotation(zombie)));
 
                 // prevent that they are not stuck but zombie digs under their foot
