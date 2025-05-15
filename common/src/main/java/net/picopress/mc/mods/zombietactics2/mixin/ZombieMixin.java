@@ -159,10 +159,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
                 return my_weapon.amount() < other.amount();
             } else
                 return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
-        } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting an armor
+        } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting armor
             ItemStack slot = this.getItemBySlot(Objects.requireNonNull(item.components().get(DataComponents.EQUIPPABLE)).slot());
 
-            if(slot.is(Items.AIR)) return true; // if I don't have an armor
+            if(slot.is(Items.AIR)) return true; // if I don't have armor
             else if(slot.getItem().components().has(DataComponents.EQUIPPABLE)) {
                 var dropped = Tactics.getItemAttr(stack, "armor_toughness");
                 var equipped = Tactics.getItemAttr(slot, "armor_toughness");
