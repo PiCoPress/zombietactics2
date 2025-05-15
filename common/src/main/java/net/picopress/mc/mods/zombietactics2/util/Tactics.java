@@ -43,7 +43,7 @@ public class Tactics {
             return list;
         }
 
-        // if block is null, return all blocks in the AABB
+        // if a block is null, return all blocks in the AABB
         public static List<BlockPos> findBlocks(Level level, AABB aabb, @Nullable Block block) {
             return findBlocks(level, block,
                     (int)aabb.minX, (int)aabb.minY, (int)aabb.minZ,

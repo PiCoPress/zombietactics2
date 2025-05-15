@@ -15,7 +15,7 @@ public class MiningRoutines {
          /
         Z
      */
-    // The sequence of these array is important because
+    // The sequence of these arrays is important because
     //      it determines how a zombie reaches its target.
     // For example, the target could be placed above, below,
     //      in front of, or behind the zombie.
@@ -23,7 +23,7 @@ public class MiningRoutines {
     //      affects the zombie's movement path.
     public static final BlockPos[] routineUp = new BlockPos[] {
             // Y = 1
-            // The blocks in front, behind, to the left and the right of eye level
+            // The block in front, behind, to the left and the right of eye level
             new BlockPos(0, 1, 1),
             new BlockPos(-1, 1, 0),
             new BlockPos(1, 1, 0),

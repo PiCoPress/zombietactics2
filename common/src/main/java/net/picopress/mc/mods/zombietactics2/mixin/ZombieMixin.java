@@ -148,9 +148,9 @@ public abstract class ZombieMixin extends Monster implements Plane {
                 // these don't indicate the base attack damage
                 return s.getTier().getAttackDamageBonus() > my_weapon.getTier().getAttackDamageBonus();
             } else return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
-        } else if(item instanceof ArmorItem armor) { // selecting an armor
+        } else if(item instanceof ArmorItem armor) { // selecting armor
             ItemStack slot = this.getItemBySlot(armor.getEquipmentSlot());
-            if(slot.is(Items.AIR)) return true; // if I don't have an armor
+            if(slot.is(Items.AIR)) return true; // if I don't have armor
             else if(slot.getItem() instanceof ArmorItem my_armor) {
                 return armor.getDefense() > my_armor.getDefense();
             }
@@ -217,7 +217,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Inject(method="hurt", at=@At("HEAD"))
     public void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity who = source.getEntity();
-        // new blacklist
+        // new target list
         if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombie_tactics$target_class.contains(who.getClass())) {
             zombie_tactics$target_priority.add(new Pair<>(mob.getClass(), 3));
             zombie_tactics$target_class.add(mob.getClass());
@@ -283,7 +283,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
      */
     @Overwrite
     public void addBehaviourGoals() {
-        // inserting new instance of Pair in HashSet is not a good idea
+        // inserting a new instance of Pair in HashSet is not a good idea
         if(Config.targetAnimals && !zombie_tactics$target_class.contains(Animal.class)) {
             zombie_tactics$target_priority.add(new Pair<>(Animal.class, 5));
             zombie_tactics$target_class.add(Animal.class);
