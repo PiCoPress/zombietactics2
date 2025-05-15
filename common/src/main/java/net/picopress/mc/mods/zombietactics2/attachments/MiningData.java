@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /*
     This class contains a mining block's position
-    and a condition of mine for each of zombie
+    and a condition of mine for each of the zombies
  */
 public class MiningData {
     public boolean doMining;

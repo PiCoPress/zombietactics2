@@ -66,7 +66,7 @@ public abstract class BreakBlockGoal extends Goal {
 
     @Override
     public void stop() {
-        // reset all progress and find path again
+        // reset all progress and find a path again
         level.destroyBlockProgress(mob.getId(), mine.bp, -1);
         mine.doMining = false;
         mine.bp = null;

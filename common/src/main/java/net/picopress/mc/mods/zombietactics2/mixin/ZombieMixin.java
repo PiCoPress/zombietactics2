@@ -1,8 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.ItemTags;
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
@@ -12,6 +10,9 @@ import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -40,7 +41,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
+
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -234,7 +235,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Inject(method="hurtServer", at=@At("HEAD"))
     public void hurtServer(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity who = source.getEntity();
-        // new blacklist
+        // new target list
         if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombie_tactics$target_class.contains(who.getClass())) {
             zombie_tactics$target_priority.add(new Pair<>(mob.getClass(), 3));
             zombie_tactics$target_class.add(mob.getClass());
@@ -300,7 +301,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
      */
     @Overwrite
     public void addBehaviourGoals() {
-        // inserting new instance of Pair in HashSet is not a good idea
+        // inserting a new instance of Pair in HashSet is not a good idea
         if(Config.targetAnimals && !zombie_tactics$target_class.contains(Animal.class)) {
             zombie_tactics$target_priority.add(new Pair<>(Animal.class, 5));
             zombie_tactics$target_class.add(Animal.class);

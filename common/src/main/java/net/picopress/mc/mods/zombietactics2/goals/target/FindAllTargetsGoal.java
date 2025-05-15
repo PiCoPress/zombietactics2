@@ -102,7 +102,7 @@ public class FindAllTargetsGoal extends TargetGoal {
             LivingEntity target = null;
             int minimumCost = Integer.MAX_VALUE;
 
-            // calculate the cost for each of imposters
+            // calculate the cost for each of the imposters
             for(var amogus: imposters) {
                 BlockPos delta = me.subtract(amogus.blockPosition());
                 int score = 0;
