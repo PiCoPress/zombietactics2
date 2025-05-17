@@ -60,6 +60,8 @@ public class ZombieGoal extends ZombieAttackGoal {
         if(jumping && ((Plane)mob).zombie_tactics$getInt(1) == 0)
             mob.setDeltaMovement(delta.x, mob.getDeltaMovement().y, delta.z);
 
+        if(mob.getTarget() == null) return; // mob.getTarget() seems to be null for unknown reason
+
         // jump a block
         if(Config.jumpBlock && !mob.isWithinMeleeAttackRange(mob.getTarget()) && mob.getNavigation().isDone()) {
             Optional<BlockPos> bp = mob.mainSupportingBlockPos;
