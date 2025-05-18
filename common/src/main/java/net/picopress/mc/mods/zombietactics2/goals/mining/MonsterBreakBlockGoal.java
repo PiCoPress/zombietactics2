@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     private final T zombie;
+    float max_p2, min_p2;
 
     public MonsterBreakBlockGoal(T zombie) {
         super(zombie, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
@@ -48,14 +49,14 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return super.canContinueToUse() && zombie.distanceToSqr(mine.bp_vec3) <= Config.maxDist * Config.maxDist;
+        return super.canContinueToUse() && zombie.distanceToSqr(mine.bp_vec3) <= max_p2;
     }
 
     @Override
     public void tick() {
         double dist = zombie.distanceToSqr(mine.bp_vec3);
-        if (dist <= Config.minDist ||
-                dist > Config.maxDist) {
+        if (dist <= min_p2 ||
+                dist > max_p2) {
             mine.doMining = false;
             return;
         }
@@ -114,5 +115,12 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
         }
         // zombie cannot escape
         return false;
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        min_p2 = (float)(Config.minDist * Config.minDist);
+        max_p2 = (float)(Config.maxDist * Config.maxDist);
     }
 }
