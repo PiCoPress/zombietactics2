@@ -210,12 +210,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
     public void remove(RemovalReason reason) {
         super.remove(reason);
         -- zombie_tactics$threshold; // decrease
-    }
-
-    // reset crack progress if a zombie died when mining
-    @Override
-    public void die(@NotNull DamageSource source) {
-        super.die(source);
+        // reset the mining progress
+        // procedure:
+        // die -> remove(=killed)
+        // despawn/transform() -> remove(=discarded)
         if(zombie_tactics$mine_goal != null && zombie_tactics$mine_goal.mine.doMining)
             this.level().destroyBlockProgress(this.getId(), zombie_tactics$mine_goal.mine.bp, -1);
     }
