@@ -49,7 +49,7 @@ public abstract class PathFinderMixin {
     
     /**
      * @author picopress
-     * @reason optimization
+     * @reason distanceTO -> distanceToSqr: to not use sqrt
      */
     @Overwrite
     private @Nullable Path findPath(ProfilerFiller profiler, Node node, Map<Target, BlockPos> targetPos, float maxRange, int accuracy, float searchDepthMultiplier) {
