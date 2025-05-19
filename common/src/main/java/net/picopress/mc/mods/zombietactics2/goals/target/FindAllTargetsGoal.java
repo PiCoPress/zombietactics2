@@ -1,10 +1,11 @@
 package net.picopress.mc.mods.zombietactics2.goals.target;
 
-import net.minecraft.server.level.ServerLevel;
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -14,8 +15,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import org.jetbrains.annotations.Nullable;
+
 import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
@@ -30,9 +31,10 @@ public class FindAllTargetsGoal extends TargetGoal {
     private final List<LivingEntity> imposters = new ArrayList<>();
     private TargetingConditions targetingConditions;
     @Nullable private final ServerLevel serverLevel;
+    private AABB boundingBox;
+    private Task task;
     private int delay;
     private int idx;
-    private Task task;
 
     /**
      * @param targets Pairs of class and priority
@@ -48,7 +50,7 @@ public class FindAllTargetsGoal extends TargetGoal {
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() == null;
+        return mob.getTarget() == null || !mob.getTarget().isAlive();
     }
 
     @Override
@@ -178,7 +180,9 @@ public class FindAllTargetsGoal extends TargetGoal {
     }
 
     private AABB followBox() {
-        return mob.getBoundingBox().inflate(getFollowDistance());
+        if(boundingBox != null) return boundingBox;
+        boundingBox = mob.getBoundingBox().inflate(getFollowDistance());
+        return boundingBox;
     }
 
     // brain rot

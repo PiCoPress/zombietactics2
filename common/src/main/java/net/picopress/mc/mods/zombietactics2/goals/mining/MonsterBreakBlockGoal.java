@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     private final T zombie;
-    float max_p2, min_p2;
+    double max_p2, min_p2;
 
     public MonsterBreakBlockGoal(T zombie) {
         super(zombie, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
@@ -121,7 +121,7 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     @Override
     public void start() {
         super.start();
-        min_p2 = (float)(Config.minDist * Config.minDist);
-        max_p2 = (float)(Config.maxDist * Config.maxDist);
+        min_p2 = Config.minDist * Config.minDist;
+        max_p2 = Config.maxDist * Config.maxDist;
     }
 }
