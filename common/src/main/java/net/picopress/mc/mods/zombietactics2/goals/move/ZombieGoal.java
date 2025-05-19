@@ -14,7 +14,6 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.Optional;
 
 
@@ -57,7 +56,7 @@ public class ZombieGoal extends ZombieAttackGoal {
         // keeping delta movement when jumping except delta y(gravity)
         if(mob.onGround()) jumping = false;
         // when I'm jumping and not climbing
-        if(jumping && ((Plane)mob).zombie_tactics$getInt(1) == 0)
+        if(jumping && ((Plane)mob).zombietactics2$getInt(1) == 0)
             mob.setDeltaMovement(delta.x, mob.getDeltaMovement().y, delta.z);
 
         if(mob.getTarget() == null) return; // mob.getTarget() seems to be null for unknown reason
@@ -89,7 +88,7 @@ public class ZombieGoal extends ZombieAttackGoal {
                     jumping = true;
                     mob.getJumpControl().jump();
                     // target must not be null in here
-                    delta = Objects.requireNonNull(mob.getTarget()).position().subtract(mob.position());
+                    delta = mob.getTarget().position().subtract(mob.position());
                     delta = delta.scale(Config.jumpAcceleration / delta.length());
                     mob.addDeltaMovement(delta);
                 }

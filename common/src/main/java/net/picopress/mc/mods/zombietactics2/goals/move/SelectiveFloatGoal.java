@@ -26,13 +26,13 @@ public class SelectiveFloatGoal extends FloatGoal {
         if(target == null) return super.canUse();
         // selectively float
         // and, zombies want to breathe, but not want to be drowned
-        if(plane.zombie_tactics$getInt(0) > calculateBreath(target)) needBreathe = true;
+        if(plane.zombietactics2$getInt(0) > calculateBreath(target)) needBreathe = true;
         return super.canUse() && (!target.isInWater() || mob.getBlockY() - target.getBlockY() < 1 || needBreathe);
     }
 
     @Override
     public boolean canContinueToUse() {
-        if(plane.zombie_tactics$getInt(0) < 20) needBreathe = false;
+        if(plane.zombietactics2$getInt(0) < 20) needBreathe = false;
         return super.canUse() || needBreathe;
     }
 

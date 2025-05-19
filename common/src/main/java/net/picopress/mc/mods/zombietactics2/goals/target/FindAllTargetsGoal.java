@@ -29,11 +29,12 @@ public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final List<LivingEntity> imposters = new ArrayList<>();
-    private TargetingConditions targetingConditions;
     @Nullable private final ServerLevel serverLevel;
+    private TargetingConditions targetingConditions;
     private int delay;
-    private int idx;
+    private AABB boundingBox;
     private Task task;
+    private int idx;
 
     /**
      * @param targets Pairs of class and priority
@@ -49,7 +50,7 @@ public class FindAllTargetsGoal extends TargetGoal {
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() == null;
+        return mob.getTarget() == null || !mob.getTarget().isAlive();
     }
 
     @Override
@@ -179,7 +180,9 @@ public class FindAllTargetsGoal extends TargetGoal {
     }
 
     private AABB followBox() {
-        return mob.getBoundingBox().inflate(getFollowDistance());
+        if(boundingBox != null) return boundingBox;
+        boundingBox = mob.getBoundingBox().inflate(getFollowDistance());
+        return boundingBox;
     }
 
     // brain rot
