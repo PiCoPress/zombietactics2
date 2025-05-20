@@ -79,7 +79,11 @@ public class ZombieGoal extends ZombieAttackGoal {
                     if(!mob.level().isEmptyBlock(pos) && !mob.level().getBlockState(pos).is(Blocks.LAVA)) {
                         airs = false;
                         break;
-                    } else if(mob.level().getBlockState(pos).is(Blocks.LAVA)) break;
+                    } else if(mob.level().getBlockState(pos).is(Blocks.LAVA)) {
+                        // not the lava wall
+                        if(i < 2) airs = false;
+                        break;
+                    }
                     if(i != 4) pos = pos.below();
                 }
                 // this algorithm should be improved

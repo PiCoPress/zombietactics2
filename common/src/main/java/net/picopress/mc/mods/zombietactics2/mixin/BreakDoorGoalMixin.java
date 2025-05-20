@@ -18,7 +18,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 @Mixin(BreakDoorGoal.class)
 public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements Plane {
-    // to prevent that the zombies climb when breaking a door
+    // prevent that the zombies climb when breaking a door
     @Unique public boolean zombie_tactics$isBreaking;
 
     @Override
