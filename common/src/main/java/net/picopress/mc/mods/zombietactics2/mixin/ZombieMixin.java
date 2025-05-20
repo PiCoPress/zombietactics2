@@ -233,7 +233,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     public void hurtServer(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity who = source.getEntity();
         // new target list
-        if(who instanceof PathfinderMob mob && !(who instanceof Monster) && ! zombietactics2$target_class.contains(who.getClass())) {
+        if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombietactics2$target_class.contains(who.getClass())) {
             zombietactics2$target_priority.add(new Pair<>(mob.getClass(), 3));
             zombietactics2$target_class.add(mob.getClass());
         }
@@ -310,7 +310,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
 
         this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombietactics2$target_priority, this, false));
-        this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Object)this, Config.aggressiveSpeed, true));
+        this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Monster)this, Config.aggressiveSpeed, true));
         this.goalSelector.addGoal(7, new MoveThroughVillageGoal(this, 1.0, false, 4, this::canBreakDoors));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers(ZombifiedPiglin.class));
         this.goalSelector.addGoal(1, zombietactics2$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));

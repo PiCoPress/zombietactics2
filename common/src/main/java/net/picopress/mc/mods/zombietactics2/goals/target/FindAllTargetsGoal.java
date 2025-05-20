@@ -158,7 +158,7 @@ public class FindAllTargetsGoal extends TargetGoal {
 
                 // getting insane
                 if(mob.hasLineOfSight(amogus)) score /= 2;
-                if(delta.getY() >= - 2) score /= 2;
+                if(delta.getY() >= -2) score /= 2;
 
                 // select minimum score
                 if(score < minimumCost) {
