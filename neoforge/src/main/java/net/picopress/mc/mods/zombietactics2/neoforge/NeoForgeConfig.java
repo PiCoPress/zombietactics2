@@ -52,9 +52,11 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue NO_IDLE;
     private static ModConfigSpec.BooleanValue BREAK_CHEST;
     private static ModConfigSpec.IntValue FIND_CHEST_RANGE;
+    private static ModConfigSpec.IntValue DEFAULT_HEALTH;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
+    private static ModConfigSpec.BooleanValue NEVER_DIE;
 
     static final ModConfigSpec SPEC = BUILDER.getRight();
 
@@ -100,6 +102,8 @@ public class NeoForgeConfig {
         Config.noIdle = NO_IDLE.get();
         Config.breakChest = BREAK_CHEST.get();
         Config.findChest = FIND_CHEST_RANGE.get();
+        Config.defaultHealth = DEFAULT_HEALTH.get();
+        Config.neverDie = NEVER_DIE.get();
     }
 
     /*
@@ -134,6 +138,9 @@ public class NeoForgeConfig {
             SPAWN_UNDER_SUN = b.translation(MOD_CFG + "spawn_under_sun").define("spawnUnderSun", Config.spawnUnderSun);
             NO_DESPAWN = b.translation(MOD_CFG + "no_despawn").define("noDespawn", Config.noDespawn);
             b.pop();
+            b.push("Attributes");
+            DEFAULT_HEALTH = b.translation(MOD_CFG + "default_health").defineInRange("defaultHealth", Config.defaultHealth, 0, 1024);
+            b.pop();
             b.push("Targeting");
             TARGET_ANIMALS = b.translation(MOD_CFG + "do_hurt_animals").define("zombiesTargetAnimals", Config.targetAnimals);
             BLOCK_COST = b.translation(MOD_CFG + "block_cost").defineInRange("blockCost", Config.blockCost, 1, 65536);
@@ -164,6 +171,7 @@ public class NeoForgeConfig {
             b.push("Debug");
             SHOW_NODES = b.define("showNodes", Config.showNodes);
             SHOW_DELTA_MOVEMENT = b.define("showDeltaMovement", Config.showDeltaMovement);
+            NEVER_DIE = b.define("neverDie", Config.neverDie);
             b.pop();
         }
     }

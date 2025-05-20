@@ -3,13 +3,16 @@ package net.picopress.mc.mods.zombietactics2.goals.target;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
+import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 
@@ -79,14 +82,15 @@ public class FindAllTargetsGoal extends TargetGoal {
             } else {
                 // query targets
                 var imposter2 = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
-                    for(var sus: list)
-                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t))
+                    for(var sus: list) {
+                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t)) {
                             return true;
-
+                        }
+                    }
                     return false;
                 });
-                for(var imposter: imposter2) {
-                    if(imposter != null) imposters.add(imposter);
+                for(var sus: imposter2) {
+                    if(sus != null) imposters.add(sus);
                 }
                 task = Task.PRIORITIZE;
             }
@@ -151,6 +155,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // getting insane
                 if(mob.hasLineOfSight(amogus)) score /= 2;
                 if(delta.getY() >= -2) score /= 2;
+                score *= simulate(amogus);
 
                 // select minimum score
                 if(score < minimumCost) {
@@ -161,8 +166,8 @@ public class FindAllTargetsGoal extends TargetGoal {
 
             // set target
             if(target != null) mob.setTarget(target);
-            imposters.clear();
             task = Task.IDLE;
+            imposters.clear();
         }
     }
 
@@ -175,6 +180,17 @@ public class FindAllTargetsGoal extends TargetGoal {
         if(boundingBox != null) return boundingBox;
         boundingBox = mob.getBoundingBox().inflate(getFollowDistance());
         return boundingBox;
+    }
+
+    public int simulate(LivingEntity target) {
+        var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
+        int cnd = (int)((attack != null? attack.getValue(): 0) / 4
+                        * target.getHealth() / 20
+                        * target.getSpeed() + 1);
+
+        var peers = mob.level().getEntitiesOfClass(Zombie.class, followBox()).size() + 2;
+        cnd /= Mth.log2(peers);
+        return cnd;
     }
 
     // brain rot

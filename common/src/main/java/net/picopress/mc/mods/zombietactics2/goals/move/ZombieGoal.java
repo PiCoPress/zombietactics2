@@ -99,4 +99,9 @@ public class ZombieGoal extends ZombieAttackGoal {
             }
         }
     }
+
+    @Override
+    public boolean canContinueToUse() {
+        return super.canContinueToUse();
+    }
 }

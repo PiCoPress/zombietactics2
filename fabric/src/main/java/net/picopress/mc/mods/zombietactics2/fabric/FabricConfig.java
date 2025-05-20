@@ -12,10 +12,11 @@ public class FabricConfig extends MidnightConfig {
     public static final String MINING = "Mining";
     public static final String CLIMBING = "Climbing";
     public static final String SPAWN = "Spawn";
+    public static final String ATTRIBUTES = "Attributes";
     public static final String TARGETING = "Targeting";
-    public static final String GENERAL = "General";
-    public static final String FLYING = "Flying";
     public static final String OPTIMIZE = "Optimize";
+    public static final String FLYING = "Flying";
+    public static final String GENERAL = "General";
     public static final String DEBUG = "Debug";
 
     @Entry(category=MINING) public static boolean do_mine = Config.mineBlocks;
@@ -39,6 +40,8 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=SPAWN, min=0, max=Integer.MAX_VALUE) public static int max_threshold = Config.maxThreshold;
     @Entry(category=SPAWN, min=0, max=1) public static double persistence_chance = Config.persistenceChance;
     @Entry(category=SPAWN) public static boolean no_despawn = Config.noDespawn;
+
+    @Entry(category=ATTRIBUTES, min=0, max=1024) public static int default_health = Config.defaultHealth;
 
     @Entry(category=TARGETING) public static boolean do_hurt_animals = Config.targetAnimals;
     @Entry(category=TARGETING) public static FindTargetType find_target_type = Config.findTargetType;
@@ -67,6 +70,7 @@ public class FabricConfig extends MidnightConfig {
     // debugging
     @Entry(category=DEBUG) public static boolean show_nodes = Config.showNodes;
     @Entry(category=DEBUG) public static boolean show_delta_movement = Config.showDeltaMovement;
+    @Entry(category=DEBUG) public static boolean never_die = Config.neverDie;
 
     // fabric fields do nothing without the update of config
     public static void updateConfig() {
@@ -110,6 +114,8 @@ public class FabricConfig extends MidnightConfig {
         Config.noDespawn = no_despawn;
         Config.breakChest = break_chest;
         Config.findChest = find_chest_range;
+        Config.defaultHealth = default_health;
+        Config.neverDie = never_die;
     }
 
     @Override

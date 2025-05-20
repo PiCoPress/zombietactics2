@@ -3,6 +3,7 @@
     "zombietactics2.configuration.Climbing": "Climbing",
     "zombietactics2.configuration.General": "General",
     "zombietactics2.configuration.Spawn": "Spawn",
+    "zombietactics2.configuration.Attributes": "Attributes",
     "zombietactics2.configuration.Targeting": "Targeting",
     "zombietactics2.configuration.Optimize": "Optimize",
     "zombietactics2.configuration.Flying": "Flying",
@@ -55,6 +56,10 @@
     "zombietactics2.midnightconfig.spawn_under_sun.tooltip": "Spawn under the sun",
     "zombietactics2.midnightconfig.no_despawn": "Do not despawn",
     "zombietactics2.midnightconfig.no_despawn.tooltip": "Zombies may not be despawned when player is far away",
+
+    "zombietactics2.midnightconfig.category.Attributes": "Attributes",
+    "zombietactics2.midnightconfig.default_health": "Default health",
+    "zombietactics2.midnightconfig.default_health.tooltip": "Default health of zombies",
 
     "zombietactics2.midnightconfig.category.Targeting": "Targeting",
     "zombietactics2.midnightconfig.block_cost": "Block cost",
