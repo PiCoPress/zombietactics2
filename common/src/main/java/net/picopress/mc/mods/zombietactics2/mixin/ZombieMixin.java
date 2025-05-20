@@ -1,5 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
@@ -235,6 +237,11 @@ public abstract class ZombieMixin extends Monster implements Plane {
             this.moveControl = new FlyingMoveControl(this, 360, true);
             this.navigation = new FlyingPathNavigation(this, level);
             Objects.requireNonNull(this.getAttribute(Attributes.FLYING_SPEED)).setBaseValue(Config.flySpeed);
+        }
+
+        // I can see all zombies through blocks
+        if(Config.glowZombie) {
+            this.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false));
         }
     }
 
