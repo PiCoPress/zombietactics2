@@ -43,7 +43,7 @@ public class GoToWantedItemGoal extends Goal {
                 mob.getX() + range, mob.getY() + range, mob.getZ() + range));
         for (var item: items) {
             ItemStack stack = item.getItem();
-            if (predicate.test(stack) && !(item.isInWater() || item.isInLava())) {
+            if (!(item.isInWater() || item.isInLava()) && predicate.test(stack)) {
                 mob.getNavigation().moveTo(item, 1);
                 target = item;
                 return true;

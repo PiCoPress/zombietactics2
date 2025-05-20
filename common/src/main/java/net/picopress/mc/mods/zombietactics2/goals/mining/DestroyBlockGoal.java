@@ -17,12 +17,12 @@ import java.util.Objects;
 // destroy specific block
 public class DestroyBlockGoal extends BreakBlockGoal {
     private final Block block;
+    private final int range;
     private int delay = 0;
     private int y;
-    private final int range;
 
     public DestroyBlockGoal(Mob mob, Block block, int range) {
-        super(mob, Config.hardnessMultiplier, Config.break_speed, false);
+        super(mob, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
         this.block = block;
         this.range = range;
         y = -range;

@@ -13,7 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 @EventBusSubscriber(modid=Main.MOD_ID, bus=EventBusSubscriber.Bus.MOD)
 public class NeoForgeConfig {
-    private static final Pair<build, ModConfigSpec> BUILDER = new ModConfigSpec.Builder().configure(build::new);
+    private static final Pair<MCSBuilder, ModConfigSpec> BUILDER = new ModConfigSpec.Builder().configure(MCSBuilder::new);
     private static ModConfigSpec.BooleanValue TARGET_ANIMALS;
     private static ModConfigSpec.BooleanValue ATTACK_INVISIBLE;
     private static ModConfigSpec.BooleanValue MINE_BLOCKS;
@@ -106,9 +106,9 @@ public class NeoForgeConfig {
         I super hard coded.
         Translation!!
      */
-    public static class build {
+    public static class MCSBuilder {
         static final String MOD_CFG = Main.MOD_ID + ".midnightconfig.";
-        public build(ModConfigSpec.Builder b) {
+        public MCSBuilder(ModConfigSpec.Builder b) {
             b.push("Mining");
             MINE_BLOCKS = b.translation(MOD_CFG + "do_mine").define("zombiesMineBlocks", Config.mineBlocks);
             MINING_SPEED = b.translation(MOD_CFG + "mining_speed").defineInRange("miningSpeed", Config.break_speed, 0, Double.MAX_VALUE);

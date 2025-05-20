@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     private final T zombie;
-    float max_p2, min_p2;
+    double max_p2, min_p2;
 
     public MonsterBreakBlockGoal(T zombie) {
         super(zombie, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
@@ -55,7 +55,7 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     @Override
     public void tick() {
         double dist = zombie.distanceToSqr(mine.bp_vec3);
-        if (dist <= min_p2 ||
+        if (dist < min_p2 ||
                 dist > max_p2) {
             mine.doMining = false;
             return;
@@ -90,18 +90,12 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
             // about fences that have 1.5 meters tall.
             if(nav.moveTo(liv, zombie.getSpeed())) return false;
             final BlockPos[] set = getCandidate(liv);
-            int airStack = 0;
 
             for(BlockPos pos: set) {
                 // checkBlock method is able to change 'zombie' variable
                 // So 'temp' cannot be determined as a valid object
                 // selects relative block position
                 BlockPos temp = zombie.blockPosition().offset(pos.rotate(getRelativeRotation(zombie)));
-
-                // prevent that they are not stuck but zombie digs under their foot
-                // It may fix the described issue in specific cases
-                if(level.getBlockState(temp).isAir()) ++ airStack;
-                if(airStack == set.length - 1) break;
                 if(checkBlock(temp))
                     return true;
             }
@@ -120,7 +114,7 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     @Override
     public void start() {
         super.start();
-        min_p2 = (float)(Config.minDist * Config.minDist);
-        max_p2 = (float)(Config.maxDist * Config.maxDist);
+        min_p2 = Config.minDist * Config.minDist;
+        max_p2 = Config.maxDist * Config.maxDist;
     }
 }

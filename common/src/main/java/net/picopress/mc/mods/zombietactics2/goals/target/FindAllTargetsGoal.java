@@ -26,9 +26,10 @@ public class FindAllTargetsGoal extends TargetGoal {
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final List<LivingEntity> imposters = new ArrayList<>();
     private TargetingConditions targetingConditions;
+    private AABB boundingBox;
+    private Task task;
     private int delay;
     private int idx;
-    private Task task;
 
     /**
      * @param targets Pairs of class and priority
@@ -43,7 +44,7 @@ public class FindAllTargetsGoal extends TargetGoal {
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() == null;
+        return mob.getTarget() == null || !mob.getTarget().isAlive();
     }
 
     @Override
@@ -149,7 +150,7 @@ public class FindAllTargetsGoal extends TargetGoal {
 
                 // getting insane
                 if(mob.hasLineOfSight(amogus)) score /= 2;
-                if(delta.getY() >= - 2) score /= 2;
+                if(delta.getY() >= -2) score /= 2;
 
                 // select minimum score
                 if(score < minimumCost) {
@@ -171,7 +172,9 @@ public class FindAllTargetsGoal extends TargetGoal {
     }
 
     private AABB followBox() {
-        return mob.getBoundingBox().inflate(getFollowDistance());
+        if(boundingBox != null) return boundingBox;
+        boundingBox = mob.getBoundingBox().inflate(getFollowDistance());
+        return boundingBox;
     }
 
     // brain rot

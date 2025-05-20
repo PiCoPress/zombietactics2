@@ -53,14 +53,14 @@ import java.util.function.Predicate;
 
 @Mixin(Zombie.class)
 public abstract class ZombieMixin extends Monster implements Plane {
-    @Unique private static final List<Pair<Class<? extends LivingEntity>, Integer>> zombie_tactics$target_priority = new ArrayList<>();
-    @Unique private static final Set<Class<? extends LivingEntity>> zombie_tactics$target_class = new HashSet<>();
-    @Unique private static int zombie_tactics$threshold = 0;
-    @Unique private MonsterBreakBlockGoal<? extends Monster> zombie_tactics$mine_goal;
-    @Unique private BreakDoorGoal zombie_tactics$bdg;
-    @Unique private int zombieTactics$climbedCount = 0;
-    @Unique private boolean zombieTactics$isClimbing = false;
-    @Unique private boolean zombie_tactics$persistence;
+    @Unique private static final List<Pair<Class<? extends LivingEntity>, Integer>> zombietactics2$target_priority = new ArrayList<>();
+    @Unique private static final Set<Class<? extends LivingEntity>> zombietactics2$target_class = new HashSet<>();
+    @Unique private static int zombietactics2$threshold = 0;
+    @Unique private MonsterBreakBlockGoal<? extends Monster> zombietactics2$mine_goal;
+    @Unique private BreakDoorGoal zombietactics2$bdg;
+    @Unique private int zombietactics2$climbedCount = 0;
+    @Unique private boolean zombietactics2$isClimbing = false;
+    @Unique private boolean zombietactics2$persistence;
 
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow private int inWaterTime;
@@ -74,10 +74,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
     // zombie doesn't take fall damage when climbing
     @Override
     protected void checkFallDamage(double y, boolean onGround, @NotNull BlockState state, @NotNull BlockPos pos) {
-        if(zombieTactics$isClimbing && onGround) {
+        if(zombietactics2$isClimbing && onGround) {
             fallDistance = 0;
-            zombieTactics$isClimbing = false;
-            zombieTactics$climbedCount = 0;
+            zombietactics2$isClimbing = false;
+            zombietactics2$climbedCount = 0;
         }
         super.checkFallDamage(y, onGround, state, pos);
     }
@@ -113,20 +113,20 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public int zombie_tactics$getInt(int id) {
+    public int zombietactics2$getInt(int id) {
         // inWaterTime
         if(id == 0) return inWaterTime;
-        if(id == 1) return zombieTactics$climbedCount;
+        if(id == 1) return zombietactics2$climbedCount;
 
         // nothing else
         return 0;
     }
 
     @Override
-    public boolean zombie_tactics$getBool(int id) {
+    public boolean zombietactics2$getBool(int id) {
         if(id == 0) {
-            if(zombie_tactics$mine_goal == null) return false;
-            return zombie_tactics$mine_goal.mine.doMining;
+            if(zombietactics2$mine_goal == null) return false;
+            return zombietactics2$mine_goal.mine.doMining;
         }
         return false;
     }
@@ -160,23 +160,23 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     @Override
     public boolean isPersistenceRequired() {
-        return zombie_tactics$persistence || super.isPersistenceRequired();
+        return zombietactics2$persistence || super.isPersistenceRequired();
     }
 
     // For climbing
     @Override
     public void push(@NotNull Entity entity) {
-        if(zombie_tactics$bdg != null && Config.zombiesClimbing && entity instanceof Zombie &&
-                (horizontalCollision || Config.hyperClimbing) && !((Plane)zombie_tactics$bdg).zombie_tactics$getBool(0)) {
-            if(zombieTactics$climbedCount < Config.climbLimitTicks) {
+        if(zombietactics2$bdg != null && Config.zombiesClimbing && entity instanceof Zombie &&
+                (horizontalCollision || Config.hyperClimbing) && !((Plane)zombietactics2$bdg).zombietactics2$getBool(0)) {
+            if(zombietactics2$climbedCount < Config.climbLimitTicks) {
                 final Vec3 v = getDeltaMovement();
                 // climb with random error
                 if(Config.randomlyClimb)
                     setDeltaMovement(v.x + (this.getRandom().nextDouble() - 0.5) / 64,
                         Config.climbingSpeed, v.z + (this.getRandom().nextDouble() - 0.5) / 64);
                 else setDeltaMovement(v.x, Config.climbingSpeed, v.z);
-                zombieTactics$isClimbing = true;
-                ++ zombieTactics$climbedCount;
+                zombietactics2$isClimbing = true;
+                ++ zombietactics2$climbedCount;
             }
         }
         super.push(entity);
@@ -191,13 +191,13 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Override
     public void remove(RemovalReason reason) {
         super.remove(reason);
-        -- zombie_tactics$threshold; // decrease
+        -- zombietactics2$threshold; // decrease
         // reset the mining progress
         // procedure:
         // die -> remove(=killed)
         // despawn/transform() -> remove(=discarded)
-        if(zombie_tactics$mine_goal != null && zombie_tactics$mine_goal.mine.doMining)
-            this.level().destroyBlockProgress(this.getId(), zombie_tactics$mine_goal.mine.bp, -1);
+        if(zombietactics2$mine_goal != null && zombietactics2$mine_goal.mine.doMining)
+            this.level().destroyBlockProgress(this.getId(), zombietactics2$mine_goal.mine.bp, -1);
     }
 
     @Override
@@ -216,21 +216,21 @@ public abstract class ZombieMixin extends Monster implements Plane {
     public void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity who = source.getEntity();
         // new target list
-        if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombie_tactics$target_class.contains(who.getClass())) {
-            zombie_tactics$target_priority.add(new Pair<>(mob.getClass(), 3));
-            zombie_tactics$target_class.add(mob.getClass());
+        if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombietactics2$target_class.contains(who.getClass())) {
+            zombietactics2$target_priority.add(new Pair<>(mob.getClass(), 3));
+            zombietactics2$target_class.add(mob.getClass());
         }
     }
 
     @Inject(method="<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at=@At("TAIL"))
     public void constructor(EntityType<? extends Zombie> entityType, Level level, CallbackInfo ci) {
         double tmp = this.level().random.nextDouble();
-        zombie_tactics$persistence = tmp <= Config.persistenceChance;
-        if(zombie_tactics$persistence && zombie_tactics$threshold < Config.maxThreshold) {
-            ++ zombie_tactics$threshold;
-        } else zombie_tactics$persistence = false;
+        zombietactics2$persistence = tmp <= Config.persistenceChance;
+        if(zombietactics2$persistence && zombietactics2$threshold < Config.maxThreshold) {
+            ++ zombietactics2$threshold;
+        } else zombietactics2$persistence = false;
 
-        if(zombie_tactics$persistence) this.setPersistenceRequired(); // I'm persistent
+        if(zombietactics2$persistence) this.setPersistenceRequired(); // I'm persistent
         if(Config.canFly) { // I can fly
             this.moveControl = new FlyingMoveControl(this, 360, true);
             this.navigation = new FlyingPathNavigation(this, level);
@@ -254,7 +254,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     // fixes that doing both mining and attacking
     @Inject(method="doHurtTarget", at=@At("HEAD"))
     public void doHurtTargetHead(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if(zombie_tactics$mine_goal != null) zombie_tactics$mine_goal.mine.doMining = false;
+        if(zombietactics2$mine_goal != null) zombietactics2$mine_goal.mine.doMining = false;
     }
 
     // Healing zombie
@@ -282,33 +282,33 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Overwrite
     public void addBehaviourGoals() {
         // inserting a new instance of Pair in HashSet is not a good idea
-        if(Config.targetAnimals && !zombie_tactics$target_class.contains(Animal.class)) {
-            zombie_tactics$target_priority.add(new Pair<>(Animal.class, 5));
-            zombie_tactics$target_class.add(Animal.class);
+        if(Config.targetAnimals && !zombietactics2$target_class.contains(Animal.class)) {
+            zombietactics2$target_priority.add(new Pair<>(Animal.class, 5));
+            zombietactics2$target_class.add(Animal.class);
         }
-        if(Config.mineBlocks) this.goalSelector.addGoal(1, zombie_tactics$mine_goal = new MonsterBreakBlockGoal<>(this));
+        if(Config.mineBlocks) this.goalSelector.addGoal(1, zombietactics2$mine_goal = new MonsterBreakBlockGoal<>(this));
         if(Config.canFloat) this.goalSelector.addGoal(5, new SelectiveFloatGoal(this));
         if(Config.canFly) this.goalSelector.addGoal(10, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
         if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
 
-        this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombie_tactics$target_priority, this, false));
-        this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Object)this, Config.aggressiveSpeed, true));
+        this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombietactics2$target_priority, this, false));
+        this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Monster)this, Config.aggressiveSpeed, true));
         this.goalSelector.addGoal(7, new MoveThroughVillageGoal(this, 1.0, false, 4, this::canBreakDoors));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers(ZombifiedPiglin.class));
-        this.goalSelector.addGoal(1, zombie_tactics$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
+        this.goalSelector.addGoal(1, zombietactics2$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
         this.goalSelector.addGoal(5, new GoToWantedItemGoal(this, this::wantsToPickUp));
     }
 
     static {
-        zombie_tactics$target_priority.add(new Pair<>(Player.class, 2));
-        zombie_tactics$target_priority.add(new Pair<>(AbstractVillager.class, 3));
-        zombie_tactics$target_priority.add(new Pair<>(IronGolem.class, 3));
-        zombie_tactics$target_priority.add(new Pair<>(Turtle.class, 3));
+        zombietactics2$target_priority.add(new Pair<>(Player.class, 2));
+        zombietactics2$target_priority.add(new Pair<>(AbstractVillager.class, 3));
+        zombietactics2$target_priority.add(new Pair<>(IronGolem.class, 3));
+        zombietactics2$target_priority.add(new Pair<>(Turtle.class, 3));
 
-        zombie_tactics$target_class.add(Player.class);
-        zombie_tactics$target_class.add(AbstractVillager.class);
-        zombie_tactics$target_class.add(IronGolem.class);
-        zombie_tactics$target_class.add(Turtle.class);
+        zombietactics2$target_class.add(Player.class);
+        zombietactics2$target_class.add(AbstractVillager.class);
+        zombietactics2$target_class.add(IronGolem.class);
+        zombietactics2$target_class.add(Turtle.class);
     }
 }
