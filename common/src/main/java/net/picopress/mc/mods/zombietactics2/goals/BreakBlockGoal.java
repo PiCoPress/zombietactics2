@@ -71,7 +71,6 @@ public abstract class BreakBlockGoal extends Goal {
         mob.getNavigation().recomputePath();
         mine.doMining = false;
         mine.bp = null;
-        progress = 0;
     }
 
     @Override

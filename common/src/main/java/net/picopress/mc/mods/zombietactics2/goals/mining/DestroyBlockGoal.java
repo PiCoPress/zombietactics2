@@ -22,7 +22,7 @@ public class DestroyBlockGoal extends BreakBlockGoal {
     private int y;
 
     public DestroyBlockGoal(Mob mob, Block block, int range) {
-        super(mob, Config.hardnessMultiplier, Config.break_speed, false);
+        super(mob, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
         this.block = block;
         this.range = range;
         y = -range;
