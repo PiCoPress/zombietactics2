@@ -29,7 +29,6 @@ public class FindAllTargetsGoal extends TargetGoal {
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final List<LivingEntity> imposters = new ArrayList<>();
     private TargetingConditions targetingConditions;
-    private AABB boundingBox;
     private Task task;
     private int delay;
     private int idx;
@@ -176,10 +175,10 @@ public class FindAllTargetsGoal extends TargetGoal {
         return canUse() || super.canContinueToUse();
     }
 
+    // please update their bounding box
+    // don't cache it
     private AABB followBox() {
-        if(boundingBox != null) return boundingBox;
-        boundingBox = mob.getBoundingBox().inflate(getFollowDistance());
-        return boundingBox;
+        return mob.getBoundingBox().inflate(getFollowDistance());
     }
 
     public int simulate(LivingEntity target) {

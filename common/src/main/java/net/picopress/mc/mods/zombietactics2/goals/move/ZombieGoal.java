@@ -54,7 +54,7 @@ public class ZombieGoal extends ZombieAttackGoal {
         }
 
         // keeping delta movement when jumping except delta y(gravity)
-        if(mob.onGround()) jumping = false;
+        if(mob.onGround() || mob.isInWater()) jumping = false;
         // when I'm jumping and not climbing
         if(jumping && ((Plane)mob).zombietactics2$getInt(1) == 0)
             mob.setDeltaMovement(delta.x, mob.getDeltaMovement().y, delta.z);

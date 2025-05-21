@@ -49,7 +49,9 @@ public class Config {
 
     // debugging
     public static boolean showNodes = false,
-        showDeltaMovement = false, neverDie = false;
+            showDeltaMovement = false,
+            neverDie = false,
+            glowZombie = false;
 
     public static FindTargetType findTargetType = FindTargetType.SIMPLE;
 }

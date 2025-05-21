@@ -71,6 +71,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=DEBUG) public static boolean show_nodes = Config.showNodes;
     @Entry(category=DEBUG) public static boolean show_delta_movement = Config.showDeltaMovement;
     @Entry(category=DEBUG) public static boolean never_die = Config.neverDie;
+    @Entry(category=DEBUG) public static boolean glow_zombie = Config.glowZombie;
 
     // fabric fields do nothing without the update of config
     public static void updateConfig() {
@@ -114,6 +115,7 @@ public class FabricConfig extends MidnightConfig {
         Config.noDespawn = no_despawn;
         Config.breakChest = break_chest;
         Config.findChest = find_chest_range;
+        Config.glowZombie = glow_zombie;
         Config.defaultHealth = default_health;
         Config.neverDie = never_die;
     }

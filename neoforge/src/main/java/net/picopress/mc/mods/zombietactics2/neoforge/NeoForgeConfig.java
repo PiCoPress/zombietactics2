@@ -57,6 +57,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
     private static ModConfigSpec.BooleanValue NEVER_DIE;
+    private static ModConfigSpec.BooleanValue GLOW_ZOMBIE;
 
     static final ModConfigSpec SPEC = BUILDER.getRight();
 
@@ -102,6 +103,7 @@ public class NeoForgeConfig {
         Config.noIdle = NO_IDLE.get();
         Config.breakChest = BREAK_CHEST.get();
         Config.findChest = FIND_CHEST_RANGE.get();
+        Config.glowZombie = GLOW_ZOMBIE.get();
         Config.defaultHealth = DEFAULT_HEALTH.get();
         Config.neverDie = NEVER_DIE.get();
     }
@@ -172,6 +174,7 @@ public class NeoForgeConfig {
             SHOW_NODES = b.define("showNodes", Config.showNodes);
             SHOW_DELTA_MOVEMENT = b.define("showDeltaMovement", Config.showDeltaMovement);
             NEVER_DIE = b.define("neverDie", Config.neverDie);
+            GLOW_ZOMBIE = b.define("glowZombie", Config.glowZombie);
             b.pop();
         }
     }
