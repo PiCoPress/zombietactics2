@@ -19,6 +19,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -252,6 +254,11 @@ public abstract class ZombieMixin extends Monster implements Plane {
             this.moveControl = new FlyingMoveControl(this, 360, true);
             this.navigation = new FlyingPathNavigation(this, level);
             Objects.requireNonNull(this.getAttribute(Attributes.FLYING_SPEED)).setBaseValue(Config.flySpeed);
+        }
+
+        // I can see all zombies through blocks
+        if(Config.glowZombie) {
+            this.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false));
         }
     }
 
