@@ -22,7 +22,9 @@ public class Config {
             strictMine = true,
             noDespawn = false,
             noIdle = false,
-            breakChest = false;
+            breakChest = false,
+            avoidance = true,
+            simulate = true;
 
     public static double break_speed = 0.2,
             maxHardness = 4.5,

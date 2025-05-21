@@ -84,6 +84,10 @@
     "zombietactics2.midnightconfig.attack_range.tooltip": "좀비가 공격 가능한 범위",
     "zombietactics2.midnightconfig.attack_invisible": "무치별 공격",
     "zombietactics2.midnightconfig.attack_invisible.tooltip": "보지 못한 엔티티도 따라가 공격합니다",
+    "zombietactics2.midnightconfig.avoidance": "회피",
+    "zombietactics2.midnightconfig.avoidance.tooltip": "좀비가 목표의 체력이 목표의 피해보다 낮을 때 회피합니다",
+    "zombietactics2.midnightconfig.simulate": "시뮬레이션",
+    "zombietactics2.midnightconfig.simulate.tooltip": "좀비가 목표의 공격을 시뮬레이션합니다",
 
     "zombietactics2.midnightconfig.category.Optimize": "최적화",
     "zombietactics2.midnightconfig.accuracy": "경로 정확도",

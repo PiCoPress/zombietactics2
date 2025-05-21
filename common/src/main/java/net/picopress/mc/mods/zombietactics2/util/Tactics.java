@@ -2,7 +2,11 @@ package net.picopress.mc.mods.zombietactics2.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -24,9 +28,49 @@ public class Tactics {
         Vec3i norm = mob.getNearestViewDirection().getNormal();
         int x = norm.getX(), z = norm.getZ();
         if(x == 0 && z == 1) return Rotation.NONE;
-        else if(x == 0 && z == -1) return Rotation.CLOCKWISE_180;
-        else if(x == -1 && z == 0) return Rotation.CLOCKWISE_90;
+        else if(x == 0 && z == - 1) return Rotation.CLOCKWISE_180;
+        else if(x == - 1 && z == 0) return Rotation.CLOCKWISE_90;
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
+    }
+
+    public static float getDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
+        var tmp = mob.getAttribute(Attributes.ATTACK_DAMAGE);
+        if(tmp == null) return 0;
+        float dam = (float)tmp.getValue();
+        return EnchantmentHelper.modifyDamage(serverLevel, mob.getWeaponItem(), target, mob.damageSources().mobAttack(mob), dam);
+    }
+
+    // thonk
+    public static class Heuristic {
+        public static int getEnemyPower(LivingEntity target) {
+            var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
+            return (int)((attack != null? attack.getValue(): 0) / 2 * target.getHealth() / 5 * target.getSpeed() + 1);
+        }
+
+        public static boolean simulate(Class<? extends LivingEntity> clazz, Mob mob, LivingEntity target) {
+            // friends list
+            var peers = mob.level().getEntitiesOfClass(clazz, mob.getBoundingBox().inflate(mob.getAttributeValue(Attributes.FOLLOW_RANGE)), (liv) -> liv != mob);
+            // win by outnumbering
+            if(peers.size() > 15) return true;
+            int opponent = getEnemyPower(target); // enemy
+            int me = getEnemyPower(mob); // just me
+            int peer_power = 0; // friends power
+
+            for(LivingEntity peer: peers) {
+                peer_power += getEnemyPower(peer);
+            }
+            return me + peer_power >= opponent;
+        }
+
+        // alternative for simulate
+        public static boolean needAvoid(Mob mob, LivingEntity target) {
+            if(target == null) return false;
+            var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
+            if(attack != null) {
+                return mob.getHealth() <= attack.getValue() && target.getHealth() > mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            }
+            return false;
+        }
     }
 
     public static class World {

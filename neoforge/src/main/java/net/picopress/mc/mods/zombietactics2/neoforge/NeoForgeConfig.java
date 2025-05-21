@@ -53,6 +53,8 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue BREAK_CHEST;
     private static ModConfigSpec.IntValue FIND_CHEST_RANGE;
     private static ModConfigSpec.IntValue DEFAULT_HEALTH;
+    private static ModConfigSpec.BooleanValue AVOIDANCE;
+    private static ModConfigSpec.BooleanValue SIMULATE;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
@@ -106,6 +108,8 @@ public class NeoForgeConfig {
         Config.glowZombie = GLOW_ZOMBIE.get();
         Config.defaultHealth = DEFAULT_HEALTH.get();
         Config.neverDie = NEVER_DIE.get();
+        Config.avoidance = AVOIDANCE.get();
+        Config.simulate = SIMULATE.get();
     }
 
     /*
@@ -150,6 +154,8 @@ public class NeoForgeConfig {
             TARGET_TYPE = b.translation(MOD_CFG + "find_target_type").defineEnum("findTargetType", Config.findTargetType);
             ATTACK_RANGE = b.translation(MOD_CFG + "attack_range").defineInRange("", Config.attackRange, 0.25, 127.);
             ATTACK_INVISIBLE = b.translation(MOD_CFG + "attack_invisible").define("targetVisibilityCheck", Config.attackInvisible);
+            AVOIDANCE = b.translation(MOD_CFG + "avoidance").define("avoidance", Config.avoidance);
+            SIMULATE = b.translation(MOD_CFG + "simulate").define("simulate", Config.simulate);
             b.pop();
             b.push("Optimize");
             PATH_ACCURACY = b.translation(MOD_CFG + "accuracy").defineInRange("pathAccuracy", Config.accuracy, 0, 95);

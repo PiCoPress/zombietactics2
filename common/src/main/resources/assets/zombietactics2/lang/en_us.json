@@ -56,6 +56,10 @@
     "zombietactics2.midnightconfig.spawn_under_sun.tooltip": "Spawn under the sun",
     "zombietactics2.midnightconfig.no_despawn": "Do not despawn",
     "zombietactics2.midnightconfig.no_despawn.tooltip": "Zombies may not be despawned when player is far away",
+    "zombietactics2.midnightconfig.avoidance": "Avoidance",
+    "zombietactics2.midnightconfig.avoidance.tooltip": "Zombies avoid the target if its health is lower than the target's damage",
+    "zombietactics2.midnightconfig.simulate": "Simulate",
+    "zombietactics2.midnightconfig.simulate.tooltip": "Zombies simulate the target's attack",
 
     "zombietactics2.midnightconfig.category.Attributes": "Attributes",
     "zombietactics2.midnightconfig.default_health": "Default health",

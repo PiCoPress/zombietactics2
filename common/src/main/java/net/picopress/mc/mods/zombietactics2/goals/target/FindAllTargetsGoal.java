@@ -1,18 +1,16 @@
 package net.picopress.mc.mods.zombietactics2.goals.target;
 
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
-import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 
@@ -154,7 +152,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // getting insane
                 if(mob.hasLineOfSight(amogus)) score /= 2;
                 if(delta.getY() >= -2) score /= 2;
-                score *= simulate(amogus);
+                score *= Tactics.Heuristic.getEnemyPower(amogus);
 
                 // select minimum score
                 if(score < minimumCost) {
@@ -179,17 +177,6 @@ public class FindAllTargetsGoal extends TargetGoal {
     // don't cache it
     private AABB followBox() {
         return mob.getBoundingBox().inflate(getFollowDistance());
-    }
-
-    public int simulate(LivingEntity target) {
-        var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
-        int cnd = (int)((attack != null? attack.getValue(): 0) / 4
-                        * target.getHealth() / 20
-                        * target.getSpeed() + 1);
-
-        var peers = mob.level().getEntitiesOfClass(Zombie.class, followBox()).size() + 2;
-        cnd /= Mth.log2(peers);
-        return cnd;
     }
 
     // brain rot

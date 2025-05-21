@@ -49,6 +49,8 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=TARGETING, min=1, max=128) public static int follow_range = Config.followRange;
     @Entry(category=TARGETING, min=0.25, max=127) public static double attack_range = Config.attackRange;
     @Entry(category=TARGETING) public static boolean attack_invisible = Config.attackInvisible;
+    @Entry(category=TARGETING) public static boolean avoidance = Config.avoidance;
+    @Entry(category=TARGETING) public static boolean simulate = Config.simulate;
 
     @Entry(category=OPTIMIZE, min=0, max=16) public static int accuracy = Config.accuracy;
     @Entry(category=OPTIMIZE) public static boolean no_idle = Config.noIdle;
@@ -118,6 +120,8 @@ public class FabricConfig extends MidnightConfig {
         Config.glowZombie = glow_zombie;
         Config.defaultHealth = default_health;
         Config.neverDie = never_die;
+        Config.avoidance = avoidance;
+        Config.simulate = simulate;
     }
 
     @Override

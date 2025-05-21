@@ -1,11 +1,14 @@
 package net.picopress.mc.mods.zombietactics2.goals.move;
 
-import net.minecraft.world.entity.Mob;
+import static net.picopress.mc.mods.zombietactics2.util.Tactics.Heuristic.needAvoid;
+import static net.picopress.mc.mods.zombietactics2.util.Tactics.Heuristic.simulate;
+
+import net.minecraft.world.entity.monster.Zombie;
+import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 
 
@@ -19,22 +22,14 @@ public class AvoidEnemyGoal<T extends LivingEntity> extends AvoidEntityGoal<T> {
 
     @Override
     public boolean canUse() {
-        if(mob.getTarget() != null) {
-            if(needAvoid(mob, mob.getTarget()) && super.canUse()) {
-                // if I think that I can't take down the target, avoid it
-                plane.zombietactics2$invoke(0, mob.getTarget());
-                return true;
+        boolean state = super.canUse();
+        if(state && toAvoid != null) {
+            if(toAvoid instanceof Zombie) return false;
+            boolean t = Config.simulate? !simulate(Zombie.class, mob, toAvoid): needAvoid(mob, toAvoid);
+            if(t) {
+                plane.zombietactics2$invoke(0);
             }
-        }
-        return false;
-    }
-
-    // static method to
-    public static boolean needAvoid(Mob mob, LivingEntity target) {
-        if(target == null) return false;
-        var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
-        if(attack != null) {
-            return mob.getHealth() <= attack.getValue();
+            return t;
         }
         return false;
     }
