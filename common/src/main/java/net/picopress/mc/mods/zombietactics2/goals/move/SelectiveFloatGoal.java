@@ -38,6 +38,6 @@ public class SelectiveFloatGoal extends FloatGoal {
 
     // calculate the cost of swimming
     private int calculateBreath(@NotNull LivingEntity target) {
-        return 600 - (mob.getBlockY() - target.getBlockY()) * 50;
+        return 600 - (mob.getBlockY() - target.getBlockY()) * 75;
     }
 }

@@ -31,9 +31,8 @@ public class FindAllTargetsGoal extends TargetGoal {
     private final List<LivingEntity> imposters = new ArrayList<>();
     @Nullable private final ServerLevel serverLevel;
     private TargetingConditions targetingConditions;
-    private int delay;
-    private AABB boundingBox;
     private Task task;
+    private int delay;
     private int idx;
 
     /**
@@ -87,10 +86,10 @@ public class FindAllTargetsGoal extends TargetGoal {
             } else {
                 // query targets
                 var imposter2 = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
-                    for(var sus: list)
+                    for(var sus: list) {
                         if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverLevel, mob, t))
                             return true;
-
+                    }
                     return false;
                 });
                 for(var imposter: imposter2) {
@@ -179,10 +178,10 @@ public class FindAllTargetsGoal extends TargetGoal {
         return canUse() || super.canContinueToUse();
     }
 
+    // please update their bounding box
+    // don't cache it
     private AABB followBox() {
-        if(boundingBox != null) return boundingBox;
-        boundingBox = mob.getBoundingBox().inflate(getFollowDistance());
-        return boundingBox;
+        return mob.getBoundingBox().inflate(getFollowDistance());
     }
 
     // brain rot
