@@ -11,7 +11,7 @@ architectury {
 allprojects {
     group = maven_group
     version = mod_version
-    change_log = """- fixed searching targets"""
+    change_log = file("$rootDir/CHANGELOG.md").getText("UTF-8")
 }
 
 subprojects {
