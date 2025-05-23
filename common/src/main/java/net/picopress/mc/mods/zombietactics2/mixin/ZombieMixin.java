@@ -9,11 +9,8 @@ import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
@@ -149,35 +146,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     @Override
     public boolean wantsToPickUp(ServerLevel sl, @NotNull ItemStack stack) {
-        Item item = stack.getItem();
-
-        // selecting a weapon
-        if(stack.is(ItemTags.WEAPON_ENCHANTABLE)) {
-            ItemStack my = this.getMainHandItem();
-
-            if(my.is(ItemTags.WEAPON_ENCHANTABLE)) {
-                var my_weapon = Tactics.getItemAttr(my, "attack_damage");
-                var other = Tactics.getItemAttr(stack, "attack_damage");
-
-                if(my_weapon == null || other == null) return false; // null check
-                return my_weapon.amount() < other.amount();
-            } else
-                return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
-        } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting an armor
-            ItemStack slot = this.getItemBySlot(Objects.requireNonNull(item.components().get(DataComponents.EQUIPPABLE)).slot());
-
-            if(slot.is(Items.AIR)) return true; // if I don't have an armor
-            else if(slot.getItem().components().has(DataComponents.EQUIPPABLE)) {
-                var dropped = Tactics.getItemAttr(stack, "armor_toughness");
-                var equipped = Tactics.getItemAttr(slot, "armor_toughness");
-
-                // and the both have to not be null
-                if(dropped != null && equipped != null) {
-                    return equipped.amount() < dropped.amount();
-                } else System.out.println("what the fuck [mine: " + equipped + ", other:" + dropped);
-            }
-        }
-        return false;
+        return Tactics.ItemUtil.isBetter(this, stack);
     }
 
     @Override

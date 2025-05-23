@@ -31,7 +31,6 @@ public class FindAllTargetsGoal extends TargetGoal {
     private List<LivingEntity> imposters;
     private TargetingConditions targetingConditions;
     @Nullable private final ServerLevel serverLevel;
-    private AABB boundingBox;
     private Task task;
     private int delay;
     private int idx;

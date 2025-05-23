@@ -5,9 +5,11 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -15,10 +17,12 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 // because it is utility class
@@ -38,25 +42,56 @@ public class Tactics {
     // for 1.21.5 or maybe later
     // 1.21.5 has changed the way to get item properties
     // for example, ArmorItem and SwordItem were disappeared
-    public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
-        ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
-        if(component == null) return null;
+    public static class ItemUtil {
+        public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
+            ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
+            if(component == null) return null;
 
-        List<ItemAttributeModifiers.Entry> list = component.modifiers();
-        ItemAttributeModifiers.Entry entry = null;
-        for(var attr: list) {
-            if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
-                entry = attr;
-                break;
+            List<ItemAttributeModifiers.Entry> list = component.modifiers();
+            ItemAttributeModifiers.Entry entry = null;
+            for(var attr: list) {
+                if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
+                    entry = attr;
+                    break;
+                }
             }
+            if(entry == null) return null;
+            return entry.modifier();
         }
-        if(entry == null) return null;
-        return entry.modifier();
-    }
 
-    // default namespace
-    static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
-        return getItemAttr(stack, path, "minecraft");
+        // default namespace
+        static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
+            return getItemAttr(stack, path, "minecraft");
+        }
+
+        public static boolean isBetter(Mob mob, @NotNull ItemStack stack) {
+            // selecting a weapon
+            if(stack.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                ItemStack my = mob.getMainHandItem();
+
+                if(my.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                    var my_weapon = ItemUtil.getItemAttr(my, "attack_damage");
+                    var other = ItemUtil.getItemAttr(stack, "attack_damage");
+
+                    if(my_weapon == null || other == null) return false; // null check
+                    return my_weapon.amount() < other.amount();
+                } else return my.is(Items.AIR); // if I don't have a weapon
+            } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting armor
+                ItemStack slot = mob.getItemBySlot(Objects.requireNonNull(stack.getItem().components().get(DataComponents.EQUIPPABLE)).slot());
+
+                if(slot.is(Items.AIR)) return true; // if I don't have armor
+                else if(slot.getItem().components().has(DataComponents.EQUIPPABLE)) {
+                    var dropped = ItemUtil.getItemAttr(stack, "armor_toughness");
+                    var equipped = ItemUtil.getItemAttr(slot, "armor_toughness");
+
+                    // and the both have to not be null
+                    if(dropped != null && equipped != null) {
+                        return equipped.amount() < dropped.amount();
+                    } else System.out.println("what the fuck [mine: " + equipped + ", other:" + dropped);
+                }
+            }
+            return false;
+        }
     }
 
     public static ServerLevel getSl(Mob mob) {
