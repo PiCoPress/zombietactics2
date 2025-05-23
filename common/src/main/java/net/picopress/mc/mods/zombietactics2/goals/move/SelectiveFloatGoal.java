@@ -32,7 +32,7 @@ public class SelectiveFloatGoal extends FloatGoal {
 
     @Override
     public boolean canContinueToUse() {
-        if(plane.zombietactics2$getInt(0) < 20) needBreathe = false;
+        if(plane.zombietactics2$getInt(0) < 15) needBreathe = false;
         return super.canUse() || needBreathe;
     }
 

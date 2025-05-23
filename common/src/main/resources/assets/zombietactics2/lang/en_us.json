@@ -88,7 +88,7 @@
 
     "zombietactics2.midnightconfig.category.Flying": "Flying",
     "zombietactics2.midnightconfig.can_fly": "Can fly",
-    "zombietactics2.midnightconfig.can_fly.tooltip": "Zombies can fly",
+    "zombietactics2.midnightconfig.can_fly.tooltip": "Zombies can fly. Restart required to apply all zombies, or applied only to newly spawned zombies",
     "zombietactics2.midnightconfig.fly_speed": "Flying speed",
     "zombietactics2.midnightconfig.fly_speed.tooltip": "Flying speed of zombies",
 
