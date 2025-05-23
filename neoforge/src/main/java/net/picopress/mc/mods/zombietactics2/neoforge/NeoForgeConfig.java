@@ -55,6 +55,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.IntValue DEFAULT_HEALTH;
     private static ModConfigSpec.BooleanValue AVOIDANCE;
     private static ModConfigSpec.BooleanValue SIMULATE;
+    private static ModConfigSpec.BooleanValue DISSEMINATE;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
@@ -110,6 +111,7 @@ public class NeoForgeConfig {
         Config.neverDie = NEVER_DIE.get();
         Config.avoidance = AVOIDANCE.get();
         Config.simulate = SIMULATE.get();
+        Config.disseminate = DISSEMINATE.get();
     }
 
     /*
@@ -156,6 +158,7 @@ public class NeoForgeConfig {
             ATTACK_INVISIBLE = b.translation(MOD_CFG + "attack_invisible").define("targetVisibilityCheck", Config.attackInvisible);
             AVOIDANCE = b.translation(MOD_CFG + "avoidance").define("avoidance", Config.avoidance);
             SIMULATE = b.translation(MOD_CFG + "simulate").define("simulate", Config.simulate);
+            DISSEMINATE = b.translation(MOD_CFG + "disseminate").define("disseminate", Config.disseminate);
             b.pop();
             b.push("Optimize");
             PATH_ACCURACY = b.translation(MOD_CFG + "accuracy").defineInRange("pathAccuracy", Config.accuracy, 0, 95);

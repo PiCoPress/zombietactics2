@@ -51,6 +51,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=TARGETING) public static boolean attack_invisible = Config.attackInvisible;
     @Entry(category=TARGETING) public static boolean avoidance = Config.avoidance;
     @Entry(category=TARGETING) public static boolean simulate = Config.simulate;
+    @Entry(category=TARGETING) public static boolean disseminate = Config.disseminate;
 
     @Entry(category=OPTIMIZE, min=0, max=16) public static int accuracy = Config.accuracy;
     @Entry(category=OPTIMIZE) public static boolean no_idle = Config.noIdle;
@@ -122,6 +123,7 @@ public class FabricConfig extends MidnightConfig {
         Config.neverDie = never_die;
         Config.avoidance = avoidance;
         Config.simulate = simulate;
+        Config.disseminate = disseminate;
     }
 
     @Override

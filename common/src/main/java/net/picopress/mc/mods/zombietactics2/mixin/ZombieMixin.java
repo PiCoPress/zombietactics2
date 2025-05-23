@@ -164,7 +164,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Override
     public boolean wantsToPickUp(@NotNull ItemStack stack) {
         // selecting a weapon
-        return Tactics.Item.isBetter(this, stack);
+        return Tactics.ItemUtil.isBetter(this, stack);
     }
 
     @Override
@@ -341,6 +341,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         if(Config.canFly) this.goalSelector.addGoal(10, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
         if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
+        if(Config.avoidance) this.goalSelector.addGoal(0, new AvoidEnemyGoal<>(this, Mob.class, 8, 1, Config.aggressiveSpeed));
 
         this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombietactics2$target_priority, this, false));
         this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Monster)this, Config.aggressiveSpeed, true));
@@ -348,7 +349,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         this.targetSelector.addGoal(1, zombietactics2$damaged_by = (DamagedByGoal)(new DamagedByGoal(this)).setAlertOthers(ZombifiedPiglin.class));
         this.goalSelector.addGoal(1, zombietactics2$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
         this.goalSelector.addGoal(5, new GoToWantedItemGoal(this, this::wantsToPickUp));
-        if(Config.avoidance) this.goalSelector.addGoal(0, new AvoidEnemyGoal<>(this, Mob.class, 8, 1, Config.aggressiveSpeed));
     }
 
     static {

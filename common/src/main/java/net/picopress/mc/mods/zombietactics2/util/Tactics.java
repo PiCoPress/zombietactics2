@@ -41,7 +41,7 @@ public class Tactics {
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
 
-    public static float getDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
+    public static float getExactDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
         var tmp = mob.getAttribute(Attributes.ATTACK_DAMAGE);
         if(tmp == null) return 0;
         float dam = (float)tmp.getValue();
@@ -81,7 +81,7 @@ public class Tactics {
         }
     }
 
-    public static class Item {
+    public static class ItemUtil {
         public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
             ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
             if(component == null) return null;
@@ -107,14 +107,12 @@ public class Tactics {
             // selecting a weapon
             if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
                 var my = me.getMainHandItem();
+                if(my.is(Items.AIR)) return true; // if I don't have a weapon
+                var my_weapon = ItemUtil.getItemAttr(my, "generic.attack_damage");
+                var other = ItemUtil.getItemAttr(dropped, "generic.attack_damage");
 
-                if(my.is(ItemTags.WEAPON_ENCHANTABLE)) {
-                    var my_weapon = Tactics.Item.getItemAttr(my, "generic.attack_damage");
-                    var other = Tactics.Item.getItemAttr(dropped, "generic.attack_damage");
-
-                    if(my_weapon == null || other == null) return false; // null check
-                    return my_weapon.amount() < other.amount();
-                } else return me.getMainHandItem().is(Items.AIR); // if I don't have a weapon
+                if(my_weapon == null || other == null) return false; // null check
+                return my_weapon.amount() < other.amount();
             } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
                 var slot = me.getItemBySlot(others.getEquipmentSlot());
 

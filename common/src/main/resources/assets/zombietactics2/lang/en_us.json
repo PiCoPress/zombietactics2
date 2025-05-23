@@ -88,6 +88,8 @@
     "zombietactics2.midnightconfig.attack_range.tooltip": "The range of attack",
     "zombietactics2.midnightconfig.attack_invisible": "Attack invisible entities",
     "zombietactics2.midnightconfig.attack_invisible.tooltip": "Follows only targets that the zombie has seen",
+    "zombietactics2.midnightconfig.disseminate": "Disseminate",
+    "zombietactics2.midnightconfig.disseminate.tooltip": "Zombies can spread itself target to other zombies",
 
     "zombietactics2.midnightconfig.category.Optimize": "Optimize",
     "zombietactics2.midnightconfig.accuracy": "Path accuracy",

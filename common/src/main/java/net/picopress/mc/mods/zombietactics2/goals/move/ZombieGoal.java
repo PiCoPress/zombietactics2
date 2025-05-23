@@ -14,13 +14,16 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 
 // for attacking and following
 public class ZombieGoal extends ZombieAttackGoal {
     private Vec3 delta;
+    private int cooldown = 0;
     private boolean jumping = false;
+
     Zombie mob;
 
     public ZombieGoal(Zombie zombie, double speedModifier, boolean followingTargetEvenIfNotSeen) {
@@ -37,6 +40,7 @@ public class ZombieGoal extends ZombieAttackGoal {
     @Override
     public void tick() {
         super.tick();
+        ++ cooldown;
 
         // for debugging
         if(Config.showNodes) {
@@ -95,6 +99,18 @@ public class ZombieGoal extends ZombieAttackGoal {
                     delta = mob.getTarget().position().subtract(mob.position());
                     delta = delta.scale(Config.jumpAcceleration / delta.length());
                     mob.addDeltaMovement(delta);
+                }
+            }
+        }
+
+        if(Config.disseminate) {
+            if(cooldown > 40) {
+                cooldown = 0;
+                // let my friends know my target to attack
+                List<Zombie> friends = mob.level().getEntitiesOfClass(Zombie.class, mob.getBoundingBox().inflate(Config.followRange),
+                        (z) -> z != mob && (z.getTarget() == null || !z.getTarget().isAlive()));
+                for(var z: friends) {
+                    z.setTarget(mob.getTarget());
                 }
             }
         }

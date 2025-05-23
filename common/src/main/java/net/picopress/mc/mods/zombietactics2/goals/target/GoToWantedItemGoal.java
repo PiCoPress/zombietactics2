@@ -41,9 +41,9 @@ public class GoToWantedItemGoal extends Goal {
         List<ItemEntity> items = mob.level().getEntitiesOfClass(ItemEntity.class,
                 new AABB(mob.getX() - range, mob.getY() - range, mob.getZ() - range,
                 mob.getX() + range, mob.getY() + range, mob.getZ() + range));
-        for (var item: items) {
+        for(var item: items) {
             ItemStack stack = item.getItem();
-            if (!(item.isInWater() || item.isInLava()) && predicate.test(stack)) {
+            if(!(item.isInWater() || item.isInLava()) && predicate.test(stack)) {
                 mob.getNavigation().moveTo(item, 1);
                 target = item;
                 return true;
