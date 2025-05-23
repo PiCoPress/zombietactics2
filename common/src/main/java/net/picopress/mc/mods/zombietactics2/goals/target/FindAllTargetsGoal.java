@@ -24,7 +24,7 @@ import java.util.List;
 public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
-    private final List<LivingEntity> imposters = new ArrayList<>();
+    private List<LivingEntity> imposters;
     private TargetingConditions targetingConditions;
     private Task task;
     private int delay;
@@ -77,15 +77,12 @@ public class FindAllTargetsGoal extends TargetGoal {
                 task = Task.IDLE;
             } else {
                 // query targets
-                var imposter2 = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
+                imposters = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                     for(var sus: list) {
                         if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t)) return true;
                     }
                     return false;
                 });
-                for(var imposter: imposter2) {
-                    if(imposter != null) imposters.add(imposter);
-                }
                 task = Task.PRIORITIZE;
             }
             delay = 0;
@@ -159,7 +156,6 @@ public class FindAllTargetsGoal extends TargetGoal {
 
             // set target
             if(target != null) mob.setTarget(target);
-            imposters.clear();
             task = Task.IDLE;
         }
     }

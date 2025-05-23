@@ -1,1 +1,2 @@
-- fixed a bug when searching targets
+- Fixed zombies not moving after toggling Flying Zombies on and off
+- Backport some logics for picking up items 
