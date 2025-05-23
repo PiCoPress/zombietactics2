@@ -38,25 +38,27 @@ public class Tactics {
     // for 1.21.5 or maybe later
     // 1.21.5 has changed the way to get item properties
     // for example, ArmorItem and SwordItem were disappeared
-    public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
-        ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
-        if(component == null) return null;
+    public static class Item {
+        public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
+            ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
+            if(component == null) return null;
 
-        List<ItemAttributeModifiers.Entry> list = component.modifiers();
-        ItemAttributeModifiers.Entry entry = null;
-        for(var attr: list) {
-            if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
-                entry = attr;
-                break;
+            List<ItemAttributeModifiers.Entry> list = component.modifiers();
+            ItemAttributeModifiers.Entry entry = null;
+            for(var attr: list) {
+                if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
+                    entry = attr;
+                    break;
+                }
             }
+            if(entry == null) return null;
+            return entry.modifier();
         }
-        if(entry == null) return null;
-        return entry.modifier();
-    }
 
-    // default namespace
-    static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
-        return getItemAttr(stack, path, "minecraft");
+        // default namespace
+        static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
+            return getItemAttr(stack, path, "minecraft");
+        }
     }
 
     public static ServerLevel getSl(Mob mob) {

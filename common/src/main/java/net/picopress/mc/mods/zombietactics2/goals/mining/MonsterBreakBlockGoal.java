@@ -37,7 +37,7 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     // is valid to mine?
     @Override
     protected boolean checkBlock(BlockPos pos) {
-        float destroying = level.getBlockState(pos).getBlock().defaultDestroyTime();
+        float destroying = getBlockHardness(pos);
         boolean ret = super.checkBlock(pos) && destroying <= Config.maxHardness;
         if(ret) {
             mine.bp = pos;
@@ -55,8 +55,7 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     @Override
     public void tick() {
         double dist = zombie.distanceToSqr(mine.bp_vec3);
-        if (dist < min_p2 ||
-                dist > max_p2) {
+        if (dist < min_p2 || dist > max_p2) {
             mine.doMining = false;
             return;
         }

@@ -38,7 +38,7 @@ public class DestroyBlockGoal extends BreakBlockGoal {
         BlockPos mob_pos = mob.blockPosition();
         double dist = Double.MAX_VALUE;
 
-        List<BlockPos> positions = Tactics.World.findBlocks(level, block,
+        List<BlockPos> positions = Tactics.World.findBlocks(mob.level(), block,
                 mob_pos.getX() - range, mob_pos.getY() + y, mob_pos.getZ() - range,
                 mob_pos.getX() + range, mob_pos.getY() + y, mob_pos.getZ() + range);
 
