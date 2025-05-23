@@ -33,7 +33,6 @@ import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -147,10 +146,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     @Override
     public boolean wantsToPickUp(ServerLevel sl, @NotNull ItemStack stack) {
-        Item item = stack.getItem();
-
         // selecting a weapon
-        return Tactics.Item.isBetter(this, stack);
+        return Tactics.ItemUtil.isBetter(this, stack);
     }
 
     @Override
