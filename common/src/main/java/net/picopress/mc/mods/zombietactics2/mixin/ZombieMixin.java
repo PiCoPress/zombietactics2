@@ -10,12 +10,13 @@ import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
@@ -69,6 +70,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique private int zombietactics2$climbedCount = 0;
     @Unique private boolean zombietactics2$isClimbing = false;
     @Unique private boolean zombietactics2$persistence;
+    @Unique private boolean zombietactics2$glowing = false;
+    @Unique private boolean zombietactics2$flying = false;
 
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow private int inWaterTime;
@@ -112,7 +115,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         } else {
             aabb = this.getBoundingBox();
         }
-        return aabb.inflate(Config.attackRange, Config.attackRange, Config.attackRange);
+        return aabb.inflate(Config.attackRange);
     }
 
     @Override
@@ -160,22 +163,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     @Override
     public boolean wantsToPickUp(@NotNull ItemStack stack) {
-        Item item = stack.getItem();
         // selecting a weapon
-        if(item instanceof TieredItem s) {
-            Item my = this.getMainHandItem().getItem();
-            if(my instanceof TieredItem my_weapon) {
-                // these don't indicate the base attack damage
-                return s.getTier().getAttackDamageBonus() > my_weapon.getTier().getAttackDamageBonus();
-            } else return this.getMainHandItem().is(Items.AIR); // if I don't have a weapon
-        } else if(item instanceof ArmorItem armor) { // selecting armor
-            ItemStack slot = this.getItemBySlot(armor.getEquipmentSlot());
-            if(slot.is(Items.AIR)) return true; // if I don't have armor
-            else if(slot.getItem() instanceof ArmorItem my_armor) {
-                return armor.getDefense() > my_armor.getDefense();
-            }
-        }
-        return false;
+        return Tactics.Item.isBetter(this, stack);
     }
 
     @Override
@@ -270,6 +259,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
         if(zombietactics2$persistence) this.setPersistenceRequired(); // I'm persistent
         if(Config.canFly) { // I can fly
+            this.zombietactics2$flying = true;
             this.moveControl = new FlyingMoveControl(this, 360, true);
             this.navigation = new FlyingPathNavigation(this, level);
             Objects.requireNonNull(this.getAttribute(Attributes.FLYING_SPEED)).setBaseValue(Config.flySpeed);
@@ -287,14 +277,28 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Inject(method="tick", at=@At("TAIL"))
     public void tick(CallbackInfo ci) {
         if(!this.canPickUpLoot()) this.setCanPickUpLoot(true);
+
         if(Config.canFly) this.fallDistance = 0;
+        else if(!zombietactics2$flying) this.setNoGravity(false);
 
         // for debugging
         if(Config.showDeltaMovement) {
             this.setCustomName(Component.literal(String.valueOf(this.getDeltaMovement().length())));
             this.setCustomNameVisible(true);
         }
+
         if(Config.noIdle) this.setNoActionTime(0);
+
+        // I can see all zombies through blocks
+        // hasEffect uses Map that computes hash algorithm to find a key
+        // in the function "tick"
+        if(Config.glowZombie && !zombietactics2$glowing) {
+            this.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false));
+            zombietactics2$glowing = true;
+        } else if(!Config.glowZombie && zombietactics2$glowing) {
+            this.removeEffect(MobEffects.GLOWING);
+            zombietactics2$glowing = false;
+        }
     }
 
     // fixes that doing both mining and attacking
@@ -317,7 +321,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     // I do not want to see that zombies burn
     @Inject(method="isSunSensitive", at=@At("RETURN"), cancellable=true)
     public void isSunSensitive(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(Config.sunSensitive);
+        cir.setReturnValue(Config.sunSensitive && cir.getReturnValue());
     }
 
     /**

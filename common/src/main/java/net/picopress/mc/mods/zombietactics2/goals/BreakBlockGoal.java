@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.InteractionHand;
 
 import java.util.EnumSet;
@@ -16,7 +15,6 @@ import java.util.EnumSet;
 // independent of Config
 public abstract class BreakBlockGoal extends Goal {
     public final MiningData mine;
-    protected final Level level;
     protected final Mob mob;
     private final double hardnessMultiplier;
     private final double break_speed;
@@ -25,7 +23,6 @@ public abstract class BreakBlockGoal extends Goal {
 
     public BreakBlockGoal(Mob mob, double hardnessMultiplier, double break_speed, boolean dropBlock) {
         mine = new MiningData();
-        level = mob.level();
         this.mob = mob;
         this.hardnessMultiplier = hardnessMultiplier;
         this.break_speed = break_speed;
@@ -34,7 +31,7 @@ public abstract class BreakBlockGoal extends Goal {
     }
 
     protected boolean checkBlock(BlockPos pos) {
-        final BlockState state = level.getBlockState(pos);
+        final BlockState state = mob.level().getBlockState(pos);
         final Block b = state.getBlock();
 
         // exclude unbreakable blocks
@@ -42,7 +39,7 @@ public abstract class BreakBlockGoal extends Goal {
     }
 
     public void terminate() {
-        level.destroyBlockProgress(mob.getId(), mine.bp, -1);
+        mob.level().destroyBlockProgress(mob.getId(), mine.bp, -1);
         progress = 0;
         mine.doMining = false;
     }
@@ -60,14 +57,14 @@ public abstract class BreakBlockGoal extends Goal {
     @Override
     public void start() {
         progress = 0;
-        hardness = level.getBlockState(mine.bp).getBlock().defaultDestroyTime() * hardnessMultiplier;
+        hardness = getBlockHardness(mine.bp) * hardnessMultiplier;
         mine.doMining = true;
     }
 
     @Override
     public void stop() {
         // reset all progress and find a path again
-        level.destroyBlockProgress(mob.getId(), mine.bp, -1);
+        mob.level().destroyBlockProgress(mob.getId(), mine.bp, -1);
         mob.getNavigation().recomputePath();
         mine.doMining = false;
         mine.bp = null;
@@ -78,16 +75,16 @@ public abstract class BreakBlockGoal extends Goal {
         if (!mine.doMining) return;
 
         // if the target block has been broken by others
-        if(level.getBlockState(mine.bp).isAir()) {
+        if(mob.level().getBlockState(mine.bp).isAir()) {
             terminate();
             return;
         }
         if (progress >= hardness) {
-            level.destroyBlock(mine.bp, dropBlock, mob);
+            mob.level().destroyBlock(mine.bp, dropBlock, mob);
             terminate();
         } else {
             // 0 <= progress <= 10
-            level.destroyBlockProgress(mob.getId(), mine.bp, (int)((progress / hardness) * 10));
+            mob.level().destroyBlockProgress(mob.getId(), mine.bp, (int)((progress / hardness) * 10));
             mob.stopInPlace();
             mob.getLookControl().setLookAt(mine.bp_vec3);
             progress += break_speed;
@@ -98,5 +95,9 @@ public abstract class BreakBlockGoal extends Goal {
     @Override
     public boolean canContinueToUse() {
         return mine.doMining;
+    }
+
+    public float getBlockHardness(BlockPos pos) {
+        return mob.level().getBlockState(pos).getBlock().defaultDestroyTime();
     }
 }

@@ -4,9 +4,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -28,8 +36,8 @@ public class Tactics {
         Vec3i norm = mob.getNearestViewDirection().getNormal();
         int x = norm.getX(), z = norm.getZ();
         if(x == 0 && z == 1) return Rotation.NONE;
-        else if(x == 0 && z == - 1) return Rotation.CLOCKWISE_180;
-        else if(x == - 1 && z == 0) return Rotation.CLOCKWISE_90;
+        else if(x == 0 && z == -1) return Rotation.CLOCKWISE_180;
+        else if(x == -1 && z == 0) return Rotation.CLOCKWISE_90;
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
 
@@ -68,6 +76,52 @@ public class Tactics {
             var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
             if(attack != null) {
                 return mob.getHealth() <= attack.getValue() && target.getHealth() > mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            }
+            return false;
+        }
+    }
+
+    public static class Item {
+        public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
+            ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
+            if(component == null) return null;
+
+            List<ItemAttributeModifiers.Entry> list = component.modifiers();
+            ItemAttributeModifiers.Entry entry = null;
+            for(var attr: list) {
+                if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
+                    entry = attr;
+                    break;
+                }
+            }
+            if(entry == null) return null;
+            return entry.modifier();
+        }
+
+        // default namespace
+        static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
+            return getItemAttr(stack, path, "minecraft");
+        }
+
+        public static boolean isBetter(Mob me, ItemStack dropped) {
+            // selecting a weapon
+            if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                var my = me.getMainHandItem();
+
+                if(my.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                    var my_weapon = Tactics.Item.getItemAttr(my, "generic.attack_damage");
+                    var other = Tactics.Item.getItemAttr(dropped, "generic.attack_damage");
+
+                    if(my_weapon == null || other == null) return false; // null check
+                    return my_weapon.amount() < other.amount();
+                } else return me.getMainHandItem().is(Items.AIR); // if I don't have a weapon
+            } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
+                var slot = me.getItemBySlot(others.getEquipmentSlot());
+
+                if(slot.is(Items.AIR)) return true; // if I don't have armor
+                if(slot.getItem() instanceof ArmorItem equipped) {
+                    return equipped.getDefense() < others.getDefense();
+                }
             }
             return false;
         }
