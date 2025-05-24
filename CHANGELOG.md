@@ -1,2 +1,1 @@
-- Fixed zombies not moving after toggling Flying Zombies on and off
-- Backport some logics for picking up items 
+- Changed the behavior of picking an item
