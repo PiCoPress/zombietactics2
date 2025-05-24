@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -15,6 +16,8 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -40,6 +43,11 @@ public class Tactics {
         else if(x == -1 && z == 0) return Rotation.CLOCKWISE_90;
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
+
+    public static class ItemUtil {
+        static double getDefensePoint(ArmorItem armor) {
+            return (armor.getDefense() + 1) * (armor.getToughness() + 1);
+        }
 
     public static float getExactDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
         var tmp = mob.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -105,23 +113,45 @@ public class Tactics {
 
         public static boolean isBetter(Mob me, ItemStack dropped) {
             // selecting a weapon
+            var my = me.getMainHandItem();
+            double test1 = 0, test2 = 0;
+
             if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
-                var my = me.getMainHandItem();
-                if(my.is(Items.AIR)) return true; // if I don't have a weapon
+                if(my.is(Items.AIR)) return my.is(Items.AIR);
+
                 var my_weapon = ItemUtil.getItemAttr(my, "generic.attack_damage");
                 var other = ItemUtil.getItemAttr(dropped, "generic.attack_damage");
 
                 if(my_weapon == null || other == null) return false; // null check
-                return my_weapon.amount() < other.amount();
+                test1 = my_weapon.amount();
+                test2 = other.amount();
+                // if I don't have a weapon
             } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
-                var slot = me.getItemBySlot(others.getEquipmentSlot());
+                if(EnchantmentHelper.has(my, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) return false;
 
+                var slot = me.getItemBySlot(others.getEquipmentSlot());
                 if(slot.is(Items.AIR)) return true; // if I don't have armor
                 if(slot.getItem() instanceof ArmorItem equipped) {
-                    return equipped.getDefense() < others.getDefense();
+                    test1 = getDefensePoint(equipped);
+                    test2 = getDefensePoint(others);
+                }
+            }
+
+            if(test1 < test2) return true;
+            if(test1 == test2) {
+                if(my.getDamageValue() > dropped.getDamageValue()) {
+                    return true; // if my weapon is more damaged
+                } else {
+                    return checkDamageable(dropped) && !checkDamageable(my);
                 }
             }
             return false;
+        }
+
+        private static boolean checkDamageable(ItemStack stack) {
+            DataComponentMap dataComponentMap = stack.getComponents();
+            int i = dataComponentMap.size();
+            return i > 1 || i == 1 && !dataComponentMap.has(DataComponents.DAMAGE);
         }
     }
 

@@ -10,9 +10,7 @@ import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -76,7 +74,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow private int inWaterTime;
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
-    @Shadow public abstract void readAdditionalSaveData(CompoundTag compound);
 
     public ZombieMixin(EntityType<? extends Zombie> entityType, Level level) {
         super(entityType, level);
@@ -162,12 +159,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public boolean wantsToPickUp(@NotNull ItemStack stack) {
-        // selecting a weapon
-        return Tactics.ItemUtil.isBetter(this, stack);
-    }
-
-    @Override
     public boolean isPersistenceRequired() {
         return zombietactics2$persistence || super.isPersistenceRequired();
     }
@@ -209,16 +200,24 @@ public abstract class ZombieMixin extends Monster implements Plane {
             this.level().destroyBlockProgress(this.getId(), zombietactics2$mine_goal.mine.bp, -1);
     }
 
+    @Inject(method="createAttributes", at=@At("RETURN"), cancellable=true)
+    private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
+        // if a zombie cannot fly, it is just nothing
+        cir.setReturnValue(cir.getReturnValue().add(Attributes.FLYING_SPEED, Config.flySpeed));
+    }
+
     @Override
     public float getWalkTargetValue(BlockPos pos, LevelReader level) {
         // unlock darkness
         return Config.spawnUnderSun? 0: super.getWalkTargetValue(pos, level);
     }
 
-    @Inject(method="createAttributes", at=@At("RETURN"), cancellable=true)
-    private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
-        // if a zombie cannot fly, it is just nothing
-        cir.setReturnValue(cir.getReturnValue().add(Attributes.FLYING_SPEED, Config.flySpeed));
+    @Inject(method="wantsToPickUp", at=@At("RETURN"), cancellable=true)
+    public void wantsToPickUp(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        // selecting a weapon
+        // cir.setReturnValue(Tactics.Item.isBetter(this, stack));
+        // ??
+        cir.setReturnValue(this.canReplaceCurrentItem(stack, this.getItemBySlot(this.getEquipmentSlotForItem(stack))));
     }
 
     @Inject(method="hurt", at=@At("HEAD"), cancellable=true)
