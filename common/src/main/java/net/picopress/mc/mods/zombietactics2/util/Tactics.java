@@ -1,23 +1,22 @@
 package net.picopress.mc.mods.zombietactics2.util;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -44,10 +43,6 @@ public class Tactics {
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
 
-    public static class ItemUtil {
-        static double getDefensePoint(ArmorItem armor) {
-            return (armor.getDefense() + 1) * (armor.getToughness() + 1);
-        }
 
     public static float getExactDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
         var tmp = mob.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -90,6 +85,10 @@ public class Tactics {
     }
 
     public static class ItemUtil {
+        static double getDefensePoint(ArmorItem armor) {
+            return (armor.getDefense() + 1) * (armor.getToughness() + 1);
+        }
+
         public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
             ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
             if(component == null) return null;
