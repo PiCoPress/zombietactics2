@@ -111,6 +111,7 @@ public class ZombieGoal extends ZombieAttackGoal {
                         (z) -> z != mob && (z.getTarget() == null || !z.getTarget().isAlive()));
                 for(var z: friends) {
                     z.setTarget(mob.getTarget());
+                    ((Plane)z).zombietactics2$invoke(1, true);
                 }
             }
         }

@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.goals.target;
 
+import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
@@ -25,6 +26,7 @@ import java.util.List;
 public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
+    private final Plane plane;
     private List<LivingEntity> imposters;
     private TargetingConditions targetingConditions;
     private Task task;
@@ -38,13 +40,14 @@ public class FindAllTargetsGoal extends TargetGoal {
         super(mob, mustSee);
         setFlags(EnumSet.of(Flag.TARGET));
         list = targets;
+        this.plane = (Plane)mob;
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
     }
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() == null || !mob.getTarget().isAlive();
+        return mob.getTarget() == null || !mob.getTarget().isAlive() || plane.zombietactics2$getBool(1);
     }
 
     @Override
@@ -52,6 +55,7 @@ public class FindAllTargetsGoal extends TargetGoal {
         idx = 0;
         delay = 0;
         task = Task.IDLE;
+        //plane.zombietactics2$invoke(1, false); // reset target alert
     }
 
     @Override

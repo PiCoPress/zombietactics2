@@ -70,6 +70,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique private boolean zombietactics2$persistence;
     @Unique private boolean zombietactics2$glowing = false;
     @Unique private boolean zombietactics2$flying = false;
+    @Unique private boolean zombietactics2$target_alert = false; // for debugging
 
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow private int inWaterTime;
@@ -130,17 +131,25 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return 0;
     }
 
+    /**
+     * @param id 0: doMining
+     *           1: target_alert
+     */
     @Override
     public boolean zombietactics2$getBool(int id, Object ...args) {
         if(id == 0) {
             if(zombietactics2$mine_goal == null) return false;
             return zombietactics2$mine_goal.mine.doMining;
         }
+        if(id == 1) {
+            return zombietactics2$target_alert;
+        }
         return false;
     }
 
     /**
      * @param id 0: set damaged_by.interrupt
+     *           1: set target_alert
      */
     @Override
     public void zombietactics2$invoke(int id, Object ...args) {
@@ -148,6 +157,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
             if(zombietactics2$damaged_by != null) {
                 zombietactics2$damaged_by.interrupt = true;
             }
+        } else if(id == 1) {
+            zombietactics2$target_alert = (boolean)args[0];
         }
     }
 
