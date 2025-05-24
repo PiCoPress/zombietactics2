@@ -2,6 +2,7 @@ package net.picopress.mc.mods.zombietactics2.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +12,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -39,10 +42,11 @@ public class Tactics {
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
 
-    // for 1.21.5 or maybe later
-    // 1.21.5 has changed the way to get item properties
-    // for example, ArmorItem and SwordItem were disappeared
     public static class ItemUtil {
+        static double getDefensePoint(ArmorItem armor) {
+            return (armor.getDefense() + 1) * (armor.getToughness() + 1);
+        }
+
         public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
             ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
             if(component == null) return null;
@@ -64,33 +68,47 @@ public class Tactics {
             return getItemAttr(stack, path, "minecraft");
         }
 
-        public static boolean isBetter(Mob mob, @NotNull ItemStack stack) {
+        public static boolean isBetter(Mob me, @NotNull ItemStack dropped) {
             // selecting a weapon
-            if(stack.is(ItemTags.WEAPON_ENCHANTABLE)) {
-                ItemStack my = mob.getMainHandItem();
+            var my = me.getMainHandItem();
+            double test1 = 0, test2 = 0;
 
-                if(my.is(ItemTags.WEAPON_ENCHANTABLE)) {
-                    var my_weapon = ItemUtil.getItemAttr(my, "attack_damage");
-                    var other = ItemUtil.getItemAttr(stack, "attack_damage");
+            if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                if(my.is(Items.AIR)) return my.is(Items.AIR);
 
-                    if(my_weapon == null || other == null) return false; // null check
-                    return my_weapon.amount() < other.amount();
-                } else return my.is(Items.AIR); // if I don't have a weapon
-            } else if(stack.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting armor
-                ItemStack slot = mob.getItemBySlot(Objects.requireNonNull(stack.getItem().components().get(DataComponents.EQUIPPABLE)).slot());
+                var my_weapon = ItemUtil.getItemAttr(my, "generic.attack_damage");
+                var other = ItemUtil.getItemAttr(dropped, "generic.attack_damage");
 
+                if(my_weapon == null || other == null) return false; // null check
+                test1 = my_weapon.amount();
+                test2 = other.amount();
+                // if I don't have a weapon
+            } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
+                if(EnchantmentHelper.has(my, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) return false;
+
+                var slot = me.getItemBySlot(others.getEquipmentSlot());
                 if(slot.is(Items.AIR)) return true; // if I don't have armor
-                else if(slot.getItem().components().has(DataComponents.EQUIPPABLE)) {
-                    var dropped = ItemUtil.getItemAttr(stack, "armor_toughness");
-                    var equipped = ItemUtil.getItemAttr(slot, "armor_toughness");
+                if(slot.getItem() instanceof ArmorItem equipped) {
+                    test1 = getDefensePoint(equipped);
+                    test2 = getDefensePoint(others);
+                }
+            }
 
-                    // and the both have to not be null
-                    if(dropped != null && equipped != null) {
-                        return equipped.amount() < dropped.amount();
-                    } else System.out.println("what the fuck [mine: " + equipped + ", other:" + dropped);
+            if(test1 < test2) return true;
+            if(test1 == test2) {
+                if(my.getDamageValue() > dropped.getDamageValue()) {
+                    return true; // if my weapon is more damaged
+                } else {
+                    return checkDamageable(dropped) && !checkDamageable(my);
                 }
             }
             return false;
+        }
+
+        private static boolean checkDamageable(ItemStack stack) {
+            DataComponentMap dataComponentMap = stack.getComponents();
+            int i = dataComponentMap.size();
+            return i > 1 || i == 1 && !dataComponentMap.has(DataComponents.DAMAGE);
         }
     }
 
