@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
