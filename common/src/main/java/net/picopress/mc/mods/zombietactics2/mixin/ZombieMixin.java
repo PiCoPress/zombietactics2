@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
@@ -11,7 +12,6 @@ import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -21,7 +21,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
@@ -191,12 +190,19 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return Config.spawnUnderSun? 0: super.getWalkTargetValue(pos, level);
     }
 
+    @Inject(method="createAttributes", at=@At("RETURN"), cancellable=true)
+    private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
+        // if a zombie cannot fly, it is just nothing
+        cir.setReturnValue(cir.getReturnValue().add(Attributes.FLYING_SPEED, Config.flySpeed));
+    }
+
     @Inject(method="wantsToPickUp", at=@At("RETURN"), cancellable=true)
     public void wantsToPickUp(ServerLevel sl, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         // selecting a weapon
         // cir.setReturnValue(Tactics.Item.isBetter(this, stack));
         // ??
-        cir.setReturnValue(this.canReplaceCurrentItem(stack, this.getItemBySlot(this.getEquipmentSlotForItem(stack))));
+        EquipmentSlot eq = this.getEquipmentSlotForItem(stack);
+        cir.setReturnValue(this.canReplaceCurrentItem(stack, this.getItemBySlot(eq), eq));
     }
 
     @Inject(method="hurtServer", at=@At("HEAD"))

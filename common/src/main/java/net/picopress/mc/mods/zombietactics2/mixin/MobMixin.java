@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 
@@ -38,7 +39,7 @@ public abstract class MobMixin extends LivingEntity {
      * @reason there is a problem to take the better item
      */
     @Inject(method="canReplaceCurrentItem", at=@At("HEAD"), cancellable=true)
-    public void canReplaceCurrentItem(ItemStack candidate, ItemStack existing, CallbackInfoReturnable<Boolean> cir) {
+    public void canReplaceCurrentItem(ItemStack candidate, ItemStack existing, EquipmentSlot slot, CallbackInfoReturnable<Boolean> cir) {
         if(zombietactics2$self instanceof Zombie) {
             if(existing.isEmpty()) cir.setReturnValue(true);
             if(candidate.getItem() instanceof ProjectileItem && existing.getItem() instanceof ProjectileItem) {

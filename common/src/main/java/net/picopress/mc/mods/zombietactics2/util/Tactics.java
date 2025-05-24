@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 // because it is utility class
@@ -43,8 +42,11 @@ public class Tactics {
     }
 
     public static class ItemUtil {
-        static double getDefensePoint(ArmorItem armor) {
-            return (armor.getDefense() + 1) * (armor.getToughness() + 1);
+        static double getDefensePoint(ItemStack item) {
+            var armor = getItemAttr(item, "armor");
+            var toughness = getItemAttr(item, "armor_toughness");
+            if(armor == null || toughness == null) return 0; // null check
+            return (armor.amount() + 1) * (toughness.amount() + 1);
         }
 
         public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
@@ -70,30 +72,31 @@ public class Tactics {
 
         public static boolean isBetter(Mob me, @NotNull ItemStack dropped) {
             // selecting a weapon
-            var my = me.getMainHandItem();
+            ItemStack my = null;
             double test1 = 0, test2 = 0;
 
             if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
+                my = me.getMainHandItem();
                 if(my.is(Items.AIR)) return my.is(Items.AIR);
 
-                var my_weapon = ItemUtil.getItemAttr(my, "generic.attack_damage");
-                var other = ItemUtil.getItemAttr(dropped, "generic.attack_damage");
+                var my_weapon = ItemUtil.getItemAttr(my, "attack_damage");
+                var other = ItemUtil.getItemAttr(dropped, "attack_damage");
 
                 if(my_weapon == null || other == null) return false; // null check
                 test1 = my_weapon.amount();
                 test2 = other.amount();
                 // if I don't have a weapon
-            } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
+            } else if(dropped.is(ItemTags.ARMOR_ENCHANTABLE)) { // selecting armor
+                my = me.getItemBySlot(me.getEquipmentSlotForItem(dropped));
                 if(EnchantmentHelper.has(my, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) return false;
 
-                var slot = me.getItemBySlot(others.getEquipmentSlot());
-                if(slot.is(Items.AIR)) return true; // if I don't have armor
-                if(slot.getItem() instanceof ArmorItem equipped) {
-                    test1 = getDefensePoint(equipped);
-                    test2 = getDefensePoint(others);
+                if(my.is(Items.AIR)) return true; // if I don't have armor
+                if(my.is(ItemTags.ARMOR_ENCHANTABLE)) {
+                    test1 = getDefensePoint(my);
+                    test2 = getDefensePoint(dropped);
                 }
             }
-
+            if(my == null) return false; // null check
             if(test1 < test2) return true;
             if(test1 == test2) {
                 if(my.getDamageValue() > dropped.getDamageValue()) {
