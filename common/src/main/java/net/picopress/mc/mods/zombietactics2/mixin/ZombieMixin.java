@@ -8,13 +8,11 @@ import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -71,7 +69,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow private int inWaterTime;
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
-    @Shadow public abstract void readAdditionalSaveData(CompoundTag compound);
 
     public ZombieMixin(EntityType<? extends Zombie> entityType, Level level) {
         super(entityType, level);
@@ -145,12 +142,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public boolean wantsToPickUp(ServerLevel sl, @NotNull ItemStack stack) {
-        // selecting a weapon
-        return Tactics.ItemUtil.isBetter(this, stack);
-    }
-
-    @Override
     public boolean isPersistenceRequired() {
         return zombietactics2$persistence || super.isPersistenceRequired();
     }
@@ -202,6 +193,15 @@ public abstract class ZombieMixin extends Monster implements Plane {
     private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
         // if a zombie cannot fly, it is just nothing
         cir.setReturnValue(cir.getReturnValue().add(Attributes.FLYING_SPEED, Config.flySpeed));
+    }
+
+    @Inject(method="wantsToPickUp", at=@At("RETURN"), cancellable=true)
+    public void wantsToPickUp(ServerLevel sl, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        // selecting a weapon
+        // cir.setReturnValue(Tactics.Item.isBetter(this, stack));
+        // ??
+        EquipmentSlot eq = this.getEquipmentSlotForItem(stack);
+        cir.setReturnValue(this.canReplaceCurrentItem(stack, this.getItemBySlot(eq), eq));
     }
 
     @Inject(method="hurtServer", at=@At("HEAD"))

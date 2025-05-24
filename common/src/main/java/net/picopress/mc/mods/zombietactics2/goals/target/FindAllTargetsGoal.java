@@ -29,8 +29,8 @@ public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private List<LivingEntity> imposters;
-    @Nullable private final ServerLevel serverLevel;
     private TargetingConditions targetingConditions;
+    @Nullable private final ServerLevel serverLevel;
     private Task task;
     private int delay;
     private int idx;
