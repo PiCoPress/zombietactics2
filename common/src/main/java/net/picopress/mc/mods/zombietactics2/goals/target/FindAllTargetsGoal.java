@@ -177,7 +177,7 @@ public class FindAllTargetsGoal extends TargetGoal {
     // please update their bounding box
     // don't cache it
     private AABB followBox() {
-        return mob.getBoundingBox().inflate(getFollowDistance());
+        return mob.getBoundingBox().inflate(Config.followRange);
     }
 
     // brain rot

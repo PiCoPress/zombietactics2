@@ -13,13 +13,11 @@ import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -136,13 +134,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public double getAttributeValue(Holder<Attribute> attribute) {
-        // change follow range
-        if(attribute == Attributes.FOLLOW_RANGE) return Config.followRange;
-        return super.getAttributeValue(attribute);
-    }
-
-    @Override
     public boolean isPersistenceRequired() {
         return zombietactics2$persistence || super.isPersistenceRequired();
     }
@@ -173,6 +164,12 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
+    public float getWalkTargetValue(BlockPos pos, LevelReader level) {
+        // unlock darkness
+        return Config.spawnUnderSun? 0: super.getWalkTargetValue(pos, level);
+    }
+
+    @Override
     public void remove(RemovalReason reason) {
         super.remove(reason);
         -- zombietactics2$threshold; // decrease
@@ -182,12 +179,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         // despawn/transform() -> remove(=discarded)
         if(zombietactics2$mine_goal != null && zombietactics2$mine_goal.mine.doMining)
             this.level().destroyBlockProgress(this.getId(), zombietactics2$mine_goal.mine.bp, -1);
-    }
-
-    @Override
-    public float getWalkTargetValue(BlockPos pos, LevelReader level) {
-        // unlock darkness
-        return Config.spawnUnderSun? 0: super.getWalkTargetValue(pos, level);
     }
 
     @Inject(method="createAttributes", at=@At("RETURN"), cancellable=true)
@@ -230,6 +221,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
             this.navigation = new FlyingPathNavigation(this, level);
             Objects.requireNonNull(this.getAttribute(Attributes.FLYING_SPEED)).setBaseValue(Config.flySpeed);
         }
+
+        Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).setBaseValue(Config.followRange);
     }
 
     @Inject(method="tick", at=@At("TAIL"))
