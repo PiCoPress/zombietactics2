@@ -16,9 +16,10 @@ import java.util.function.Predicate;
 public class GoToWantedItemGoal extends Goal {
     private final Mob mob;
     private final Predicate<ItemStack> predicate;
+    private final int range;
+
     private ItemEntity target;
     private int delay = 0;
-    private final int range;
 
     public GoToWantedItemGoal(Mob mob, Predicate<ItemStack> predicate) {
         this(mob, predicate, Config.pickupRange);
@@ -41,9 +42,8 @@ public class GoToWantedItemGoal extends Goal {
         List<ItemEntity> items = mob.level().getEntitiesOfClass(ItemEntity.class,
                 new AABB(mob.getX() - range, mob.getY() - range, mob.getZ() - range,
                 mob.getX() + range, mob.getY() + range, mob.getZ() + range));
-        for(var item: items) {
-            ItemStack stack = item.getItem();
-            if(!(item.isInWater() || item.isInLava()) && predicate.test(stack)) {
+        for (var item: items) {
+            if (!(item.isInWater() || item.isInLava()) && predicate.test(item.getItem())) {
                 mob.getNavigation().moveTo(item, 1);
                 target = item;
                 return true;
