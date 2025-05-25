@@ -104,7 +104,7 @@ public class ZombieGoal extends ZombieAttackGoal {
         }
 
         if(Config.disseminate) {
-            if(cooldown > 40) {
+            if(cooldown > 30) {
                 cooldown = 0;
                 // let my friends know my target to attack
                 List<Zombie> friends = mob.level().getEntitiesOfClass(Zombie.class, mob.getBoundingBox().inflate(Config.followRange),

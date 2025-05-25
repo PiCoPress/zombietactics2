@@ -55,7 +55,6 @@ public class FindAllTargetsGoal extends TargetGoal {
         idx = 0;
         delay = 0;
         task = Task.IDLE;
-        //plane.zombietactics2$invoke(1, false); // reset target alert
     }
 
     @Override
