@@ -1,1 +1,1 @@
-- Changed the behavior of picking an item
+- Compatibility improved
