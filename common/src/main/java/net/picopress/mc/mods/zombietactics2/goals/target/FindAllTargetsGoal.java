@@ -2,7 +2,6 @@ package net.picopress.mc.mods.zombietactics2.goals.target;
 
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
-import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
@@ -91,7 +90,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // query targets
                 imposters = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                     for(var sus: list) {
-                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t)) {
+                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverLevel, mob, t)) {
                             return true;
                         }
                     }

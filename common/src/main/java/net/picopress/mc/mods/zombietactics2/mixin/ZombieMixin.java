@@ -213,7 +213,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         cir.setReturnValue(this.canReplaceCurrentItem(stack, this.getItemBySlot(eq), eq));
     }
 
-    @Inject(method="hurtServer", at=@At("HEAD"))
+    @Inject(method="hurtServer", at=@At("HEAD"), cancellable=true)
     public void hurtServer(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         // why are avoid_list's elements removed even if I didn't remove?
         // fucking hell
@@ -222,14 +222,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
         // allows kill by commands or creative players
         if(Config.neverDie && amount >= this.getHealth() && !source.is(DamageTypes.GENERIC_KILL) && !source.isCreativePlayer()) {
             // just make them unkillable things
-            var s = this.level().getServer();
-            if(s != null) {
-                var sl = s.getLevel(this.level().dimension());
-                if(sl != null) sl.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
+            sl.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
                         this.getX(), this.getY() + 1.5, this.getZ(),
                         16, 0.5, 0.5, 0.5, 0.3);
                 this.level().playSound(this, this.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.BLOCKS, 1, 1);
-            }
             cir.setReturnValue(false);
             return;
         }
