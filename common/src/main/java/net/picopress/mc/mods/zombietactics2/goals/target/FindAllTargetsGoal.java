@@ -40,14 +40,14 @@ public class FindAllTargetsGoal extends TargetGoal {
         super(mob, mustSee);
         setFlags(EnumSet.of(Flag.TARGET));
         list = targets;
-        this.plane = (Plane)mob;
+        plane = (Plane)mob;
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
     }
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() == null || !mob.getTarget().isAlive() || plane.zombietactics2$getBool(1);
+        return mob.getTarget() == null || !mob.getTarget().isAlive() || plane.zombietactics2$shouldAlert();
     }
 
     @Override
@@ -104,8 +104,8 @@ public class FindAllTargetsGoal extends TargetGoal {
                 int idx = 0;
 
                 if(Config.findTargetType == FindTargetType.INTENSIVE) {
-                    boolean found = false;
                     Path path = null;
+                    boolean found = false;
                     for(var p: cache_path) {
                         if(p.getA() == amogus) {
                             path = p.getB();
@@ -175,7 +175,7 @@ public class FindAllTargetsGoal extends TargetGoal {
     // please update their bounding box
     // don't cache it
     private AABB followBox() {
-        return mob.getBoundingBox().inflate(Config.followRange);
+        return plane.zombietactics2$getFollowingArea();
     }
 
     // brain rot

@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 
+import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class Tactics {
 
         public static boolean simulate(Class<? extends LivingEntity> clazz, Mob mob, LivingEntity target) {
             // friends list
-            var peers = mob.level().getEntitiesOfClass(clazz, mob.getBoundingBox().inflate(mob.getAttributeValue(Attributes.FOLLOW_RANGE)), (liv) -> liv != mob);
+            var peers = mob.level().getEntitiesOfClass(clazz, ((Plane)mob).zombietactics2$getFollowingArea(), (liv) -> liv != mob);
             // win by outnumbering
             if(peers.size() > 15) return true;
             int opponent = getEnemyPower(target); // enemy

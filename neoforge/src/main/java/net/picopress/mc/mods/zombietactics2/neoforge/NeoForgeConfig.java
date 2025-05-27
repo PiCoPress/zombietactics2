@@ -50,7 +50,6 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue STRICT_MINE;
     private static ModConfigSpec.BooleanValue NO_DESPAWN;
     private static ModConfigSpec.BooleanValue NO_IDLE;
-    private static ModConfigSpec.BooleanValue BREAK_CHEST;
     private static ModConfigSpec.IntValue FIND_CHEST_RANGE;
     private static ModConfigSpec.IntValue DEFAULT_HEALTH;
     private static ModConfigSpec.BooleanValue AVOIDANCE;
@@ -66,9 +65,13 @@ public class NeoForgeConfig {
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent ignored) {
-        Config.mineBlocks = MINE_BLOCKS.get();
         Config.minDist = MIN_DISTANCE.get();
         Config.maxDist = MAX_DISTANCE.get();
+        if(Config.minDist > Config.maxDist) {
+            Config.maxDist = Config.minDist;
+        } // ensure minDist is not greater than maxDist
+
+        Config.mineBlocks = MINE_BLOCKS.get();
         Config.dropBlocks = DROP_BROKEN_BLOCKS.get();
         Config.targetAnimals = TARGET_ANIMALS.get();
         Config.attackInvisible = ATTACK_INVISIBLE.get();
@@ -104,7 +107,6 @@ public class NeoForgeConfig {
         Config.strictMine = STRICT_MINE.get();
         Config.noDespawn = NO_DESPAWN.get();
         Config.noIdle = NO_IDLE.get();
-        Config.breakChest = BREAK_CHEST.get();
         Config.findChest = FIND_CHEST_RANGE.get();
         Config.glowZombie = GLOW_ZOMBIE.get();
         Config.defaultHealth = DEFAULT_HEALTH.get();
@@ -130,8 +132,7 @@ public class NeoForgeConfig {
             DROP_BROKEN_BLOCKS = b.translation(MOD_CFG + "drop_blocks").define("dropBrokenBlocks", Config.dropBlocks);
             HARDNESS_MULTIPLIER = b.translation(MOD_CFG + "hardness_multiplier").defineInRange("hardnessMultiplier", Config.hardnessMultiplier, 0, Double.MAX_VALUE);
             STRICT_MINE = b.translation(MOD_CFG + "strict_mine").define("strictMine", Config.strictMine);
-            BREAK_CHEST = b.translation(MOD_CFG + "break_chest").define("breakChest", Config.breakChest);
-            FIND_CHEST_RANGE = b.translation(MOD_CFG + "find_chest_range").defineInRange("findChestRange", Config.findChest, 1, 256);
+            FIND_CHEST_RANGE = b.translation(MOD_CFG + "find_chest_range").defineInRange("findChestRange", Config.findChest, 0, 256);
             b.pop();
             b.push("Climbing");
             ZOMBIE_CLIMBING = b.translation(MOD_CFG + "do_climb").define("zombiesClimb", Config.zombiesClimbing);

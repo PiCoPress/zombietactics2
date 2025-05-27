@@ -20,16 +20,18 @@ import java.util.Optional;
 
 // for attacking and following
 public class ZombieGoal extends ZombieAttackGoal {
+    final Zombie mob;
+    final Plane plane;
+
     private Vec3 delta;
     private int cooldown = 0;
     private boolean jumping = false;
-
-    Zombie mob;
 
     public ZombieGoal(Zombie zombie, double speedModifier, boolean followingTargetEvenIfNotSeen) {
         super(zombie, speedModifier, followingTargetEvenIfNotSeen);
         this.setFlags(EnumSet.of(Flag.MOVE));
         mob = zombie;
+        plane = (Plane)zombie;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class ZombieGoal extends ZombieAttackGoal {
         // keeping delta movement when jumping except delta y(gravity)
         if(mob.onGround() || mob.isInWater()) jumping = false;
         // when I'm jumping and not climbing
-        if(jumping && ((Plane)mob).zombietactics2$getInt(1) == 0)
+        if(jumping && ((Plane)mob).zombietactics2$getClimbCount() == 0)
             mob.setDeltaMovement(delta.x, mob.getDeltaMovement().y, delta.z);
 
         if(mob.getTarget() == null) return; // mob.getTarget() seems to be null for unknown reason
@@ -107,11 +109,11 @@ public class ZombieGoal extends ZombieAttackGoal {
             if(cooldown > 30) {
                 cooldown = 0;
                 // let my friends know my target to attack
-                List<Zombie> friends = mob.level().getEntitiesOfClass(Zombie.class, mob.getBoundingBox().inflate(Config.followRange),
+                List<Zombie> friends = mob.level().getEntitiesOfClass(Zombie.class, plane.zombietactics2$getFollowingArea(),
                         (z) -> z != mob && (z.getTarget() == null || !z.getTarget().isAlive()));
                 for(var z: friends) {
                     z.setTarget(mob.getTarget());
-                    ((Plane)z).zombietactics2$invoke(1, true);
+                    ((Plane)z).zombietactics2$setAlert(true);
                 }
             }
         }

@@ -68,10 +68,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique private boolean zombietactics2$persistence;
     @Unique private boolean zombietactics2$glowing = false;
     @Unique private boolean zombietactics2$flying = false;
-    @Unique private boolean zombietactics2$target_alert = false; // for debugging
+    @Unique private boolean zombietactics2$target_alert = false;
 
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
-    @Shadow private int inWaterTime;
+
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
 
     public ZombieMixin(EntityType<? extends Zombie> entityType, Level level) {
@@ -115,49 +115,31 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public int getMaxSpawnClusterSize() {
-        return 32; // I think, the bigger the number is the better
+    public int zombietactics2$getClimbCount() {
+        return zombietactics2$climbedCount;
     }
 
     @Override
-    public int zombietactics2$getInt(int id) {
-        // inWaterTime
-        if(id == 0) return inWaterTime;
-        if(id == 1) return zombietactics2$climbedCount;
-
-        // nothing else
-        return 0;
+    public boolean zombietactics2$isDigging() {
+        if(zombietactics2$mine_goal == null) return false;
+        return zombietactics2$mine_goal.mine.doMining;
     }
 
-    /**
-     * @param id 0: doMining
-     *           1: target_alert
-     */
     @Override
-    public boolean zombietactics2$getBool(int id, Object ...args) {
-        if(id == 0) {
-            if(zombietactics2$mine_goal == null) return false;
-            return zombietactics2$mine_goal.mine.doMining;
-        }
-        if(id == 1) {
-            return zombietactics2$target_alert;
-        }
-        return false;
+    public boolean zombietactics2$shouldAlert() {
+        return zombietactics2$target_alert;
     }
 
-    /**
-     * @param id 0: set damaged_by.interrupt
-     *           1: set target_alert
-     */
     @Override
-    public void zombietactics2$invoke(int id, Object ...args) {
-        if(id == 0) {
-            if(zombietactics2$damaged_by != null) {
-                zombietactics2$damaged_by.interrupt = true;
-            }
-        } else if(id == 1) {
-            zombietactics2$target_alert = (boolean)args[0];
+    public void zombietactics2$setInterrupt(boolean b) {
+        if(zombietactics2$damaged_by != null) {
+            zombietactics2$damaged_by.interrupt = true;
         }
+    }
+
+    @Override
+    public void zombietactics2$setAlert(boolean b) {
+        zombietactics2$target_alert = b;
     }
 
     @Override
@@ -165,11 +147,17 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return zombietactics2$persistence || super.isPersistenceRequired();
     }
 
+
+    @Override
+    public int getMaxSpawnClusterSize() {
+        return 32; // I think, the bigger the number is the better
+    }
+
     // For climbing
     @Override
     public void push(@NotNull Entity entity) {
         if(zombietactics2$bdg != null && Config.zombiesClimbing && entity instanceof Zombie &&
-                (horizontalCollision || Config.hyperClimbing) && !((Plane)zombietactics2$bdg).zombietactics2$getBool(0)) {
+                (horizontalCollision || Config.hyperClimbing) && !((Plane)zombietactics2$bdg).zombietactics2$isBreakingDoor()) {
             if(zombietactics2$climbedCount < Config.climbLimitTicks) {
                 final Vec3 v = getDeltaMovement();
                 // climb with random error
@@ -344,7 +332,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         if(Config.canFloat) this.goalSelector.addGoal(5, new SelectiveFloatGoal(this));
         if(Config.canFly) this.goalSelector.addGoal(10, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
         if(Config.avoidance) this.goalSelector.addGoal(0, new AvoidEnemyGoal<>(this, Mob.class, 8, 1, Config.aggressiveSpeed));
 
         this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombietactics2$target_priority, this, false));
@@ -353,6 +340,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         this.targetSelector.addGoal(1, zombietactics2$damaged_by = (DamagedByGoal)(new DamagedByGoal(this)).setAlertOthers(ZombifiedPiglin.class));
         this.goalSelector.addGoal(1, zombietactics2$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
         this.goalSelector.addGoal(5, new GoToWantedItemGoal(this, this::wantsToPickUp));
+        this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
     }
 
     static {

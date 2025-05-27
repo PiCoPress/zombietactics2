@@ -27,7 +27,7 @@ public class AvoidEnemyGoal<T extends LivingEntity> extends AvoidEntityGoal<T> {
             if(toAvoid instanceof Zombie) return false;
             boolean t = Config.simulate? !simulate(Zombie.class, mob, toAvoid): needAvoid(mob, toAvoid);
             if(t) {
-                plane.zombietactics2$invoke(0);
+                plane.zombietactics2$setInterrupt(true);
             }
             return t;
         }

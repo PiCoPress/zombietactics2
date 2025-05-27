@@ -27,8 +27,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=MINING, min=0) public static double max_mine_dist = Config.maxDist;
     @Entry(category=MINING, min=0)  public static double hardness_multiplier = Config.hardnessMultiplier;
     @Entry(category=MINING) public static boolean strict_mine = Config.strictMine;
-    @Entry(category=MINING) public static boolean break_chest = Config.breakChest;
-    @Entry(category=MINING, min=1, max=256) public static int find_chest_range = Config.findChest;
+    @Entry(category=MINING, min=0, max=256) public static int find_chest_range = Config.findChest;
 
     @Entry(category=CLIMBING) public static boolean do_climb = Config.zombiesClimbing;
     @Entry(category=CLIMBING, min=1, max=Integer.MAX_VALUE) public static int climb_limit_ticks = Config.climbLimitTicks;
@@ -78,6 +77,12 @@ public class FabricConfig extends MidnightConfig {
 
     // fabric fields do nothing without the update of config
     public static void updateConfig() {
+        if(min_mine_dist > max_mine_dist) {
+            max_mine_dist = min_mine_dist;
+        } // validate the config
+        Config.minDist = min_mine_dist;
+        Config.maxDist = max_mine_dist;
+
         Config.mineBlocks = do_mine;
         Config.targetAnimals = do_hurt_animals;
         Config.attackInvisible = attack_invisible;
@@ -94,8 +99,6 @@ public class FabricConfig extends MidnightConfig {
         Config.maxHardness = max_hardness;
         Config.hardnessMultiplier = hardness_multiplier;
         Config.climbingSpeed = climb_speed;
-        Config.minDist = min_mine_dist;
-        Config.maxDist = max_mine_dist;
         Config.healAmount = heal_amount;
         Config.aggressiveSpeed = aggressive_speed;
         Config.attackRange = attack_range;
@@ -116,7 +119,6 @@ public class FabricConfig extends MidnightConfig {
         Config.noIdle = no_idle;
         Config.strictMine = strict_mine;
         Config.noDespawn = no_despawn;
-        Config.breakChest = break_chest;
         Config.findChest = find_chest_range;
         Config.glowZombie = glow_zombie;
         Config.defaultHealth = default_health;

@@ -31,6 +31,7 @@ public class DestroyBlockGoal extends BreakBlockGoal {
 
     @Override
     public boolean canUse() {
+        if(range == 0) return false; // set the range to 0 to disable
         if(!super.canUse()) return false;
         ++ delay;
         if(delay < 2) return false;

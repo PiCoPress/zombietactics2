@@ -10,6 +10,7 @@
         "MonsterMixin",
         "PathFinderMixin",
         "ServerLevelMixin",
+        "ZombieMisc",
         "ZombieMixin",
         "ZombieVillagerMixin"
     ],

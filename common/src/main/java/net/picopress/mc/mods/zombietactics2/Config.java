@@ -22,7 +22,6 @@ public class Config {
             strictMine = true,
             noDespawn = false,
             noIdle = false,
-            breakChest = false,
             avoidance = true,
             simulate = true,
             disseminate = false;

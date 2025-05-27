@@ -30,10 +30,8 @@
     "zombietactics2.midnightconfig.hardness_multiplier.tooltip": "목표한 블럭의 경도에 해당 값을 곱합니다. 클수록 채굴 시간이 증가합니다.",
     "zombietactics2.midnightconfig.strict_mine": "엄격한 채굴",
     "zombietactics2.midnightconfig.strict_mine.tooltip": "좀비가 거의 움직이지 않을 때만 채굴합니다",
-    "zombietactics2.midnightconfig.break_chest": "상자 파괴",
-    "zombietactics2.midnightconfig.break_chest.tooltip": "좀비가 상자를 부수도록 허용합니다",
     "zombietactics2.midnightconfig.find_chest_range": "상자 탐색 범위",
-    "zombietactics2.midnightconfig.find_chest_range.tooltip": "상자를 탐색하는 범위",
+    "zombietactics2.midnightconfig.find_chest_range.tooltip": "상자를 탐색하는 범위. 0이면 비활성화",
 
     "zombietactics2.midnightconfig.category.Climbing": "등반",
     "zombietactics2.midnightconfig.do_climb": "등반 여부",
