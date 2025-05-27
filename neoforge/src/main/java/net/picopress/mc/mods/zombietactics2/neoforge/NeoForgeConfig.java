@@ -50,20 +50,28 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue STRICT_MINE;
     private static ModConfigSpec.BooleanValue NO_DESPAWN;
     private static ModConfigSpec.BooleanValue NO_IDLE;
-    private static ModConfigSpec.BooleanValue BREAK_CHEST;
     private static ModConfigSpec.IntValue FIND_CHEST_RANGE;
+    private static ModConfigSpec.IntValue DEFAULT_HEALTH;
+    private static ModConfigSpec.BooleanValue AVOIDANCE;
+    private static ModConfigSpec.BooleanValue SIMULATE;
+    private static ModConfigSpec.BooleanValue DISSEMINATE;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
+    private static ModConfigSpec.BooleanValue NEVER_DIE;
     private static ModConfigSpec.BooleanValue GLOW_ZOMBIE;
 
     static final ModConfigSpec SPEC = BUILDER.getRight();
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent ignored) {
-        Config.mineBlocks = MINE_BLOCKS.get();
         Config.minDist = MIN_DISTANCE.get();
         Config.maxDist = MAX_DISTANCE.get();
+        if(Config.minDist > Config.maxDist) {
+            Config.maxDist = Config.minDist;
+        } // ensure minDist is not greater than maxDist
+
+        Config.mineBlocks = MINE_BLOCKS.get();
         Config.dropBlocks = DROP_BROKEN_BLOCKS.get();
         Config.targetAnimals = TARGET_ANIMALS.get();
         Config.attackInvisible = ATTACK_INVISIBLE.get();
@@ -99,9 +107,13 @@ public class NeoForgeConfig {
         Config.strictMine = STRICT_MINE.get();
         Config.noDespawn = NO_DESPAWN.get();
         Config.noIdle = NO_IDLE.get();
-        Config.breakChest = BREAK_CHEST.get();
         Config.findChest = FIND_CHEST_RANGE.get();
         Config.glowZombie = GLOW_ZOMBIE.get();
+        Config.defaultHealth = DEFAULT_HEALTH.get();
+        Config.neverDie = NEVER_DIE.get();
+        Config.avoidance = AVOIDANCE.get();
+        Config.simulate = SIMULATE.get();
+        Config.disseminate = DISSEMINATE.get();
     }
 
     /*
@@ -120,8 +132,7 @@ public class NeoForgeConfig {
             DROP_BROKEN_BLOCKS = b.translation(MOD_CFG + "drop_blocks").define("dropBrokenBlocks", Config.dropBlocks);
             HARDNESS_MULTIPLIER = b.translation(MOD_CFG + "hardness_multiplier").defineInRange("hardnessMultiplier", Config.hardnessMultiplier, 0, Double.MAX_VALUE);
             STRICT_MINE = b.translation(MOD_CFG + "strict_mine").define("strictMine", Config.strictMine);
-            BREAK_CHEST = b.translation(MOD_CFG + "break_chest").define("breakChest", Config.breakChest);
-            FIND_CHEST_RANGE = b.translation(MOD_CFG + "find_chest_range").defineInRange("findChestRange", Config.findChest, 1, 256);
+            FIND_CHEST_RANGE = b.translation(MOD_CFG + "find_chest_range").defineInRange("findChestRange", Config.findChest, 0, 256);
             b.pop();
             b.push("Climbing");
             ZOMBIE_CLIMBING = b.translation(MOD_CFG + "do_climb").define("zombiesClimb", Config.zombiesClimbing);
@@ -136,6 +147,9 @@ public class NeoForgeConfig {
             SPAWN_UNDER_SUN = b.translation(MOD_CFG + "spawn_under_sun").define("spawnUnderSun", Config.spawnUnderSun);
             NO_DESPAWN = b.translation(MOD_CFG + "no_despawn").define("noDespawn", Config.noDespawn);
             b.pop();
+            b.push("Attributes");
+            DEFAULT_HEALTH = b.translation(MOD_CFG + "default_health").defineInRange("defaultHealth", Config.defaultHealth, 0, 1024);
+            b.pop();
             b.push("Targeting");
             TARGET_ANIMALS = b.translation(MOD_CFG + "do_hurt_animals").define("zombiesTargetAnimals", Config.targetAnimals);
             BLOCK_COST = b.translation(MOD_CFG + "block_cost").defineInRange("blockCost", Config.blockCost, 1, 65536);
@@ -143,6 +157,9 @@ public class NeoForgeConfig {
             TARGET_TYPE = b.translation(MOD_CFG + "find_target_type").defineEnum("findTargetType", Config.findTargetType);
             ATTACK_RANGE = b.translation(MOD_CFG + "attack_range").defineInRange("", Config.attackRange, 0.25, 127.);
             ATTACK_INVISIBLE = b.translation(MOD_CFG + "attack_invisible").define("targetVisibilityCheck", Config.attackInvisible);
+            AVOIDANCE = b.translation(MOD_CFG + "avoidance").define("avoidance", Config.avoidance);
+            SIMULATE = b.translation(MOD_CFG + "simulate").define("simulate", Config.simulate);
+            DISSEMINATE = b.translation(MOD_CFG + "disseminate").define("disseminate", Config.disseminate);
             b.pop();
             b.push("Optimize");
             PATH_ACCURACY = b.translation(MOD_CFG + "accuracy").defineInRange("pathAccuracy", Config.accuracy, 0, 95);
@@ -166,6 +183,7 @@ public class NeoForgeConfig {
             b.push("Debug");
             SHOW_NODES = b.define("showNodes", Config.showNodes);
             SHOW_DELTA_MOVEMENT = b.define("showDeltaMovement", Config.showDeltaMovement);
+            NEVER_DIE = b.define("neverDie", Config.neverDie);
             GLOW_ZOMBIE = b.define("glowZombie", Config.glowZombie);
             b.pop();
         }

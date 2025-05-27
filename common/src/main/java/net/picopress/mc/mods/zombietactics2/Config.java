@@ -22,7 +22,9 @@ public class Config {
             strictMine = true,
             noDespawn = false,
             noIdle = false,
-            breakChest = false;
+            avoidance = true,
+            simulate = true,
+            disseminate = false;
 
     public static double break_speed = 0.2,
             maxHardness = 4.5,
@@ -44,11 +46,13 @@ public class Config {
             followRange = 40,
             accuracy = 1,
             pickupRange = 8,
-            findChest = 12;
+            findChest = 12,
+            defaultHealth = 20;
 
     // debugging
     public static boolean showNodes = false,
-        showDeltaMovement = false,
+            showDeltaMovement = false,
+            neverDie = false,
             glowZombie = false;
 
     public static FindTargetType findTargetType = FindTargetType.SIMPLE;

@@ -12,10 +12,11 @@ public class FabricConfig extends MidnightConfig {
     public static final String MINING = "Mining";
     public static final String CLIMBING = "Climbing";
     public static final String SPAWN = "Spawn";
+    public static final String ATTRIBUTES = "Attributes";
     public static final String TARGETING = "Targeting";
-    public static final String GENERAL = "General";
-    public static final String FLYING = "Flying";
     public static final String OPTIMIZE = "Optimize";
+    public static final String FLYING = "Flying";
+    public static final String GENERAL = "General";
     public static final String DEBUG = "Debug";
 
     @Entry(category=MINING) public static boolean do_mine = Config.mineBlocks;
@@ -26,8 +27,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=MINING, min=0) public static double max_mine_dist = Config.maxDist;
     @Entry(category=MINING, min=0)  public static double hardness_multiplier = Config.hardnessMultiplier;
     @Entry(category=MINING) public static boolean strict_mine = Config.strictMine;
-    @Entry(category=MINING) public static boolean break_chest = Config.breakChest;
-    @Entry(category=MINING, min=1, max=256) public static int find_chest_range = Config.findChest;
+    @Entry(category=MINING, min=0, max=256) public static int find_chest_range = Config.findChest;
 
     @Entry(category=CLIMBING) public static boolean do_climb = Config.zombiesClimbing;
     @Entry(category=CLIMBING, min=1, max=Integer.MAX_VALUE) public static int climb_limit_ticks = Config.climbLimitTicks;
@@ -40,12 +40,17 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=SPAWN, min=0, max=1) public static double persistence_chance = Config.persistenceChance;
     @Entry(category=SPAWN) public static boolean no_despawn = Config.noDespawn;
 
+    @Entry(category=ATTRIBUTES, min=0, max=1024) public static int default_health = Config.defaultHealth;
+
     @Entry(category=TARGETING) public static boolean do_hurt_animals = Config.targetAnimals;
     @Entry(category=TARGETING) public static FindTargetType find_target_type = Config.findTargetType;
     @Entry(category=TARGETING, min=1, max=65536) public static int block_cost = Config.blockCost;
     @Entry(category=TARGETING, min=1, max=128) public static int follow_range = Config.followRange;
     @Entry(category=TARGETING, min=0.25, max=127) public static double attack_range = Config.attackRange;
     @Entry(category=TARGETING) public static boolean attack_invisible = Config.attackInvisible;
+    @Entry(category=TARGETING) public static boolean avoidance = Config.avoidance;
+    @Entry(category=TARGETING) public static boolean simulate = Config.simulate;
+    @Entry(category=TARGETING) public static boolean disseminate = Config.disseminate;
 
     @Entry(category=OPTIMIZE, min=0, max=16) public static int accuracy = Config.accuracy;
     @Entry(category=OPTIMIZE) public static boolean no_idle = Config.noIdle;
@@ -67,10 +72,17 @@ public class FabricConfig extends MidnightConfig {
     // debugging
     @Entry(category=DEBUG) public static boolean show_nodes = Config.showNodes;
     @Entry(category=DEBUG) public static boolean show_delta_movement = Config.showDeltaMovement;
+    @Entry(category=DEBUG) public static boolean never_die = Config.neverDie;
     @Entry(category=DEBUG) public static boolean glow_zombie = Config.glowZombie;
 
     // fabric fields do nothing without the update of config
     public static void updateConfig() {
+        if(min_mine_dist > max_mine_dist) {
+            max_mine_dist = min_mine_dist;
+        } // validate the config
+        Config.minDist = min_mine_dist;
+        Config.maxDist = max_mine_dist;
+
         Config.mineBlocks = do_mine;
         Config.targetAnimals = do_hurt_animals;
         Config.attackInvisible = attack_invisible;
@@ -87,8 +99,6 @@ public class FabricConfig extends MidnightConfig {
         Config.maxHardness = max_hardness;
         Config.hardnessMultiplier = hardness_multiplier;
         Config.climbingSpeed = climb_speed;
-        Config.minDist = min_mine_dist;
-        Config.maxDist = max_mine_dist;
         Config.healAmount = heal_amount;
         Config.aggressiveSpeed = aggressive_speed;
         Config.attackRange = attack_range;
@@ -109,9 +119,13 @@ public class FabricConfig extends MidnightConfig {
         Config.noIdle = no_idle;
         Config.strictMine = strict_mine;
         Config.noDespawn = no_despawn;
-        Config.breakChest = break_chest;
         Config.findChest = find_chest_range;
         Config.glowZombie = glow_zombie;
+        Config.defaultHealth = default_health;
+        Config.neverDie = never_die;
+        Config.avoidance = avoidance;
+        Config.simulate = simulate;
+        Config.disseminate = disseminate;
     }
 
     @Override

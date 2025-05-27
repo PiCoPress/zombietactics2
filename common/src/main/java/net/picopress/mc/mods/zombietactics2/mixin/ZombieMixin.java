@@ -4,6 +4,8 @@ import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
+import net.picopress.mc.mods.zombietactics2.goals.move.AvoidEnemyGoal;
+import net.picopress.mc.mods.zombietactics2.goals.target.DamagedByGoal;
 import net.picopress.mc.mods.zombietactics2.goals.target.GoToWantedItemGoal;
 import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
 import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
@@ -13,8 +15,12 @@ import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -22,7 +28,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -58,15 +63,17 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique private static final Set<Class<? extends LivingEntity>> zombietactics2$target_class = new HashSet<>();
     @Unique private static int zombietactics2$threshold = 0;
     @Unique private MonsterBreakBlockGoal<? extends Monster> zombietactics2$mine_goal;
+    @Unique private DamagedByGoal zombietactics2$damaged_by;
     @Unique private BreakDoorGoal zombietactics2$bdg;
     @Unique private int zombietactics2$climbedCount = 0;
     @Unique private boolean zombietactics2$isClimbing = false;
     @Unique private boolean zombietactics2$persistence;
     @Unique private boolean zombietactics2$glowing = false;
     @Unique private boolean zombietactics2$flying = false;
+    @Unique private boolean zombietactics2$target_alert = false;
 
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
-    @Shadow private int inWaterTime;
+
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
 
     public ZombieMixin(EntityType<? extends Zombie> entityType, Level level) {
@@ -110,27 +117,31 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public int getMaxSpawnClusterSize() {
-        return 32; // I think, the bigger the number is the better
+    public int zombietactics2$getClimbCount() {
+        return zombietactics2$climbedCount;
     }
 
     @Override
-    public int zombietactics2$getInt(int id) {
-        // inWaterTime
-        if(id == 0) return inWaterTime;
-        if(id == 1) return zombietactics2$climbedCount;
-
-        // nothing else
-        return 0;
+    public boolean zombietactics2$isDigging() {
+        if(zombietactics2$mine_goal == null) return false;
+        return zombietactics2$mine_goal.mine.doMining;
     }
 
     @Override
-    public boolean zombietactics2$getBool(int id) {
-        if(id == 0) {
-            if(zombietactics2$mine_goal == null) return false;
-            return zombietactics2$mine_goal.mine.doMining;
+    public boolean zombietactics2$shouldAlert() {
+        return zombietactics2$target_alert;
+    }
+
+    @Override
+    public void zombietactics2$setInterrupt(boolean b) {
+        if(zombietactics2$damaged_by != null) {
+            zombietactics2$damaged_by.interrupt = true;
         }
-        return false;
+    }
+
+    @Override
+    public void zombietactics2$setAlert(boolean b) {
+        zombietactics2$target_alert = b;
     }
 
     @Override
@@ -138,11 +149,17 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return zombietactics2$persistence || super.isPersistenceRequired();
     }
 
+
+    @Override
+    public int getMaxSpawnClusterSize() {
+        return 32; // I think, the bigger the number is the better
+    }
+
     // For climbing
     @Override
     public void push(@NotNull Entity entity) {
         if(zombietactics2$bdg != null && Config.zombiesClimbing && entity instanceof Zombie &&
-                (horizontalCollision || Config.hyperClimbing) && !((Plane)zombietactics2$bdg).zombietactics2$getBool(0)) {
+                (horizontalCollision || Config.hyperClimbing) && !((Plane)zombietactics2$bdg).zombietactics2$isBreakingDoor()) {
             if(zombietactics2$climbedCount < Config.climbLimitTicks) {
                 final Vec3 v = getDeltaMovement();
                 // climb with random error
@@ -198,6 +215,24 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     @Inject(method="hurtServer", at=@At("HEAD"))
     public void hurtServer(ServerLevel sl, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        // why are avoid_list's elements removed even if I didn't remove?
+        // fucking hell
+        // zombies do strange behavior
+
+        // allows kill by commands or creative players
+        if(Config.neverDie && amount >= this.getHealth() && !source.is(DamageTypes.GENERIC_KILL) && !source.isCreativePlayer()) {
+            // just make them unkillable things
+            var s = this.level().getServer();
+            if(s != null) {
+                var sl = s.getLevel(this.level().dimension());
+                if(sl != null) sl.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
+                        this.getX(), this.getY() + 1.5, this.getZ(),
+                        16, 0.5, 0.5, 0.5, 0.3);
+                this.level().playSound(this, this.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.BLOCKS, 1, 1);
+            }
+            cir.setReturnValue(false);
+            return;
+        }
         Entity who = source.getEntity();
         // new target list
         if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombietactics2$target_class.contains(who.getClass())) {
@@ -223,6 +258,14 @@ public abstract class ZombieMixin extends Monster implements Plane {
         }
 
         Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).setBaseValue(Config.followRange);
+
+        // I can see all zombies through blocks
+        if(Config.glowZombie) {
+            this.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false));
+        }
+        // change default health
+        Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(Config.defaultHealth);
+        this.setHealth(Config.defaultHealth);
     }
 
     @Inject(method="tick", at=@At("TAIL"))
@@ -291,13 +334,14 @@ public abstract class ZombieMixin extends Monster implements Plane {
         if(Config.canFloat) this.goalSelector.addGoal(5, new SelectiveFloatGoal(this));
         if(Config.canFly) this.goalSelector.addGoal(10, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        if(Config.breakChest) this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
+        if(Config.avoidance) this.goalSelector.addGoal(0, new AvoidEnemyGoal<>(this, Mob.class, 8, 1, Config.aggressiveSpeed));
 
         this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombietactics2$target_priority, this, false));
         this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Monster)this, Config.aggressiveSpeed, true));
         this.goalSelector.addGoal(7, new MoveThroughVillageGoal(this, 1.0, false, 4, this::canBreakDoors));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers(ZombifiedPiglin.class));
+        this.targetSelector.addGoal(1, zombietactics2$damaged_by = (DamagedByGoal)(new DamagedByGoal(this)).setAlertOthers(ZombifiedPiglin.class));
         this.goalSelector.addGoal(1, zombietactics2$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
+        this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
         this.goalSelector.addGoal(5, new GoToWantedItemGoal(this, (item) -> wantsToPickUp(Tactics.getSl(this), item)));
     }
 

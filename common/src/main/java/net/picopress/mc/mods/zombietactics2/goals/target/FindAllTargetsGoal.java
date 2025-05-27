@@ -1,6 +1,8 @@
 package net.picopress.mc.mods.zombietactics2.goals.target;
 
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
+import net.picopress.mc.mods.zombietactics2.impl.Plane;
+import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.Config;
 
@@ -28,6 +30,7 @@ import java.util.List;
 public class FindAllTargetsGoal extends TargetGoal {
     public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
+    private final Plane plane;
     private List<LivingEntity> imposters;
     private TargetingConditions targetingConditions;
     @Nullable private final ServerLevel serverLevel;
@@ -43,13 +46,14 @@ public class FindAllTargetsGoal extends TargetGoal {
         setFlags(EnumSet.of(Flag.TARGET));
         list = targets;
         serverLevel = Tactics.getServerLevel(mob);
+        plane = (Plane)mob;
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
     }
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() == null || !mob.getTarget().isAlive();
+        return mob.getTarget() == null || !mob.getTarget().isAlive() || plane.zombietactics2$shouldAlert();
     }
 
     @Override
@@ -87,8 +91,9 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // query targets
                 imposters = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                     for(var sus: list) {
-                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(serverLevel, mob, t))
+                        if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(mob, t)) {
                             return true;
+                        }
                     }
                     return false;
                 });
@@ -107,8 +112,8 @@ public class FindAllTargetsGoal extends TargetGoal {
                 int idx = 0;
 
                 if(Config.findTargetType == FindTargetType.INTENSIVE) {
-                    boolean found = false;
                     Path path = null;
+                    boolean found = false;
                     for(var p: cache_path) {
                         if(p.getA() == amogus) {
                             path = p.getB();
@@ -155,6 +160,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // getting insane
                 if(mob.hasLineOfSight(amogus)) score /= 2;
                 if(delta.getY() >= -2) score /= 2;
+                score *= Tactics.Heuristic.getEnemyPower(amogus);
 
                 // select minimum score
                 if(score < minimumCost) {
@@ -177,7 +183,7 @@ public class FindAllTargetsGoal extends TargetGoal {
     // please update their bounding box
     // don't cache it
     private AABB followBox() {
-        return mob.getBoundingBox().inflate(Config.followRange);
+        return plane.zombietactics2$getFollowingArea();
     }
 
     // brain rot
