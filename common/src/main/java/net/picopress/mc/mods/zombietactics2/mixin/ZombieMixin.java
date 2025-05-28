@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
 import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
@@ -326,7 +327,9 @@ public abstract class ZombieMixin extends Monster implements Plane {
         // inserting a new instance of Pair in HashSet is not a good idea
         if(Config.targetAnimals && !zombietactics2$target_class.contains(Animal.class)) {
             zombietactics2$target_priority.add(new Pair<>(Animal.class, 5));
+            zombietactics2$target_priority.add(new Pair<>(AmbientCreature.class, 2));
             zombietactics2$target_class.add(Animal.class);
+            zombietactics2$target_class.add(AmbientCreature.class);
         }
         if(Config.mineBlocks) this.goalSelector.addGoal(1, zombietactics2$mine_goal = new MonsterBreakBlockGoal<>(this));
         if(Config.canFloat) this.goalSelector.addGoal(5, new SelectiveFloatGoal(this));
@@ -348,7 +351,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         zombietactics2$target_priority.add(new Pair<>(AbstractVillager.class, 3));
         zombietactics2$target_priority.add(new Pair<>(IronGolem.class, 3));
         zombietactics2$target_priority.add(new Pair<>(Turtle.class, 3));
-
         zombietactics2$target_class.add(Player.class);
         zombietactics2$target_class.add(AbstractVillager.class);
         zombietactics2$target_class.add(IronGolem.class);
