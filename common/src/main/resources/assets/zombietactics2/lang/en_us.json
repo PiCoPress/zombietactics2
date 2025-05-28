@@ -120,6 +120,8 @@
     "zombietactics2.midnightconfig.jump_acceleration.tooltip": "The acceleration of jump between blocks",
     "zombietactics2.midnightconfig.pickup_range": "Pickup range",
     "zombietactics2.midnightconfig.pickup_range.tooltip": "The range within which zombies can pick up the better items",
+    "zombietactics2.midnightconfig.pickup_priority": "Pickup goal priority",
+    "zombietactics2.midnightconfig.pickup_priority.tooltip": "Priority of picking up items (lower values mean higher priority)",
 
     "zombietactics2.midnightconfig.category.Debug": "Debug",
     "zombietactics2.midnightconfig.category.Debug.tooltip": "Debug tab. It's not recommended to change if you are not a developer"

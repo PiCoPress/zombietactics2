@@ -1,5 +1,3 @@
-# 2.1.0 Changelog
-- Zombies simulate whether they can win a target.
-- Zombies call other zombies out of their following range.
-- Zombies can run away from targets if they are too strong.
-- Performance improvements
+- Zombies destroy a block when they are in the water and the above their head is stuck
+- Added a pickup priority config option
+- Changed pickup priority as default to 0

@@ -98,7 +98,12 @@ public class ZombieGoal extends ZombieAttackGoal {
                     jumping = true;
                     mob.getJumpControl().jump();
                     // target must not be null in here
-                    delta = mob.getTarget().position().subtract(mob.position());
+                    // ignore Y coordinate
+                    // subtract: new constructor
+                    // multiply: new constructor
+                    // scale: new constructor
+                    // so it calls the constructor of Vec3 at least 3 times
+                    delta = mob.getTarget().position().subtract(mob.position()).multiply(1, 0, 1);
                     delta = delta.scale(Config.jumpAcceleration / delta.length());
                     mob.addDeltaMovement(delta);
                 }

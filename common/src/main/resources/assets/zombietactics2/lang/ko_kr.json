@@ -120,6 +120,8 @@
     "zombietactics2.midnightconfig.jump_acceleration.tooltip": "블럭간 점프 시 가속도",
     "zombietactics2.midnightconfig.pickup_range": "아이템 획득 범위",
     "zombietactics2.midnightconfig.pickup_range.tooltip": "좀비가 더 좋은 아이템을 획득할 수 있는 범위",
+    "zombietactics2.midnightconfig.pickup_priority": "아이템 획득 우선도",
+    "zombietactics2.midnightconfig.pickup_priority.tooltip": "좀비가 아이템을 획득할 때의 우선순위",
 
     "zombietactics2.midnightconfig.category.Debug": "디버그",
     "zombietactics2.midnightconfig.category.Debug.tooltip": "디버그 카테고리. 이 카테고리는 디버그를 위한 것이며, 일반적인 사용자는 이 카테고리를 사용하지 않는 것이 좋습니다"

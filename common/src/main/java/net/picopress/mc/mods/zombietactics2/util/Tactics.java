@@ -1,5 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.util;
 
+import net.picopress.mc.mods.zombietactics2.impl.Plane;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -23,7 +25,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 
-import net.picopress.mc.mods.zombietactics2.impl.Plane;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -44,11 +46,12 @@ public class Tactics {
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
 
-
-    public static float getExactDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
+    public static float getExactDamage(@NotNull Mob mob, LivingEntity target) {
+        ServerLevel serverLevel = getSl(mob);
         var tmp = mob.getAttribute(Attributes.ATTACK_DAMAGE);
         if(tmp == null) return 0;
         float dam = (float)tmp.getValue();
+        if(serverLevel == null) return dam;
         return EnchantmentHelper.modifyDamage(serverLevel, mob.getWeaponItem(), target, mob.damageSources().mobAttack(mob), dam);
     }
 
@@ -155,6 +158,16 @@ public class Tactics {
         }
     }
 
+    public static ServerLevel getSl(Mob mob) {
+        var stuff = mob.getServer();
+        return stuff != null? stuff.getLevel(mob.level().dimension()): null; // I'm not in the server
+    }
+
+    // alias
+    public static ServerLevel getServerLevel(Mob mob) {
+        return getSl(mob);
+    }
+
     public static class World {
         // chunk xz = 16*16
         public static LevelChunk[] getNearbyChunks(Level level, BlockPos pos) {
@@ -196,4 +209,6 @@ public class Tactics {
             return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY()) + Math.abs(p1.getZ() - p2.getZ());
         }
     }
+
+    private Tactics() {}
 }
