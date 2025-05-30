@@ -2,9 +2,10 @@ package net.picopress.mc.mods.zombietactics2.goals.mining;
 
 import static net.picopress.mc.mods.zombietactics2.attachments.MiningRoutines.*;
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.getRelativeRotation;
-import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.goals.BreakBlockGoal;
+import net.picopress.mc.mods.zombietactics2.Config;
 
+import net.minecraft.tags.FluidTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -105,6 +106,12 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
             for(BlockPos p: routineWall) {
                 BlockPos temp = zombie.blockPosition().offset(p);
                 if(checkBlock(temp)) return true;
+            }
+        } else {
+            // stuck in the water
+            final BlockPos head2 = zombie.blockPosition().above(2);
+            if(zombie.isEyeInFluid(FluidTags.WATER) && zombie.level().getBlockState(head2).canOcclude()) {
+                return checkBlock(head2);
             }
         }
         // zombie cannot escape

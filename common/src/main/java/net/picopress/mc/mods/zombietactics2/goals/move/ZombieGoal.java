@@ -1,6 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.goals.move;
 
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.*;
+import net.picopress.mc.mods.zombietactics2.util.MutableVec3;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
@@ -11,7 +12,6 @@ import net.minecraft.world.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ZombieGoal extends ZombieAttackGoal {
     final Zombie mob;
     final Plane plane;
 
-    private Vec3 delta;
+    private MutableVec3 delta;
     private int cooldown = 0;
     private boolean jumping = false;
 
@@ -62,7 +62,7 @@ public class ZombieGoal extends ZombieAttackGoal {
         // keeping delta movement when jumping except delta y(gravity)
         if(mob.onGround() || mob.isInWater()) jumping = false;
         // when I'm jumping and not climbing
-        if(jumping && ((Plane)mob).zombietactics2$getClimbCount() == 0)
+        if(jumping && plane.zombietactics2$getClimbCount() == 0)
             mob.setDeltaMovement(delta.x, mob.getDeltaMovement().y, delta.z);
 
         if(mob.getTarget() == null) return; // mob.getTarget() seems to be null for unknown reason
@@ -71,7 +71,7 @@ public class ZombieGoal extends ZombieAttackGoal {
         if(Config.jumpBlock && !mob.isWithinMeleeAttackRange(mob.getTarget()) && mob.getNavigation().isDone()) {
             Optional<BlockPos> bp = mob.mainSupportingBlockPos;
             if(bp.isPresent()) {
-                BlockPos pos = bp.get().mutable().offset(UNIT_FRONT.rotate(getRelativeRotation(mob))).above().above();
+                BlockPos pos = bp.get().mutable().offset(UNIT_FRONT.rotate(getRelativeRotation(mob))).above(2);
                 boolean airs = true;
                 /* do not jump in an inadequate situation
                     zombie      target
@@ -98,7 +98,8 @@ public class ZombieGoal extends ZombieAttackGoal {
                     jumping = true;
                     mob.getJumpControl().jump();
                     // target must not be null in here
-                    delta = mob.getTarget().position().subtract(mob.position());
+                    // ignore Y coordinate
+                    delta = MutableVec3.toMutableWithCopy(mob.getTarget().position()).subtract(mob.position()).multiply(1, 0, 1);
                     delta = delta.scale(Config.jumpAcceleration / delta.length());
                     mob.addDeltaMovement(delta);
                 }

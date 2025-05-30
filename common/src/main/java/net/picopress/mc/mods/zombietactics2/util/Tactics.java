@@ -45,21 +45,34 @@ public class Tactics {
         else return Rotation.COUNTERCLOCKWISE_90; // x = 1, z = 0
     }
 
-
-    public static float getExactDamage(ServerLevel serverLevel, Mob mob, LivingEntity target) {
+    public static float getExactDamage(@NotNull Mob mob, LivingEntity target) {
+        ServerLevel serverLevel = getSl(mob);
         var tmp = mob.getAttribute(Attributes.ATTACK_DAMAGE);
         if(tmp == null) return 0;
         float dam = (float)tmp.getValue();
+        if(serverLevel == null) return dam;
         return EnchantmentHelper.modifyDamage(serverLevel, mob.getWeaponItem(), target, mob.damageSources().mobAttack(mob), dam);
     }
 
     // thonk
     public static class Heuristic {
+        /**
+         * calculates the power of the mob
+         * @param target the target entity
+         * @return the power of the mob, which is calculated as (attack + 1) * (health / 5) * speed + 1
+         */
         public static int getEnemyPower(LivingEntity target) {
             var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
             return (int)((attack != null? attack.getValue(): 0) / 2 * target.getHealth() / 5 * target.getSpeed() + 1);
         }
 
+        /**
+         *
+         * @param clazz the class of the mob
+         * @param mob attacker
+         * @param target the target entity
+         * @return true if the mob can win against the target, false otherwise
+         */
         public static boolean simulate(Class<? extends LivingEntity> clazz, Mob mob, LivingEntity target) {
             // friends list
             var peers = mob.level().getEntitiesOfClass(clazz, ((Plane)mob).zombietactics2$getFollowingArea(), (liv) -> liv != mob);
@@ -87,13 +100,26 @@ public class Tactics {
     }
 
     public static class ItemUtil {
+        /**
+         * returns the defense point
+         * @param item armor item
+         * @return the defense point of the armor, which is calculated as (defense + 1) * (toughness + 1)
+        */
         static double getDefensePoint(ItemStack item) {
             var armor = getItemAttr(item, "armor");
             var toughness = getItemAttr(item, "armor_toughness");
             if(armor == null || toughness == null) return 0; // null check
             return (armor.amount() + 1) * (toughness.amount() + 1);
-        }
+         }
 
+        /**
+         * it retrieves an attribute modifier of the item stack by its path and namespace.
+         * you should check if it is null
+         * @param stack an item stack
+         * @param path the path of the attribute, e.g. "generic.attack_damage"
+         * @param namespace the namespace of the attribute, e.g. "minecraft"
+         * @return the attribute modifier of the item stack, or null if not found
+         */
         public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
             ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
             if(component == null) return null;
@@ -110,12 +136,23 @@ public class Tactics {
             return entry.modifier();
         }
 
-        // default namespace
+        /**
+         *
+         * @param stack an item stack
+         * @param path the path of the attribute with the namespace "minecraft"
+         * @return the attribute modifier of the item stack, or null if not found
+         */
         static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
             return getItemAttr(stack, path, "minecraft");
         }
 
-        public static boolean isBetter(Mob me, @NotNull ItemStack dropped) {
+        /**
+         *
+         * @param me the mob holding the item
+         * @param dropped dropped stuff
+         * @return true if the dropped item is better than the mob's one, false otherwise
+         */
+        public static boolean isBetter(Mob me, ItemStack dropped) {
             // selecting a weapon
             ItemStack my = null;
             double test1 = 0, test2 = 0;
@@ -211,4 +248,6 @@ public class Tactics {
             return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY()) + Math.abs(p1.getZ() - p2.getZ());
         }
     }
+
+    private Tactics() {}
 }

@@ -47,7 +47,8 @@ public class Config {
             accuracy = 1,
             pickupRange = 8,
             findChest = 12,
-            defaultHealth = 20;
+            defaultHealth = 20,
+            pickUpPriority = 0;
 
     // debugging
     public static boolean showNodes = false,

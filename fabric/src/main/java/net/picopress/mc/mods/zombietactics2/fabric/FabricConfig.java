@@ -67,6 +67,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=GENERAL) public static boolean jump_block = Config.jumpBlock;
     @Entry(category=GENERAL, min=0, max=128) public static double jump_acceleration = Config.jumpAcceleration;
     @Entry(category=GENERAL, min=0, max=128) public static int pickup_range = Config.pickupRange;
+    @Entry(category=GENERAL) public static int pickup_priority = Config.pickUpPriority;
 
 
     // debugging
@@ -126,6 +127,7 @@ public class FabricConfig extends MidnightConfig {
         Config.avoidance = avoidance;
         Config.simulate = simulate;
         Config.disseminate = disseminate;
+        Config.pickUpPriority = pickup_priority;
     }
 
     @Override
