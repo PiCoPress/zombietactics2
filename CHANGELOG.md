@@ -1,1 +1,3 @@
-- Changed the behavior of picking an item
+- Zombies destroy a block when they are in the water and the above their head is stuck
+- Added a pickup priority config option
+- Changed pickup priority as default to 0

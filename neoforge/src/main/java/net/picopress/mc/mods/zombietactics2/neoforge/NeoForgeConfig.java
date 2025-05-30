@@ -55,6 +55,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue AVOIDANCE;
     private static ModConfigSpec.BooleanValue SIMULATE;
     private static ModConfigSpec.BooleanValue DISSEMINATE;
+    private static ModConfigSpec.IntValue PICKUP_PRIORITY;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
@@ -114,6 +115,7 @@ public class NeoForgeConfig {
         Config.avoidance = AVOIDANCE.get();
         Config.simulate = SIMULATE.get();
         Config.disseminate = DISSEMINATE.get();
+        Config.pickUpPriority = PICKUP_PRIORITY.get();
     }
 
     /*
@@ -179,6 +181,7 @@ public class NeoForgeConfig {
             JUMP_ACCELERATION = b.translation(MOD_CFG + "jump_acceleration").defineInRange("jumpAcceleration", Config.jumpAcceleration, 0, 128);
             JUMP_BLOCK = b.translation(MOD_CFG + "jump_block").define("jumpBlock", Config.jumpBlock);
             PICKUP_RANGE = b.translation(MOD_CFG + "pickup_range").defineInRange("pickupRange", Config.pickupRange, 0, 128);
+            PICKUP_PRIORITY = b.translation(MOD_CFG + "pickup_priority").defineInRange("pickUpPriority", Config.pickUpPriority, -100, 100);
             b.pop();
             b.push("Debug");
             SHOW_NODES = b.define("showNodes", Config.showNodes);
