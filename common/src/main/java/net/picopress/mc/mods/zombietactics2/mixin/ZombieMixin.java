@@ -338,7 +338,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         this.targetSelector.addGoal(1, zombietactics2$damaged_by = (DamagedByGoal)(new DamagedByGoal(this)).setAlertOthers(ZombifiedPiglin.class));
         this.goalSelector.addGoal(1, zombietactics2$bdg = new BreakDoorGoal(this, DOOR_BREAKING_PREDICATE));
         this.goalSelector.addGoal(6, new DestroyBlockGoal(this, Blocks.CHEST, Config.findChest));
-        this.goalSelector.addGoal(Config.picUpPriority, new GoToWantedItemGoal(this, (item) -> wantsToPickUp(Tactics.getSl(this), item)));
+        this.goalSelector.addGoal(Config.pickUpPriority, new GoToWantedItemGoal(this, (item) -> wantsToPickUp(Tactics.getSl(this), item)));
     }
 
     static {
