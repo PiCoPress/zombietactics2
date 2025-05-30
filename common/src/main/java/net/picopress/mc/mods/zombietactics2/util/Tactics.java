@@ -57,11 +57,23 @@ public class Tactics {
 
     // thonk
     public static class Heuristic {
+        /**
+         * calculates the power of the mob
+         * @param target the target entity
+         * @return the power of the mob, which is calculated as (attack + 1) * (health / 5) * speed + 1
+         */
         public static int getEnemyPower(LivingEntity target) {
             var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
             return (int)((attack != null? attack.getValue(): 0) / 2 * target.getHealth() / 5 * target.getSpeed() + 1);
         }
 
+        /**
+         *
+         * @param clazz the class of the mob
+         * @param mob attacker
+         * @param target the target entity
+         * @return true if the mob can win against the target, false otherwise
+         */
         public static boolean simulate(Class<? extends LivingEntity> clazz, Mob mob, LivingEntity target) {
             // friends list
             var peers = mob.level().getEntitiesOfClass(clazz, ((Plane)mob).zombietactics2$getFollowingArea(), (liv) -> liv != mob);
@@ -89,10 +101,23 @@ public class Tactics {
     }
 
     public static class ItemUtil {
+        /**
+         * returns the defense point
+         * @param armor armor item
+         * @return the defense point of the armor, which is calculated as (defense + 1) * (toughness + 1)
+         */
         static double getDefensePoint(ArmorItem armor) {
             return (armor.getDefense() + 1) * (armor.getToughness() + 1);
         }
 
+        /**
+         * it retrieves an attribute modifier of the item stack by its path and namespace.
+         * you should check if it is null
+         * @param stack an item stack
+         * @param path the path of the attribute, e.g. "generic.attack_damage"
+         * @param namespace the namespace of the attribute, e.g. "minecraft"
+         * @return the attribute modifier of the item stack, or null if not found
+         */
         public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
             ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
             if(component == null) return null;
@@ -109,11 +134,22 @@ public class Tactics {
             return entry.modifier();
         }
 
-        // default namespace
+        /**
+         *
+         * @param stack an item stack
+         * @param path the path of the attribute with the namespace "minecraft"
+         * @return the attribute modifier of the item stack, or null if not found
+         */
         static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
             return getItemAttr(stack, path, "minecraft");
         }
 
+        /**
+         *
+         * @param me the mob holding the item
+         * @param dropped dropped stuff
+         * @return true if the dropped item is better than the mob's one, false otherwise
+         */
         public static boolean isBetter(Mob me, ItemStack dropped) {
             // selecting a weapon
             var my = me.getMainHandItem();
