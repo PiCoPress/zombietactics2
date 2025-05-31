@@ -129,10 +129,4 @@ public class FabricConfig extends MidnightConfig {
         Config.disseminate = disseminate;
         Config.pickUpPriority = pickup_priority;
     }
-
-    @Override
-    public void writeChanges(String mod_id) {
-        super.writeChanges(mod_id);
-        updateConfig();
-    }
 }

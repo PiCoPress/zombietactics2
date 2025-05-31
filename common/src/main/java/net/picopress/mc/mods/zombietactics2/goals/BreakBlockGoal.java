@@ -85,7 +85,7 @@ public abstract class BreakBlockGoal extends Goal {
         } else {
             // 0 <= progress <= 10
             mob.level().destroyBlockProgress(mob.getId(), mine.bp, (int)((progress / hardness) * 10));
-            mob.stopInPlace();
+            mob.getNavigation().stop();
             mob.getLookControl().setLookAt(mine.bp_vec3);
             progress += break_speed;
             mob.swing(InteractionHand.MAIN_HAND);

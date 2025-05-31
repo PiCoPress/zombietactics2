@@ -27,6 +27,7 @@ public abstract class MonsterMixin extends PathfinderMob {
     // zombie-like mobs can be spawned in sunny day
     @Inject(method="checkMonsterSpawnRules", at=@At(value="RETURN"), cancellable=true)
     private static void checkMonsterSpawnRules(EntityType<? extends Monster> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(level.getDifficulty() != Difficulty.PEACEFUL && (MobSpawnType.ignoresLightRequirements(spawnType) || Monster.isDarkEnoughToSpawn(level, pos, random) || (type == EntityType.ZOMBIE || type == EntityType.HUSK) && Config.spawnUnderSun) && checkMobSpawnRules(type, level, spawnType, pos, random));
+
+        cir.setReturnValue(level.getDifficulty() != Difficulty.PEACEFUL && (Monster.isDarkEnoughToSpawn(level, pos, random) || (type == EntityType.ZOMBIE || type == EntityType.HUSK) && Config.spawnUnderSun) && checkMobSpawnRules(type, level, spawnType, pos, random));
     }
 }

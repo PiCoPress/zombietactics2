@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.picopress.mc.mod.zombietactics2.neoforge.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "package": "net.picopress.mc.mod.zombietactics2.forge.mixin",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "zombietactics2.refmap.json",
   "mixins": [
   ],

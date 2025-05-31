@@ -1,68 +1,68 @@
-package net.picopress.mc.mods.zombietactics2.neoforge;
+package net.picopress.mc.mods.zombietactics2.forge;
 
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 
-@EventBusSubscriber(modid=Main.MOD_ID, bus=EventBusSubscriber.Bus.MOD)
-public class NeoForgeConfig {
-    private static final Pair<MCSBuilder, ModConfigSpec> BUILDER = new ModConfigSpec.Builder().configure(MCSBuilder::new);
-    private static ModConfigSpec.BooleanValue TARGET_ANIMALS;
-    private static ModConfigSpec.BooleanValue ATTACK_INVISIBLE;
-    private static ModConfigSpec.BooleanValue MINE_BLOCKS;
-    private static ModConfigSpec.DoubleValue MIN_DISTANCE;
-    private static ModConfigSpec.DoubleValue MAX_DISTANCE;
-    private static ModConfigSpec.BooleanValue DROP_BROKEN_BLOCKS;
-    private static ModConfigSpec.BooleanValue ZOMBIE_CLIMBING;
-    private static ModConfigSpec.DoubleValue CLIMBING_SPEED;
-    private static ModConfigSpec.DoubleValue MINING_SPEED;
-    private static ModConfigSpec.DoubleValue MAX_HARDNESS;
-    private static ModConfigSpec.DoubleValue HARDNESS_MULTIPLIER;
-    private static ModConfigSpec.DoubleValue HEAL_AMOUNT;
-    private static ModConfigSpec.IntValue ATTACK_COOLDOWN;
-    private static ModConfigSpec.DoubleValue AGGRESSIVE_SPEED;
-    private static ModConfigSpec.BooleanValue SUN_SENSITIVE;
-    private static ModConfigSpec.BooleanValue NO_MERCY;
-    private static ModConfigSpec.DoubleValue ATTACK_RANGE;
-    private static ModConfigSpec.DoubleValue PERSISTENCE_CHANCE;
-    private static ModConfigSpec.IntValue MAX_THRESHOLD;
-    private static ModConfigSpec.IntValue BLOCK_COST;
-    private static ModConfigSpec.BooleanValue CAN_FLOAT;
-    private static ModConfigSpec.IntValue CLIMB_LIMIT_TICKS;
-    private static ModConfigSpec.DoubleValue JUMP_ACCELERATION;
-    private static ModConfigSpec.BooleanValue HYPER_CLIMBING;
-    private static ModConfigSpec.BooleanValue JUMP_BLOCK;
-    private static ModConfigSpec.IntValue FOLLOW_RANGE;
-    private static ModConfigSpec.EnumValue<FindTargetType> TARGET_TYPE;
-    private static ModConfigSpec.BooleanValue SPAWN_UNDER_SUN;
-    private static ModConfigSpec.BooleanValue CAN_FLY;
-    private static ModConfigSpec.DoubleValue FLY_SPEED;
-    private static ModConfigSpec.IntValue PATH_ACCURACY;
-    private static ModConfigSpec.IntValue PICKUP_RANGE;
-    private static ModConfigSpec.BooleanValue RANDOM_CLIMB;
-    private static ModConfigSpec.BooleanValue STRICT_MINE;
-    private static ModConfigSpec.BooleanValue NO_DESPAWN;
-    private static ModConfigSpec.BooleanValue NO_IDLE;
-    private static ModConfigSpec.IntValue FIND_CHEST_RANGE;
-    private static ModConfigSpec.IntValue DEFAULT_HEALTH;
-    private static ModConfigSpec.BooleanValue AVOIDANCE;
-    private static ModConfigSpec.BooleanValue SIMULATE;
-    private static ModConfigSpec.BooleanValue DISSEMINATE;
-    private static ModConfigSpec.IntValue PICKUP_PRIORITY;
+@Mod.EventBusSubscriber(modid=Main.MOD_ID, bus=Mod.EventBusSubscriber.Bus.MOD)
+public class ForgeConfig {
+    private static final Pair<MCSBuilder, ForgeConfigSpec> BUILDER = new ForgeConfigSpec.Builder().configure(MCSBuilder::new);
+    private static ForgeConfigSpec.BooleanValue TARGET_ANIMALS;
+    private static ForgeConfigSpec.BooleanValue ATTACK_INVISIBLE;
+    private static ForgeConfigSpec.BooleanValue MINE_BLOCKS;
+    private static ForgeConfigSpec.DoubleValue MIN_DISTANCE;
+    private static ForgeConfigSpec.DoubleValue MAX_DISTANCE;
+    private static ForgeConfigSpec.BooleanValue DROP_BROKEN_BLOCKS;
+    private static ForgeConfigSpec.BooleanValue ZOMBIE_CLIMBING;
+    private static ForgeConfigSpec.DoubleValue CLIMBING_SPEED;
+    private static ForgeConfigSpec.DoubleValue MINING_SPEED;
+    private static ForgeConfigSpec.DoubleValue MAX_HARDNESS;
+    private static ForgeConfigSpec.DoubleValue HARDNESS_MULTIPLIER;
+    private static ForgeConfigSpec.DoubleValue HEAL_AMOUNT;
+    private static ForgeConfigSpec.IntValue ATTACK_COOLDOWN;
+    private static ForgeConfigSpec.DoubleValue AGGRESSIVE_SPEED;
+    private static ForgeConfigSpec.BooleanValue SUN_SENSITIVE;
+    private static ForgeConfigSpec.BooleanValue NO_MERCY;
+    private static ForgeConfigSpec.DoubleValue ATTACK_RANGE;
+    private static ForgeConfigSpec.DoubleValue PERSISTENCE_CHANCE;
+    private static ForgeConfigSpec.IntValue MAX_THRESHOLD;
+    private static ForgeConfigSpec.IntValue BLOCK_COST;
+    private static ForgeConfigSpec.BooleanValue CAN_FLOAT;
+    private static ForgeConfigSpec.IntValue CLIMB_LIMIT_TICKS;
+    private static ForgeConfigSpec.DoubleValue JUMP_ACCELERATION;
+    private static ForgeConfigSpec.BooleanValue HYPER_CLIMBING;
+    private static ForgeConfigSpec.BooleanValue JUMP_BLOCK;
+    private static ForgeConfigSpec.IntValue FOLLOW_RANGE;
+    private static ForgeConfigSpec.EnumValue<FindTargetType> TARGET_TYPE;
+    private static ForgeConfigSpec.BooleanValue SPAWN_UNDER_SUN;
+    private static ForgeConfigSpec.BooleanValue CAN_FLY;
+    private static ForgeConfigSpec.DoubleValue FLY_SPEED;
+    private static ForgeConfigSpec.IntValue PATH_ACCURACY;
+    private static ForgeConfigSpec.IntValue PICKUP_RANGE;
+    private static ForgeConfigSpec.BooleanValue RANDOM_CLIMB;
+    private static ForgeConfigSpec.BooleanValue STRICT_MINE;
+    private static ForgeConfigSpec.BooleanValue NO_DESPAWN;
+    private static ForgeConfigSpec.BooleanValue NO_IDLE;
+    private static ForgeConfigSpec.IntValue FIND_CHEST_RANGE;
+    private static ForgeConfigSpec.IntValue DEFAULT_HEALTH;
+    private static ForgeConfigSpec.BooleanValue AVOIDANCE;
+    private static ForgeConfigSpec.BooleanValue SIMULATE;
+    private static ForgeConfigSpec.BooleanValue DISSEMINATE;
+    private static ForgeConfigSpec.IntValue PICKUP_PRIORITY;
 
-    private static ModConfigSpec.BooleanValue SHOW_NODES;
-    private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
-    private static ModConfigSpec.BooleanValue NEVER_DIE;
-    private static ModConfigSpec.BooleanValue GLOW_ZOMBIE;
+    private static ForgeConfigSpec.BooleanValue SHOW_NODES;
+    private static ForgeConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
+    private static ForgeConfigSpec.BooleanValue NEVER_DIE;
+    private static ForgeConfigSpec.BooleanValue GLOW_ZOMBIE;
 
-    static final ModConfigSpec SPEC = BUILDER.getRight();
+    static final ForgeConfigSpec SPEC = BUILDER.getRight();
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent ignored) {
@@ -124,7 +124,7 @@ public class NeoForgeConfig {
      */
     public static class MCSBuilder {
         static final String MOD_CFG = Main.MOD_ID + ".midnightconfig.";
-        public MCSBuilder(ModConfigSpec.Builder b) {
+        public MCSBuilder(ForgeConfigSpec.Builder b) {
             b.push("Mining");
             MINE_BLOCKS = b.translation(MOD_CFG + "do_mine").define("zombiesMineBlocks", Config.mineBlocks);
             MINING_SPEED = b.translation(MOD_CFG + "mining_speed").defineInRange("miningSpeed", Config.break_speed, 0, Double.MAX_VALUE);

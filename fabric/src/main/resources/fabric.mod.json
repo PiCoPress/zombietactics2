@@ -25,11 +25,11 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.10",
-    "minecraft": "1.21.1",
-    "java": "21",
-    "architectury": ">=13.0.0",
-    "midnightlib": ">=1.6.5",
-    "modmenu": ">=11",
+    "minecraft": "1.20.1",
+    "java": ">=17",
+    "architectury": ">=9",
+    "midnightlib": ">=1.4",
+    "modmenu": ">=7",
     "fabric-api": "*"
   },
   "suggests": {

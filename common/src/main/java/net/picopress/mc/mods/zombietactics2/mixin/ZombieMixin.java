@@ -39,7 +39,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import org.spongepowered.asm.mixin.*;
@@ -97,22 +96,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     // Modifying Attack range
     @Override
-    protected @NotNull AABB getAttackBoundingBox() {
-        Entity entity = this.getVehicle();
-        AABB aabb;
-        if (entity != null) {
-            AABB aabb1 = entity.getBoundingBox();
-            AABB aabb2 = this.getBoundingBox();
-            aabb = new AABB(Math.min(aabb2.minX, aabb1.minX),
-                    aabb2.minY,
-                    Math.min(aabb2.minZ, aabb1.minZ),
-                    Math.max(aabb2.maxX, aabb1.maxX),
-                    aabb2.maxY,
-                    Math.max(aabb2.maxZ, aabb1.maxZ));
-        } else {
-            aabb = this.getBoundingBox();
-        }
-        return aabb.inflate(Config.attackRange);
+    public double getMeleeAttackRangeSqr(LivingEntity entity) {
+        return super.getMeleeAttackRangeSqr(entity) * Config.attackRange;
     }
 
     @Override

@@ -5,9 +5,6 @@ import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -17,8 +14,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -30,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 // because it is utility class
@@ -38,7 +34,7 @@ public class Tactics {
     public static final BlockPos UNIT_FRONT = new BlockPos(0, 0, 1);
 
     public static Rotation getRelativeRotation(Mob mob) {
-        Vec3i norm = mob.getNearestViewDirection().getNormal();
+        Vec3i norm = mob.getDirection().getNormal();
         int x = norm.getX(), z = norm.getZ();
         if(x == 0 && z == 1) return Rotation.NONE;
         else if(x == 0 && z == -1) return Rotation.CLOCKWISE_180;
@@ -52,7 +48,7 @@ public class Tactics {
         if(tmp == null) return 0;
         float dam = (float)tmp.getValue();
         if(serverLevel == null) return dam;
-        return EnchantmentHelper.modifyDamage(serverLevel, mob.getWeaponItem(), target, mob.damageSources().mobAttack(mob), dam);
+        return EnchantmentHelper.getDamageBonus(mob.getMainHandItem(), mob.getMobType());
     }
 
     // thonk
@@ -118,20 +114,8 @@ public class Tactics {
          * @param namespace the namespace of the attribute, e.g. "minecraft"
          * @return the attribute modifier of the item stack, or null if not found
          */
-        public static @Nullable AttributeModifier getItemAttr(ItemStack stack, String path, String namespace) {
-            ItemAttributeModifiers component = stack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
-            if(component == null) return null;
-
-            List<ItemAttributeModifiers.Entry> list = component.modifiers();
-            ItemAttributeModifiers.Entry entry = null;
-            for(var attr: list) {
-                if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
-                    entry = attr;
-                    break;
-                }
-            }
-            if(entry == null) return null;
-            return entry.modifier();
+        public static double getItemAttr(ItemStack stack, String path, String namespace) {
+            return stack.getTag().getDouble(namespace + ":" + path);
         }
 
         /**
@@ -140,7 +124,7 @@ public class Tactics {
          * @param path the path of the attribute with the namespace "minecraft"
          * @return the attribute modifier of the item stack, or null if not found
          */
-        static public @Nullable AttributeModifier getItemAttr(ItemStack stack, String path) {
+        static public double getItemAttr(ItemStack stack, String path) {
             return getItemAttr(stack, path, "minecraft");
         }
 
@@ -155,18 +139,19 @@ public class Tactics {
             var my = me.getMainHandItem();
             double test1 = 0, test2 = 0;
 
-            if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
+            if(dropped.is(ItemTags.SWORDS) || dropped.is(ItemTags.AXES)
+                    || dropped.is(ItemTags.SHOVELS) || dropped.is(ItemTags.PICKAXES)
+                    || dropped.is(ItemTags.HOES)) {
                 if(my.is(Items.AIR)) return my.is(Items.AIR);
 
                 var my_weapon = ItemUtil.getItemAttr(my, "generic.attack_damage");
                 var other = ItemUtil.getItemAttr(dropped, "generic.attack_damage");
 
-                if(my_weapon == null || other == null) return false; // null check
-                test1 = my_weapon.amount();
-                test2 = other.amount();
+                test1 = my_weapon;
+                test2 = other;
                 // if I don't have a weapon
             } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
-                if(EnchantmentHelper.has(my, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) return false;
+                if(EnchantmentHelper.hasBindingCurse(my)) return false;
 
                 var slot = me.getItemBySlot(others.getEquipmentSlot());
                 if(slot.is(Items.AIR)) return true; // if I don't have armor
@@ -188,9 +173,10 @@ public class Tactics {
         }
 
         private static boolean checkDamageable(ItemStack stack) {
-            DataComponentMap dataComponentMap = stack.getComponents();
-            int i = dataComponentMap.size();
-            return i > 1 || i == 1 && !dataComponentMap.has(DataComponents.DAMAGE);
+            if(stack.hasTag()) {
+                return Objects.requireNonNull(stack.getTag()).getAllKeys().stream().anyMatch((string) -> ! string.equals("Damage"));
+            }
+            return false;
         }
     }
 

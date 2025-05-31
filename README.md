@@ -3,7 +3,7 @@
 - A fork mod of Zombie Tactics, originally created by n643064
 - This branch is a development branch
 ## Requirements
-- Minecraft 1.21.1
+- Minecraft 1.20.1
 - Architectury API
 ### Fabric also needs
 - MidnightLib

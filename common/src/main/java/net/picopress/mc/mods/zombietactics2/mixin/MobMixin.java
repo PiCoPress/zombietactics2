@@ -61,7 +61,7 @@ public abstract class MobMixin extends LivingEntity implements Plane {
     public void canReplaceCurrentItem(ItemStack candidate, ItemStack existing, CallbackInfoReturnable<Boolean> cir) {
         if(zombietactics2$self instanceof Zombie) {
             if(existing.isEmpty()) cir.setReturnValue(true);
-            else if(candidate.getItem() instanceof ProjectileItem && existing.getItem() instanceof ProjectileItem) {
+            else if(candidate.getItem() instanceof ProjectileWeaponItem && existing.getItem() instanceof ProjectileWeaponItem) {
                 cir.setReturnValue(this.canReplaceEqualItem(candidate, existing));
             } else {
                 cir.setReturnValue(Tactics.ItemUtil.isBetter(zombietactics2$self, candidate));
