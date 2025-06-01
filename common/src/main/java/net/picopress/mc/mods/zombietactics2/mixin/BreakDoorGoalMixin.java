@@ -1,6 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.picopress.mc.mods.zombietactics2.impl.Plane;
+import net.picopress.mc.mods.zombietactics2.impl.GoalPlane;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.BreakDoorGoal;
@@ -17,7 +17,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 
 @Mixin(BreakDoorGoal.class)
-public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements Plane {
+public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements GoalPlane {
     // prevent that the zombies climb when breaking a door
     @Unique public boolean zombie_tactics$isBreaking;
 

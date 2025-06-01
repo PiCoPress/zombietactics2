@@ -154,6 +154,7 @@ public class Tactics {
             // selecting a weapon
             var my = me.getMainHandItem();
             double test1 = 0, test2 = 0;
+            boolean is_armor = false;
 
             if(dropped.is(ItemTags.WEAPON_ENCHANTABLE)) {
                 if(my.is(Items.AIR)) return my.is(Items.AIR);
@@ -166,6 +167,7 @@ public class Tactics {
                 test2 = other.amount();
                 // if I don't have a weapon
             } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
+                is_armor = true;
                 if(EnchantmentHelper.has(my, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) return false;
 
                 var slot = me.getItemBySlot(others.getEquipmentSlot());
@@ -177,9 +179,9 @@ public class Tactics {
             }
 
             if(test1 < test2) return true;
-            if(test1 == test2) {
-                if(my.getDamageValue() > dropped.getDamageValue()) {
-                    return true; // if my weapon is more damaged
+            if(test1 == test2 && !is_armor) {
+                if(my.getDamageValue() < dropped.getDamageValue()) {
+                    return true; // dropped weapon is more damaged
                 } else {
                     return checkDamageable(dropped) && !checkDamageable(my);
                 }

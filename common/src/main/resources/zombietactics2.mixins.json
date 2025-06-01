@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_21",
     "mixins": [
         "BreakDoorGoalMixin",
+        "LivingEntityMixin",
         "MeleeAttackGoalMixin",
         "MobMixin",
         "MonsterMixin",
