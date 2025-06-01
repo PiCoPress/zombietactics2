@@ -14,15 +14,17 @@ import java.util.EnumSet;
 
 // independent of Config
 public abstract class BreakBlockGoal extends Goal {
-    public final MiningData mine;
-    protected final Mob mob;
     private final double hardnessMultiplier;
     private final double break_speed;
     private final boolean dropBlock;
+
+    protected final Mob mob;
     protected double progress, hardness = Double.MAX_VALUE;
 
-    public BreakBlockGoal(Mob mob, double hardnessMultiplier, double break_speed, boolean dropBlock) {
-        mine = new MiningData();
+    public final MiningData mine;
+
+    public BreakBlockGoal(Mob mob, MiningData mine, double hardnessMultiplier, double break_speed, boolean dropBlock) {
+        this.mine = mine;
         this.mob = mob;
         this.hardnessMultiplier = hardnessMultiplier;
         this.break_speed = break_speed;
