@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 
@@ -16,6 +17,7 @@ import net.minecraft.world.phys.AABB;
 
 import org.jetbrains.annotations.NotNull;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,17 +26,38 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+
 
 @Mixin(Mob.class)
 public abstract class MobMixin extends LivingEntity implements Plane {
-    @Shadow public abstract boolean canReplaceEqualItem(ItemStack stack, ItemStack stack2);
-
     @Unique private Mob zombietactics2$self;
     @Unique private AABB zombietactics2$followArea;
     @Unique private BlockPos zombietactics2$prevPos = BlockPos.ZERO;
+    @Unique private static int zombietactics2$threshold = 0;
+
+    @Shadow @Final private static double DEFAULT_ATTACK_REACH;
+    @Shadow private boolean persistenceRequired;
+    @Shadow public abstract boolean canReplaceEqualItem(ItemStack stack, ItemStack stack2);
 
     protected MobMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    public @NotNull AABB zombietactics2$getFollowingArea() {
+        return zombietactics2$followArea;
+    }
+
+    @Override
+    public int zombietactics2$getThreshold() {
+        return zombietactics2$threshold;
+    }
+
+    @Override
+    public void zombietactics2$setThreshold(int threshold) {
+        zombietactics2$threshold = threshold;
     }
 
     // reduce calling of AABB.inflate()
@@ -43,11 +66,13 @@ public abstract class MobMixin extends LivingEntity implements Plane {
         zombietactics2$self = (Mob)(LivingEntity)this;
         zombietactics2$prevPos = this.blockPosition();
         zombietactics2$followArea = new AABB(zombietactics2$prevPos).inflate(this.getAttributeValue(Attributes.FOLLOW_RANGE));
-    }
 
-    @Override
-    public @NotNull AABB zombietactics2$getFollowingArea() {
-        return zombietactics2$followArea;
+        if(zombietactics2$self instanceof Zombie && zombietactics2$threshold < Config.maxThreshold) {
+            // for zombies, we need to set the threshold
+            double tmp = this.level().random.nextDouble();
+            persistenceRequired = tmp <= Config.persistenceChance;
+            if(persistenceRequired) ++ zombietactics2$threshold;
+        }
     }
 
     @Inject(method="tick", at=@At("TAIL"))
@@ -70,5 +95,29 @@ public abstract class MobMixin extends LivingEntity implements Plane {
             // only for zombies
             cir.cancel();
         }
+    }
+
+    @ModifyExpressionValue(method="getMaxSpawnClusterSize", at=@At(value="CONSTANT", args="intValue=4"))
+    public int cluster(int original) {
+        // increase zombie spawn size to 6
+        return zombietactics2$self instanceof Zombie? 32: original;
+    }
+
+    @ModifyReturnValue(method="removeWhenFarAway", at=@At("RETURN"))
+    public boolean removeWhenFarAway(boolean original) {
+        if(zombietactics2$self instanceof Zombie) {
+            return Config.noDespawn;
+        }
+        return original;
+    }
+
+    // modifying attack range
+    @ModifyExpressionValue(method="getAttackBoundingBox", at=@At(value="INVOKE", target="Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"))
+    public AABB getAttackBoundingBox(AABB original) {
+        // increase the attack range of zombies
+        if(zombietactics2$self instanceof Zombie) {
+            return original.inflate(Config.attackRange);
+        }
+        return original.inflate(DEFAULT_ATTACK_REACH, 0, DEFAULT_ATTACK_REACH);
     }
 }
