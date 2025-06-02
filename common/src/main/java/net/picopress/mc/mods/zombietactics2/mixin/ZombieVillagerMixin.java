@@ -7,8 +7,8 @@ import net.minecraft.world.level.Level;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 
 @Mixin(ZombieVillager.class)
@@ -18,8 +18,8 @@ public abstract class ZombieVillagerMixin extends Zombie {
     }
 
     // this is to make the zombie villager convert in water
-    @Inject(method="convertsInWater", at=@At("RETURN"), cancellable=true)
-    public void convertsInWater(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(true);
+    @ModifyReturnValue(method="convertsInWater", at=@At("RETURN"))
+    public boolean convertsInWater(boolean original) {
+        return true;
     }
 }
