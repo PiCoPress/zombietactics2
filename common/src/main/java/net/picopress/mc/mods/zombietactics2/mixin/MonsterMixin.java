@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+
 
 @Mixin(Monster.class)
 public abstract class MonsterMixin extends PathfinderMob {
@@ -32,10 +34,11 @@ public abstract class MonsterMixin extends PathfinderMob {
         cir.setReturnValue(level.getDifficulty() != Difficulty.PEACEFUL && (EntitySpawnReason.ignoresLightRequirements(spawnReason) || Monster.isDarkEnoughToSpawn(level, pos, random) || (type == EntityType.ZOMBIE || type == EntityType.HUSK) && Config.spawnUnderSun) && checkMobSpawnRules(type, level, spawnReason, pos, random));
     }
 
-    @Inject(method="getWalkTargetValue", at=@At("RETURN"), cancellable=true)
-    private void getWalkTargetValue(BlockPos pos, LevelReader level, CallbackInfoReturnable<Float> cir) {
+    @ModifyReturnValue(method="getWalkTargetValue", at=@At("RETURN"))
+    private float getWalkTargetValue(float original) {
         if((PathfinderMob)this instanceof Zombie) {
-            if(Config.spawnUnderSun) cir.setReturnValue(0F);
+            if(Config.spawnUnderSun) return 0;
         }
+        return original;
     }
 }

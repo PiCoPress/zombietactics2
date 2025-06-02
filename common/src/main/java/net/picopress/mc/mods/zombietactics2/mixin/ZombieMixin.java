@@ -48,6 +48,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+
 import oshi.util.tuples.Pair;
 
 import java.util.*;
@@ -103,10 +105,16 @@ public abstract class ZombieMixin extends Monster implements Plane {
         zombietactics2$target_alert = b;
     }
 
-    @Inject(method="createAttributes", at=@At("RETURN"), cancellable=true)
-    private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
+    @ModifyReturnValue(method="createAttributes", at=@At("RETURN"))
+    private static AttributeSupplier.Builder createAttributes(AttributeSupplier.Builder original) {
         // if a zombie cannot fly, it is just nothing
-        cir.setReturnValue(cir.getReturnValue().add(Attributes.FLYING_SPEED, Config.flySpeed));
+        return original.add(Attributes.FLYING_SPEED, Config.flySpeed);
+    }
+
+    // I do not want to see that zombies burn
+    @ModifyReturnValue(method="isSunSensitive", at=@At("RETURN"))
+    public boolean isSunSensitive(boolean original) {
+        return Config.sunSensitive && original;
     }
 
     @Inject(method="wantsToPickUp", at=@At("RETURN"), cancellable=true)
@@ -204,12 +212,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         }
         // reset invulnerable time
         if(Config.noMercy) ent.invulnerableTime = 0;
-    }
-
-    // I do not want to see that zombies burn
-    @Inject(method="isSunSensitive", at=@At("RETURN"), cancellable=true)
-    public void isSunSensitive(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(Config.sunSensitive && cir.getReturnValue());
     }
 
     /**

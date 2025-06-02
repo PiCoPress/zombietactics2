@@ -182,8 +182,9 @@ public class Tactics {
             if(my == null) return false; // null check
             if(test1 < test2) return true;
             if(test1 == test2 && !is_armor) {
-                if(my.getDamageValue() < dropped.getDamageValue()) {
-                    return true; // dropped weapon is more damaged
+                // this damage is not the attack of damage
+                if(my.getDamageValue() > dropped.getDamageValue()) {
+                    return true; // my weapon is more damaged
                 } else {
                     return checkDamageable(dropped) && !checkDamageable(my);
                 }

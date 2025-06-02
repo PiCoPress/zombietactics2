@@ -19,7 +19,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 
 @Mixin(LivingEntity.class)
@@ -84,11 +85,12 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
         }
     }
 
-    @Inject(method="getFlyingSpeed", at=@At("RETURN"), cancellable=true)
-    public void getFlyingSpeed(CallbackInfoReturnable<Float> cir) {
+    @ModifyReturnValue(method="getFlyingSpeed", at=@At("RETURN"))
+    public float getFlyingSpeed(float original) {
         if((Entity)this instanceof Zombie z) {
             AttributeInstance fly = z.getAttribute(Attributes.FLYING_SPEED);
-            if(fly != null) cir.setReturnValue((float)fly.getValue());
+            if(fly != null) return (float)fly.getValue();
         }
+        return original;
     }
 }
