@@ -16,12 +16,11 @@ import net.minecraft.world.phys.AABB;
 
 import org.jetbrains.annotations.NotNull;
 
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -36,7 +35,6 @@ public abstract class MobMixin extends LivingEntity implements Plane {
     @Unique private BlockPos zombietactics2$prevPos = BlockPos.ZERO;
     @Unique private static int zombietactics2$threshold = 0;
 
-    @Shadow @Final private static double DEFAULT_ATTACK_REACH;
     @Shadow private boolean persistenceRequired;
     @Shadow public abstract boolean canReplaceEqualItem(ItemStack stack, ItemStack stack2);
 
@@ -91,8 +89,6 @@ public abstract class MobMixin extends LivingEntity implements Plane {
             } else {
                 cir.setReturnValue(Tactics.ItemUtil.isBetter(zombietactics2$self, candidate));
             }
-            // only for zombies
-            cir.cancel();
         }
     }
 
@@ -111,12 +107,13 @@ public abstract class MobMixin extends LivingEntity implements Plane {
     }
 
     // modifying attack range
-    @ModifyExpressionValue(method="getAttackBoundingBox", at=@At(value="INVOKE", target="Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"))
-    public AABB getAttackBoundingBox(AABB original) {
+    @ModifyArgs(method="getAttackBoundingBox", at=@At(value="INVOKE", target="Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"))
+    public void getAttackBoundingBox(Args args) {
         // increase the attack range of zombies
         if(zombietactics2$self instanceof Zombie) {
-            return original.inflate(Config.attackRange);
+            args.set(0, Config.attackRange);
+            args.set(1, Config.attackRange);
+            args.set(2, Config.attackRange);
         }
-        return original.inflate(DEFAULT_ATTACK_REACH, 0, DEFAULT_ATTACK_REACH);
     }
 }

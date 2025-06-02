@@ -1,2 +1,2 @@
-- Compatibility has been quite improved
-- Fixed a bug that makes zombies endlessly pick up and drop armor
+- Minor bug fix
+- Stability improvements

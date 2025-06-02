@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 
@@ -50,8 +50,8 @@ public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements Goa
     }
 
     // breaking door sound and the swinging arms are continued while the door was broken
-    @Inject(method="canContinueToUse", at=@At("RETURN"), cancellable=true)
-    public void canContinueToUse(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValue() && !mob.level().getBlockState(this.doorPos).isAir());
+    @ModifyReturnValue(method="canContinueToUse", at=@At("RETURN"))
+    public boolean canContinueToUse(boolean original) {
+        return original && !mob.level().getBlockState(this.doorPos).isAir();
     }
 }
