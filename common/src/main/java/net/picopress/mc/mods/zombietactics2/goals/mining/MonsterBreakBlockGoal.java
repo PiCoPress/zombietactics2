@@ -2,9 +2,11 @@ package net.picopress.mc.mods.zombietactics2.goals.mining;
 
 import static net.picopress.mc.mods.zombietactics2.attachments.MiningRoutines.*;
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.getRelativeRotation;
+import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
 import net.picopress.mc.mods.zombietactics2.goals.BreakBlockGoal;
 import net.picopress.mc.mods.zombietactics2.Config;
 
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,8 +20,11 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     private final T zombie;
     double max_p2, min_p2;
 
-    public MonsterBreakBlockGoal(T zombie) {
-        super(zombie, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
+    public MiningData mine;
+
+    public MonsterBreakBlockGoal(T zombie, MiningData mine) {
+        super(zombie, mine, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
+        this.mine = mine;
         this.zombie = zombie;
     }
 
@@ -39,7 +44,8 @@ public class MonsterBreakBlockGoal<T extends Monster> extends BreakBlockGoal {
     @Override
     protected boolean checkBlock(BlockPos pos) {
         float destroying = getBlockHardness(pos);
-        boolean ret = super.checkBlock(pos) && destroying <= Config.maxHardness;
+        // except doors
+        boolean ret = super.checkBlock(pos) && destroying <= Config.maxHardness && !zombie.level().getBlockState(pos).is(BlockTags.DOORS);
         if(ret) {
             mine.bp = pos;
             mine.bp_vec3 = pos.getCenter();

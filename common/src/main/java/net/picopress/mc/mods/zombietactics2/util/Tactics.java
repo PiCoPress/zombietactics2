@@ -138,6 +138,7 @@ public class Tactics {
             // selecting a weapon
             var my = me.getMainHandItem();
             double test1 = 0, test2 = 0;
+            boolean is_armor = false;
 
             if(dropped.is(ItemTags.SWORDS) || dropped.is(ItemTags.AXES)
                     || dropped.is(ItemTags.SHOVELS) || dropped.is(ItemTags.PICKAXES)
@@ -152,6 +153,7 @@ public class Tactics {
                 // if I don't have a weapon
             } else if(dropped.getItem() instanceof ArmorItem others) { // selecting armor
                 if(EnchantmentHelper.hasBindingCurse(my)) return false;
+                is_armor = true;
 
                 var slot = me.getItemBySlot(others.getEquipmentSlot());
                 if(slot.is(Items.AIR)) return true; // if I don't have armor
@@ -162,9 +164,10 @@ public class Tactics {
             }
 
             if(test1 < test2) return true;
-            if(test1 == test2) {
+            if(test1 == test2 && !is_armor) {
+                // this damage is not the attack of damage
                 if(my.getDamageValue() > dropped.getDamageValue()) {
-                    return true; // if my weapon is more damaged
+                    return true; // my weapon is more damaged
                 } else {
                     return checkDamageable(dropped) && !checkDamageable(my);
                 }

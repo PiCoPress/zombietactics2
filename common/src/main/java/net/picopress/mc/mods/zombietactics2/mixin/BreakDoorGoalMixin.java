@@ -1,6 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.picopress.mc.mods.zombietactics2.impl.Plane;
+import net.picopress.mc.mods.zombietactics2.impl.GoalPlane;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.BreakDoorGoal;
@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 
 @Mixin(BreakDoorGoal.class)
-public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements Plane {
+public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements GoalPlane {
     // prevent that the zombies climb when breaking a door
     @Unique public boolean zombie_tactics$isBreaking;
 
@@ -50,8 +50,8 @@ public abstract class BreakDoorGoalMixin extends DoorInteractGoal implements Pla
     }
 
     // breaking door sound and the swinging arms are continued while the door was broken
-    @Inject(method="canContinueToUse", at=@At("RETURN"), cancellable=true)
-    public void canContinueToUse(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValue() && !mob.level().getBlockState(this.doorPos).isAir());
+    @ModifyReturnValue(method="canContinueToUse", at=@At("RETURN"))
+    public boolean canContinueToUse(boolean original) {
+        return original && !mob.level().getBlockState(this.doorPos).isAir();
     }
 }

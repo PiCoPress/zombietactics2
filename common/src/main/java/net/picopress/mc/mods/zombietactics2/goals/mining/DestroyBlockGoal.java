@@ -1,6 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.goals.mining;
 
 import net.picopress.mc.mods.zombietactics2.Config;
+import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.goals.BreakBlockGoal;
 
@@ -21,8 +22,11 @@ public class DestroyBlockGoal extends BreakBlockGoal {
     private int delay = 0;
     private int y;
 
-    public DestroyBlockGoal(Mob mob, Block block, int range) {
-        super(mob, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
+    public MiningData mine;
+
+    public DestroyBlockGoal(Mob mob, MiningData mine, Block block, int range) {
+        super(mob, mine, Config.hardnessMultiplier, Config.break_speed, Config.dropBlocks);
+        this.mine = mine;
         this.block = block;
         this.range = range;
         y = -range;

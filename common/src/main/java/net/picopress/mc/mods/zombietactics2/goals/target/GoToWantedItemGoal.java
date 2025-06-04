@@ -44,7 +44,7 @@ public class GoToWantedItemGoal extends Goal {
                 mob.getX() + range, mob.getY() + range, mob.getZ() + range));
         for (var item: items) {
             if (!(item.isInWater() || item.isInLava()) && predicate.test(item.getItem())) {
-                mob.getNavigation().moveTo(item, mob.getTarget() != null? Config.aggressiveSpeed: 1);
+                mob.getNavigation().moveTo(item, mob.getTarget() != null && mob.getTarget().isAlive()? Config.aggressiveSpeed: 1);
                 target = item;
                 return true;
             }

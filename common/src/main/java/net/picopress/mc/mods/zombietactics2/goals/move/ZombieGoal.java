@@ -1,17 +1,17 @@
 package net.picopress.mc.mods.zombietactics2.goals.move;
 
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.*;
-import net.picopress.mc.mods.zombietactics2.util.MutableVec3;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ZombieGoal extends ZombieAttackGoal {
     final Zombie mob;
     final Plane plane;
 
-    private MutableVec3 delta;
+    private Vec3 delta;
     private int cooldown = 0;
     private boolean jumping = false;
 
@@ -99,7 +99,7 @@ public class ZombieGoal extends ZombieAttackGoal {
                     mob.getJumpControl().jump();
                     // target must not be null in here
                     // ignore Y coordinate
-                    delta = MutableVec3.toMutableWithCopy(mob.getTarget().position()).subtract(mob.position()).multiply(1, 0, 1);
+                    delta = mob.getTarget().position().subtract(mob.position()).multiply(1, 0, 1);
                     delta = delta.scale(Config.jumpAcceleration / delta.length());
                     mob.addDeltaMovement(delta);
                 }

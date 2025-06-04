@@ -1,6 +1,9 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
     id 'com.gradleup.shadow'
     id "com.modrinth.minotaur" version "2.+"
+    id 'net.darkhax.curseforgegradle' version "$curseforge_version"
 }
 
 architectury {
@@ -73,4 +76,31 @@ modrinth {
         // The type can either be `project` or `version`
         required.project "architectury-api"
     }
+}
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+
+    // This token is used to authenticate with CurseForge. It should be handled
+    // with the same level of care and security as your actual password. You
+    // should never share your token with an untrusted source or publish it
+    // publicly to GitHub or embed it within a project. The best practice is to
+    // store this token in an environment variable or a build secret.
+    apiToken = System.getenv('curseforge_token')
+
+    // A project ID is required to tell CurseForge which project the uploaded
+    // file belongs to. This is public on your project page and is not private
+    // information.
+
+    // Tells CurseForgeGradle to publish the output of the jar task. This will
+    // return a UploadArtifact object that can be used to further configure the
+    // file.
+    def mainFile = upload(curseforge_id, remapJar)
+    mainFile.changelog = change_log
+    mainFile.changelogType = 'markdown'
+    mainFile.releaseType = 'release'
+    mainFile.addModLoader('NeoForge')
+    mainFile.addGameVersion(minecraft_version)
+    mainFile.addRequirement('architectury-api')
+    mainFile.displayName = "neoforge-$mod_version"
+    //debugMode = true
 }
