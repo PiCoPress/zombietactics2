@@ -1,6 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.forge;
 
-import net.minecraftforge.fml.ModLoadingContext;
+import static net.picopress.mc.mods.zombietactics2.forge.ForgeConfig.SPEC;
 import net.picopress.mc.mods.zombietactics2.impl.IMain;
 import net.picopress.mc.mods.zombietactics2.commands.CommandSumZ;
 
@@ -9,10 +9,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.event.RegisterCommandsEvent;
-
-import static net.picopress.mc.mods.zombietactics2.forge.ForgeConfig.SPEC;
 
 
 @Mod.EventBusSubscriber(modid=Main.MOD_ID)
