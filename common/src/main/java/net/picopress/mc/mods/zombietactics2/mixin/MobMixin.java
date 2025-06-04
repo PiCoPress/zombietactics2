@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -107,13 +105,12 @@ public abstract class MobMixin extends LivingEntity implements Plane {
     }
 
     // modifying attack range
-    @ModifyArgs(method="getAttackBoundingBox", at=@At(value="INVOKE", target="Lnet/minecraft/world/phys/AABB;inflate(DDD)Lnet/minecraft/world/phys/AABB;"))
-    public void getAttackBoundingBox(Args args) {
+    @ModifyReturnValue(method="getMeleeAttackRangeSqr", at=@At("RETURN"))
+    public double getAttackBoundingBox(double original) {
         // increase the attack range of zombies
         if(zombietactics2$self instanceof Zombie) {
-            args.set(0, Config.attackRange);
-            args.set(1, Config.attackRange);
-            args.set(2, Config.attackRange);
+            return Config.attackRange;
         }
+        return original;
     }
 }
