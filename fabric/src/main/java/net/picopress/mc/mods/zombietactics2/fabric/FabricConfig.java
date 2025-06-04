@@ -15,7 +15,7 @@ public class FabricConfig extends MidnightConfig {
     public static final String ATTRIBUTES = "Attributes";
     public static final String TARGETING = "Targeting";
     public static final String OPTIMIZE = "Optimize";
-    public static final String FLYING = "Flying";
+    public static final String MOVING = "Moving";
     public static final String GENERAL = "General";
     public static final String DEBUG = "Debug";
 
@@ -55,16 +55,18 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=OPTIMIZE, min=0, max=16) public static int accuracy = Config.accuracy;
     @Entry(category=OPTIMIZE) public static boolean no_idle = Config.noIdle;
 
-    @Entry(category=FLYING) public static boolean can_fly = Config.canFly;
-    @Entry(category=FLYING, min=0, max=32) public static double fly_speed = Config.flySpeed;
+    @Entry(category=MOVING, min=0.01, max=128) public static double aggressive_speed = Config.aggressiveSpeed;
+    @Entry(category=MOVING) public static boolean jump_block = Config.jumpBlock;
+    @Entry(category=MOVING) public static boolean can_fly = Config.canFly;
+    @Entry(category=MOVING, min=0, max=32) public static double fly_speed = Config.flySpeed;
+    @Entry(category=MOVING) public static boolean can_swim = Config.canSwim;
+    @Entry(category=MOVING, min=0, max=128) public static double swim_speed = Config.swimSpeed;
 
     @Entry(category=GENERAL, min=0, max=1024) public static double heal_amount = Config.healAmount;
-    @Entry(category=GENERAL, min=0.01, max=128) public static double aggressive_speed = Config.aggressiveSpeed;
     @Entry(category=GENERAL, min=1, max=1000) public static int attack_cooldown = Config.attackCooldown;
     @Entry(category=GENERAL) public static boolean sun_sensitive = Config.sunSensitive;
     @Entry(category=GENERAL) public static boolean no_mercy = Config.noMercy;
     @Entry(category=GENERAL) public static boolean can_float = Config.canFloat;
-    @Entry(category=GENERAL) public static boolean jump_block = Config.jumpBlock;
     @Entry(category=GENERAL, min=0, max=128) public static double jump_acceleration = Config.jumpAcceleration;
     @Entry(category=GENERAL, min=0, max=128) public static int pickup_range = Config.pickupRange;
     @Entry(category=GENERAL) public static int pickup_priority = Config.pickUpPriority;
@@ -128,6 +130,8 @@ public class FabricConfig extends MidnightConfig {
         Config.simulate = simulate;
         Config.disseminate = disseminate;
         Config.pickUpPriority = pickup_priority;
+        Config.swimSpeed = swim_speed;
+        Config.canSwim = can_swim;
     }
 
     @Override

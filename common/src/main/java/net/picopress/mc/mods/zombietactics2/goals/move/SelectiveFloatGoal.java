@@ -14,6 +14,8 @@ public class SelectiveFloatGoal extends FloatGoal {
     private final ZombieMisc misc;
     private boolean needBreathe = false;
 
+    public boolean floating;
+
     public SelectiveFloatGoal(Mob mob) {
         super(mob);
         this.mob = mob;
@@ -21,9 +23,21 @@ public class SelectiveFloatGoal extends FloatGoal {
     }
 
     @Override
+    public void start() {
+        super.start();
+        floating = true;
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        floating = false;
+    }
+
+    @Override
     public boolean canUse() {
         LivingEntity target = this.mob.getTarget();
-        if(target == null) return super.canUse();
+        if(target == null || !target.isAlive()) return super.canUse();
         // selectively float
         // and, zombies want to breathe, but not want to be drowned
         if(misc.getInWaterTime() > calculateBreath(target)) needBreathe = true;
@@ -38,6 +52,6 @@ public class SelectiveFloatGoal extends FloatGoal {
 
     // calculate the cost of swimming
     private int calculateBreath(@NotNull LivingEntity target) {
-        return 600 - (mob.getBlockY() - target.getBlockY()) * 75;
+        return 600 - (mob.getBlockY() - target.getBlockY()) * 30;
     }
 }

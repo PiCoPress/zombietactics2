@@ -17,14 +17,12 @@ import net.minecraft.world.phys.AABB;
 
 import oshi.util.tuples.Pair;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 
 // the new improved target finding goal
 public class FindAllTargetsGoal extends TargetGoal {
-    public static final List<Pair<LivingEntity, Path>> cache_path = new ArrayList<>();
+    public static final Map<LivingEntity, Path> cache_path = new HashMap<>();
     private final List<Pair<Class<? extends LivingEntity>, Integer>> list;
     private final Plane plane;
     private List<LivingEntity> imposters;
@@ -104,19 +102,11 @@ public class FindAllTargetsGoal extends TargetGoal {
                 int idx = 0;
 
                 if(Config.findTargetType == FindTargetType.INTENSIVE) {
-                    Path path = null;
-                    boolean found = false;
-                    for(var p: cache_path) {
-                        if(p.getA() == amogus) {
-                            path = p.getB();
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(!found) {
+                    Path path = cache_path.get(amogus);
+                    if(path == null) {
                         // use cache to prevent overloading
                         path = mob.getNavigation().createPath(amogus, Config.accuracy);
-                        cache_path.add(new Pair<>(amogus, path));
+                        cache_path.put(amogus, path);
                     }
                     if(path != null) {
                         score += path.getNodeCount();

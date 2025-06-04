@@ -24,7 +24,8 @@ public class Config {
             noIdle = false,
             avoidance = true,
             simulate = true,
-            disseminate = false;
+            disseminate = false,
+            canSwim = true;
 
     public static double break_speed = 0.2,
             maxHardness = 4.5,
@@ -37,7 +38,8 @@ public class Config {
             attackRange = Math.sqrt(2.04) - 0.6, // from BoundingBox code
             persistenceChance = 0,
             jumpAcceleration = 0.3,
-            flySpeed = 0.10;
+            flySpeed = 0.10,
+            swimSpeed = 0.8;
 
     public static int attackCooldown = 20,
             maxThreshold = 384,

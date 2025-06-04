@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
 import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
@@ -19,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -34,24 +37,18 @@ public abstract class ServerLevelMixin extends Level {
     // garbage
     @Inject(method = "tick", at = @At("TAIL"))
     public void tick(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
-        // run if FindTargetType is not LINEAR
+        // run if FindTargetType is INTENSIVE
         if(Config.findTargetType == FindTargetType.INTENSIVE) {
             ++ zombie_tactics$duration;
-            if(zombie_tactics$duration > 20) {
+            if(zombie_tactics$duration > 22) {
                 zombie_tactics$duration = 0;
-                while(true) {
-                    boolean mark = true;
-                    int idx = 0;
-                    for(var cp: FindAllTargetsGoal.cache_path) {
-                        if(!cp.getA().isAlive()) {
-                            mark = false;
-                            break;
-                        }
-                        ++ idx;
+                List<LivingEntity> dead = new ArrayList<>();
+                for(LivingEntity x: FindAllTargetsGoal.cache_path.keySet()) {
+                    if(!x.isAlive()) {
+                        dead.add(x);
                     }
-                    if(mark) break;
-                    FindAllTargetsGoal.cache_path.remove(idx);
                 }
+                dead.forEach(FindAllTargetsGoal.cache_path::remove);
             }
         }
     }
