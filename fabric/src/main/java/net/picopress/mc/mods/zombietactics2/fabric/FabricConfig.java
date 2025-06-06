@@ -77,6 +77,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=DEBUG) public static boolean show_delta_movement = Config.showDeltaMovement;
     @Entry(category=DEBUG) public static boolean never_die = Config.neverDie;
     @Entry(category=DEBUG) public static boolean glow_zombie = Config.glowZombie;
+    @Entry(category=DEBUG) public static boolean water_breathing = Config.waterBreathing;
 
     // fabric fields do nothing without the update of config
     public static void updateConfig() {
@@ -130,8 +131,9 @@ public class FabricConfig extends MidnightConfig {
         Config.simulate = simulate;
         Config.disseminate = disseminate;
         Config.pickUpPriority = pickup_priority;
-        Config.swimSpeed = swim_speed;
         Config.canSwim = can_swim;
+        Config.swimSpeed = swim_speed;
+        Config.waterBreathing = water_breathing;
     }
 
     @Override

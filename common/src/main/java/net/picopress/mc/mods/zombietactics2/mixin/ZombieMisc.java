@@ -8,6 +8,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Zombie.class)
 public interface ZombieMisc {
-    @Accessor(value="inWaterTime")
+    @Accessor
     int getInWaterTime();
+
+    @Accessor(value="inWaterTime")
+    void setInWaterTime(int time);
 }

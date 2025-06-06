@@ -1,9 +1,8 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.minecraft.world.entity.LivingEntity;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
-import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.FindAllTargetsGoal;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +12,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
+import net.minecraft.world.entity.LivingEntity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

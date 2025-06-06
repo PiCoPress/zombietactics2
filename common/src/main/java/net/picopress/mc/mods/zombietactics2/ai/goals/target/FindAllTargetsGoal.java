@@ -1,4 +1,4 @@
-package net.picopress.mc.mods.zombietactics2.goals.target;
+package net.picopress.mc.mods.zombietactics2.ai.goals.target;
 
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
@@ -139,7 +139,7 @@ public class FindAllTargetsGoal extends TargetGoal {
                 // idx must match the target list unless priorities are invalid
                 score *= list.get(idx).getB();
 
-                // getting insane
+                // getting crazy
                 if(mob.hasLineOfSight(amogus)) score /= 2;
                 if(delta.getY() >= -2) score /= 2;
                 score *= Tactics.Heuristic.getEnemyPower(amogus);

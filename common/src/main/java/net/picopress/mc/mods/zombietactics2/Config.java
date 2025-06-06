@@ -39,7 +39,7 @@ public class Config {
             persistenceChance = 0,
             jumpAcceleration = 0.3,
             flySpeed = 0.10,
-            swimSpeed = 0.8;
+            swimSpeed = 1;
 
     public static int attackCooldown = 20,
             maxThreshold = 384,
@@ -56,7 +56,8 @@ public class Config {
     public static boolean showNodes = false,
             showDeltaMovement = false,
             neverDie = false,
-            glowZombie = false;
+            glowZombie = false,
+            waterBreathing = false;
 
     public static FindTargetType findTargetType = FindTargetType.SIMPLE;
 }

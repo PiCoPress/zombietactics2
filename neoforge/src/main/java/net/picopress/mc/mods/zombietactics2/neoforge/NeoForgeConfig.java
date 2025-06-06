@@ -63,6 +63,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
     private static ModConfigSpec.BooleanValue NEVER_DIE;
     private static ModConfigSpec.BooleanValue GLOW_ZOMBIE;
+    private static ModConfigSpec.BooleanValue WATER_BREATH;
 
     static final ModConfigSpec SPEC = BUILDER.getRight();
 
@@ -120,6 +121,7 @@ public class NeoForgeConfig {
         Config.pickUpPriority = PICKUP_PRIORITY.get();
         Config.canSwim = CAN_SWIM.get();
         Config.swimSpeed = SWIM_SPEED.get();
+        Config.waterBreathing = WATER_BREATH.get();
     }
 
     /*
@@ -194,6 +196,7 @@ public class NeoForgeConfig {
             SHOW_DELTA_MOVEMENT = b.define("showDeltaMovement", Config.showDeltaMovement);
             NEVER_DIE = b.define("neverDie", Config.neverDie);
             GLOW_ZOMBIE = b.define("glowZombie", Config.glowZombie);
+            WATER_BREATH = b.define("waterBreathing", Config.waterBreathing);
             b.pop();
         }
     }

@@ -1,4 +1,4 @@
-package net.picopress.mc.mods.zombietactics2.goals;
+package net.picopress.mc.mods.zombietactics2.ai.goals;
 
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
 

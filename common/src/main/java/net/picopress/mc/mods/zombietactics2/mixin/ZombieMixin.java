@@ -1,17 +1,16 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
-import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.picopress.mc.mods.zombietactics2.Config;
+import net.picopress.mc.mods.zombietactics2.ai.path.navigation.AmphibiousNavigation;
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
-import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
-import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
-import net.picopress.mc.mods.zombietactics2.goals.move.AvoidEnemyGoal;
-import net.picopress.mc.mods.zombietactics2.goals.target.DamagedByGoal;
-import net.picopress.mc.mods.zombietactics2.goals.target.GoToWantedItemGoal;
-import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
-import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
-import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.mining.DestroyBlockGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.mining.MonsterBreakBlockGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.move.AvoidEnemyGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.DamagedByGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.GoToWantedItemGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.FindAllTargetsGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.move.SelectiveFloatGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.GoalPlane;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
@@ -66,8 +65,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique private BreakDoorGoal zombietactics2$door_goal;
     @Unique private DamagedByGoal zombietactics2$damaged_by;
     @Unique private SelectiveFloatGoal zombietactics2$selective_float;
-    @Unique private GroundPathNavigation zombietactics2$ground;
-    @Unique private WaterBoundPathNavigation zombietactics2$water;
     @Unique private boolean zombietactics2$glowing = false;
     @Unique private boolean zombietactics2$flying = false;
     @Unique private boolean zombietactics2$target_alert = false;
@@ -75,8 +72,16 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
 
+    @Shadow private int inWaterTime;
+
     public ZombieMixin(EntityType<? extends Zombie> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    public boolean zombietactics2$floating() {
+        if(zombietactics2$selective_float != null) return zombietactics2$selective_float.floating;
+        return false;
     }
 
     @Override
@@ -129,11 +134,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         cir.setReturnValue(this.canReplaceCurrentItem(stack, this.getItemBySlot(this.getEquipmentSlotForItem(stack))));
     }
 
-    @Override
-    public float getWaterSlowDown() {
-        return (float)Config.swimSpeed;
-    }
-
     @Inject(method="hurt", at=@At("HEAD"), cancellable=true)
     public void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         // why are avoid_list's elements removed even if I didn't remove?
@@ -164,15 +164,15 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
     @Inject(method="<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at=@At("TAIL"))
     public void constructor(EntityType<? extends Zombie> entityType, Level level, CallbackInfo ci) {
-        zombietactics2$ground = new GroundPathNavigation(this, level);
-        zombietactics2$water = new WaterBoundPathNavigation(this, level);
-
         if(Config.canFly) { // I can fly
             this.zombietactics2$flying = true;
             this.moveControl = new FlyingMoveControl(this, 360, true);
             this.navigation = new FlyingPathNavigation(this, level);
             Objects.requireNonNull(this.getAttribute(Attributes.FLYING_SPEED)).setBaseValue(Config.flySpeed);
-        } else navigation = zombietactics2$ground;
+        } else if(Config.canSwim) { // I can swim
+            this.navigation = new AmphibiousNavigation(this, level);
+            this.navigation.setCanFloat(true);
+        }
 
         Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).setBaseValue(Config.followRange);
 
@@ -183,6 +183,9 @@ public abstract class ZombieMixin extends Monster implements Plane {
         // change default health
         Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(Config.defaultHealth);
         this.setHealth(Config.defaultHealth);
+
+        // ???!!!??!??!!?!!?
+        Objects.requireNonNull(this.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY)).setBaseValue(Config.swimSpeed);
     }
 
     @Inject(method="tick", at=@At("TAIL"))
@@ -211,15 +214,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
             zombietactics2$glowing = false;
         }
 
-        // when I'm not flying and can't swim
-        if(Config.canSwim && !zombietactics2$flying && zombietactics2$selective_float != null) {
-            // in the water but floating goal is not active
-            if(!zombietactics2$selective_float.floating && this.isInWater()) {
-                if(!(navigation instanceof WaterBoundPathNavigation)) this.navigation = zombietactics2$water;
-            } else if(!(navigation instanceof GroundPathNavigation) && (this.getTarget() == null || this.onGround())) {
-                this.navigation = zombietactics2$ground;
-            }
-        }
+        if(Config.waterBreathing) this.inWaterTime = 0; // please don't be drowned
     }
 
     // fixes that doing both mining and attacking

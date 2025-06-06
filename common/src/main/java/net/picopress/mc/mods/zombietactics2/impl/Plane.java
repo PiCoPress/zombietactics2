@@ -13,6 +13,7 @@ public interface Plane {
     boolean zombietactics2$isDigging();
     boolean zombietactics2$shouldAlert();
     boolean zombietactics2$breakingDoor();
+    boolean zombietactics2$floating();
     void zombietactics2$setThreshold(int threshold);
     void zombietactics2$setInterrupt(boolean interrupt);
     void zombietactics2$setAlert(boolean alert);

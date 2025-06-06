@@ -20,11 +20,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements Plane {
+    @Unique private Zombie zombietactics2$zombie;
+    @Unique private Plane zombietactics2$plane;
     @Unique private int zombietactics2$climbedCount = 0;
     @Unique private boolean zombietactics2$isClimbing = false;
 
@@ -32,20 +36,28 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
         super(entityType, level);
     }
 
+    @Inject(method="<init>", at=@At("TAIL"))
+    public void constructor(EntityType<? extends LivingEntity> entityType, Level level, CallbackInfo ci) {
+        if((Entity)this instanceof Zombie z) {
+            // initialize the plane and zombie
+            zombietactics2$plane = (Plane)z;
+            zombietactics2$zombie = z;
+        }
+    }
+
     @Inject(method="remove", at=@At("TAIL"))
     public void remove(RemovalReason reason, CallbackInfo ci) {
-        if((Entity)this instanceof Zombie z) {
+        if(zombietactics2$plane != null) {
             // decrement the threshold
-            Plane plane = (Plane)z;
-            if(z.isPersistenceRequired()) {
-                plane.zombietactics2$setThreshold(plane.zombietactics2$getThreshold() - 1);
+            if(zombietactics2$zombie.isPersistenceRequired()) {
+                zombietactics2$plane.zombietactics2$setThreshold(zombietactics2$plane.zombietactics2$getThreshold() - 1);
             }
             // reset the mining progress
             // procedure:
             // die -> remove(=killed)
             // despawn/transform() -> remove(=discarded)
-            if(plane.zombietactics2$isDigging())
-                this.level().destroyBlockProgress(this.getId(), plane.zombietactics2$getMiningData().bp, -1);
+            if(zombietactics2$plane.zombietactics2$isDigging())
+                this.level().destroyBlockProgress(this.getId(), zombietactics2$plane.zombietactics2$getMiningData().bp, -1);
         }
     }
 
@@ -56,9 +68,8 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
 
     @Inject(method="push", at=@At("HEAD"))
     public void push(Entity entity, CallbackInfo ci) {
-        if((Entity)this instanceof Zombie z) {
-            Plane plane = (Plane)z;
-            if(!plane.zombietactics2$breakingDoor() && Config.zombiesClimbing && entity instanceof Zombie &&
+        if(zombietactics2$plane != null) {
+            if(! zombietactics2$plane.zombietactics2$breakingDoor() && Config.zombiesClimbing && entity instanceof Zombie &&
                     (horizontalCollision || Config.hyperClimbing)) {
                 if(zombietactics2$climbedCount < Config.climbLimitTicks) {
                     final Vec3 v = getDeltaMovement();
@@ -87,10 +98,29 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
 
     @ModifyReturnValue(method="getFlyingSpeed", at=@At("RETURN"))
     public float getFlyingSpeed(float original) {
-        if((Entity)this instanceof Zombie z) {
-            AttributeInstance fly = z.getAttribute(Attributes.FLYING_SPEED);
+        if(zombietactics2$plane != null) {
+            AttributeInstance fly = zombietactics2$zombie.getAttribute(Attributes.FLYING_SPEED);
             if(fly != null) return (float)fly.getValue();
         }
         return original;
+    }
+
+    // I think it can control the falling speed in the water
+    @WrapMethod(method="getFluidFallingAdjustedMovement")
+    public Vec3 getFluidFallingAdjustedMovement(double gravity, boolean isFalling, Vec3 deltaMovement, Operation<Vec3> original) {
+        if(zombietactics2$plane != null) {
+            if(!zombietactics2$floating()) {
+                if(gravity != 0 && !this.isSprinting()) {
+                    // deltaMovement(n + 1) = deltaMovement(n) - gravity / (8 * (0.5) ^ swimSpeed + 1)
+                    double d = getDeltaMovement().y - gravity / (1 + 8 * Math.pow(0.5, Config.swimSpeed));
+                    if(isFalling && Math.abs(getDeltaMovement().y - 0.005) >= 0.003 && Math.abs(d) < 0.003) {
+                        d = - 0.003;
+                    }
+                    return new Vec3(getDeltaMovement().x, d, getDeltaMovement().z);
+                }
+                return getDeltaMovement();
+            }
+        }
+        return original.call(gravity, isFalling, deltaMovement);
     }
 }

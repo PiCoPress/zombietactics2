@@ -1,2 +1,2 @@
-- Minor bug fix
-- Stability improvements
+- Zombies can now swim
+- Improved floating water goal
