@@ -99,6 +99,11 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
+    public MiningData zombietactics2$getMiningData() {
+        return zombietactics2$miningData;
+    }
+
+    @Override
     public void zombietactics2$setAlert(boolean b) {
         zombietactics2$target_alert = b;
     }
