@@ -114,6 +114,11 @@ public abstract class ZombieMixin extends Monster implements Plane {
         zombietactics2$target_alert = b;
     }
 
+    @Override
+    public MiningData zombietactics2$getMiningData() {
+        return zombietactics2$miningData;
+    }
+
     @ModifyReturnValue(method="createAttributes", at=@At("RETURN"))
     private static AttributeSupplier.Builder createAttributes(AttributeSupplier.Builder original) {
         // if a zombie cannot fly, it is just nothing
