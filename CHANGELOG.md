@@ -1,2 +1,1 @@
-- Minor bug fix
-- Stability improvements
+- Severe crash fixed
