@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.minecraft.world.entity.vehicle.Boat;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.ai.path.navigation.AmphibiousNavigation;
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
@@ -220,6 +221,10 @@ public abstract class ZombieMixin extends Monster implements Plane {
         }
 
         if(Config.waterBreathing) this.inWaterTime = 0; // please don't be drowned
+
+        if(this.getVehicle() instanceof Boat && this.getTarget() != null) {
+            this.stopRiding();
+        }
     }
 
     // fixes that doing both mining and attacking

@@ -1,3 +1,4 @@
 - Zombies can now swim
 - Improved floating water goal
+- Can get off boats
 - Bugs fixed
