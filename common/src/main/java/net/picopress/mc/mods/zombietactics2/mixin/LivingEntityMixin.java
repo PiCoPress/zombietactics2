@@ -114,7 +114,7 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
                     // deltaMovement(n + 1) = deltaMovement(n) - gravity / (8 * (0.5) ^ swimSpeed + 1)
                     double d = getDeltaMovement().y - gravity / (1 + 8 * Math.pow(0.5, Config.swimSpeed));
                     if(isFalling && Math.abs(getDeltaMovement().y - 0.005) >= 0.003 && Math.abs(d) < 0.003) {
-                        d = - 0.003;
+                        d = -0.003;
                     }
                     return new Vec3(getDeltaMovement().x, d, getDeltaMovement().z);
                 }
