@@ -1,1 +1,1 @@
-- Severe crash fixed
+- support for the new version 1.21.6

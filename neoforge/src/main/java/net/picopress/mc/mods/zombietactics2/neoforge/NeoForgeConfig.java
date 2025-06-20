@@ -11,7 +11,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 
-@EventBusSubscriber(modid=Main.MOD_ID, bus=EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid=Main.MOD_ID)
 public class NeoForgeConfig {
     private static final Pair<MCSBuilder, ModConfigSpec> BUILDER = new ModConfigSpec.Builder().configure(MCSBuilder::new);
     private static ModConfigSpec.BooleanValue TARGET_ANIMALS;

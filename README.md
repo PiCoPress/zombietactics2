@@ -2,7 +2,7 @@
 ## Information
 - A fork mod of Zombie Tactics, originally created by n643064
 ## Requirements
-- Minecraft 1.21.5
+- Minecraft 1.21.6
 - Architectury API
 ### Fabric also needs
 - MidnightLib

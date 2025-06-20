@@ -21,14 +21,14 @@ side = "BOTH"
 [[dependencies.zombietactics2]]
 modId = "minecraft"
 type = "required"
-versionRange = "1.21.5"
+versionRange = "1.21.6"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.zombietactics2]]
 modId = "architectury"
 type = "required"
-versionRange = "[16,)"
+versionRange = "[17,)"
 ordering = "AFTER"
 side = "BOTH"
 
