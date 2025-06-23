@@ -54,6 +54,8 @@
     "zombietactics2.midnightconfig.spawn_under_sun.tooltip": "좀비가 낮에도 스폰됨",
     "zombietactics2.midnightconfig.no_despawn": "디스폰 무시",
     "zombietactics2.midnightconfig.no_despawn.tooltip": "플레이어가 멀어져도 좀비가 디스폰되지 않을 수 있음",
+    "zombietactics2.midnightconfig.convert_zombie_villager": "익사하는 좀비 주민",
+    "zombietactics2.midnightconfig.convert_zombie_villager.tooltip": "좀비 주민이 물 속에서 익사자로 변합니다",
 
     "zombietactics2.midnightconfig.category.Attributes": "속성",
     "zombietactics2.midnightconfig.default_health": "기본 체력",
@@ -105,7 +107,7 @@
     "zombietactics2.midnightconfig.fly_speed": "비행 속도",
     "zombietactics2.midnightconfig.fly_speed.tooltip": "좀비의 비행 속도",
     "zombietactics2.midnightconfig.can_swim": "수영 가능",
-    "zombietactics2.midnightconfig.can_swim.tooltip": "좀비가 수영합니다",
+    "zombietactics2.midnightconfig.can_swim.tooltip": "좀비가 수영합니다. 물에 뜰 수 있을 때 효과적입니다",
     "zombietactics2.midnightconfig.swim_speed": "수영 속도",
     "zombietactics2.midnightconfig.swim_speed.tooltip": "좀비의 수영 속도",
 

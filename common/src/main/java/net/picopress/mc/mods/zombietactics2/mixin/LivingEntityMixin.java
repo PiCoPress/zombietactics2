@@ -112,13 +112,13 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
             if(!zombietactics2$floating()) {
                 if(gravity != 0 && !this.isSprinting()) {
                     // deltaMovement(n + 1) = deltaMovement(n) - gravity / (8 * (0.5) ^ swimSpeed + 1)
-                    double d = getDeltaMovement().y - gravity / (1 + 8 * Math.pow(0.5, Config.swimSpeed));
-                    if(isFalling && Math.abs(getDeltaMovement().y - 0.005) >= 0.003 && Math.abs(d) < 0.003) {
+                    double d = deltaMovement.y - gravity / (1 + 8 * Math.pow(0.5, Config.swimSpeed));
+                    if(isFalling && Math.abs(deltaMovement.y - 0.005) >= 0.003 && Math.abs(d) < 0.003) {
                         d = -0.003;
                     }
-                    return new Vec3(getDeltaMovement().x, d, getDeltaMovement().z);
+                    return new Vec3(deltaMovement.x, d, deltaMovement.z);
                 }
-                return getDeltaMovement();
+                return deltaMovement;
             }
         }
         return original.call(gravity, isFalling, deltaMovement);

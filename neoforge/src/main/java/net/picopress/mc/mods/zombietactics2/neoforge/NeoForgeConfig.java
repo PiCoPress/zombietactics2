@@ -11,7 +11,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 
-@EventBusSubscriber(modid=Main.MOD_ID, bus=EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid=Main.MOD_ID)
 public class NeoForgeConfig {
     private static final Pair<MCSBuilder, ModConfigSpec> BUILDER = new ModConfigSpec.Builder().configure(MCSBuilder::new);
     private static ModConfigSpec.BooleanValue TARGET_ANIMALS;
@@ -58,6 +58,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.IntValue PICKUP_PRIORITY;
     private static ModConfigSpec.BooleanValue CAN_SWIM;
     private static ModConfigSpec.DoubleValue SWIM_SPEED;
+    private static ModConfigSpec.BooleanValue CONVERT_ZOMBIE_VILLAGER;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
@@ -122,6 +123,7 @@ public class NeoForgeConfig {
         Config.canSwim = CAN_SWIM.get();
         Config.swimSpeed = SWIM_SPEED.get();
         Config.waterBreathing = WATER_BREATH.get();
+        Config.convertZombieVillager = CONVERT_ZOMBIE_VILLAGER.get();
     }
 
     /*
@@ -154,6 +156,7 @@ public class NeoForgeConfig {
             MAX_THRESHOLD = b.translation(MOD_CFG + "max_threshold").defineInRange("maxThreshold", Config.maxThreshold, 0, Integer.MAX_VALUE);
             SPAWN_UNDER_SUN = b.translation(MOD_CFG + "spawn_under_sun").define("spawnUnderSun", Config.spawnUnderSun);
             NO_DESPAWN = b.translation(MOD_CFG + "no_despawn").define("noDespawn", Config.noDespawn);
+            CONVERT_ZOMBIE_VILLAGER = b.translation(MOD_CFG + "convert_zombie_villager").define("convertZombieVillager", Config.convertZombieVillager);
             b.pop();
             b.push("Attributes");
             DEFAULT_HEALTH = b.translation(MOD_CFG + "default_health").defineInRange("defaultHealth", Config.defaultHealth, 0, 1024);

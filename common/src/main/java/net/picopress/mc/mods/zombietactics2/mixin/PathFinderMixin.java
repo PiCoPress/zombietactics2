@@ -93,7 +93,7 @@ public abstract class PathFinderMixin {
                     float f = node2.distanceToSqr(node3);
                     float g = node2.g + f + node3.costMalus;
                     node3.walkedDistance = node2.walkedDistance + f;
-                    if(node3.walkedDistance < maxRange && (!node3.inOpenSet() || g < node3.g)) {
+                    if(node3.walkedDistance < range2 && (!node3.inOpenSet() || g < node3.g)) {
                         node3.cameFrom = node2;
                         node3.g = g;
                         node3.h = this.getBestH(node3, set);

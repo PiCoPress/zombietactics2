@@ -1,5 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import net.picopress.mc.mods.zombietactics2.Config;
+
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.monster.ZombieVillager;
@@ -20,6 +22,6 @@ public abstract class ZombieVillagerMixin extends Zombie {
     // this is to make the zombie villager convert in water
     @ModifyReturnValue(method="convertsInWater", at=@At("RETURN"))
     public boolean convertsInWater(boolean original) {
-        return true;
+        return Config.convertZombieVillager;
     }
 }

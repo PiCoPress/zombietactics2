@@ -54,10 +54,8 @@
     "zombietactics2.midnightconfig.spawn_under_sun.tooltip": "Spawn under the sun",
     "zombietactics2.midnightconfig.no_despawn": "Do not despawn",
     "zombietactics2.midnightconfig.no_despawn.tooltip": "Zombies may not be despawned when player is far away",
-    "zombietactics2.midnightconfig.avoidance": "Avoidance",
-    "zombietactics2.midnightconfig.avoidance.tooltip": "Zombies avoid the target if its health is lower than the target's damage",
-    "zombietactics2.midnightconfig.simulate": "Simulate",
-    "zombietactics2.midnightconfig.simulate.tooltip": "Zombies simulate the target's attack",
+    "zombietactics2.midnightconfig.convert_zombie_villager": "Drowned zombie villager",
+    "zombietactics2.midnightconfig.convert_zombie_villager.tooltip": "Zombie villagers will be converted to drowned in water",
 
     "zombietactics2.midnightconfig.category.Attributes": "Attributes",
     "zombietactics2.midnightconfig.default_health": "Default health",
@@ -86,6 +84,10 @@
     "zombietactics2.midnightconfig.attack_range.tooltip": "The range of attack",
     "zombietactics2.midnightconfig.attack_invisible": "Attack invisible entities",
     "zombietactics2.midnightconfig.attack_invisible.tooltip": "Follows only targets that the zombie has seen",
+    "zombietactics2.midnightconfig.avoidance": "Avoidance",
+    "zombietactics2.midnightconfig.avoidance.tooltip": "Zombies avoid the target if its health is lower than the target's damage",
+    "zombietactics2.midnightconfig.simulate": "Simulate",
+    "zombietactics2.midnightconfig.simulate.tooltip": "Zombies simulate the target's attack",
     "zombietactics2.midnightconfig.disseminate": "Disseminate",
     "zombietactics2.midnightconfig.disseminate.tooltip": "Zombies can spread itself target to other zombies",
 
@@ -105,7 +107,7 @@
     "zombietactics2.midnightconfig.fly_speed": "Flying speed",
     "zombietactics2.midnightconfig.fly_speed.tooltip": "Flying speed of zombies",
     "zombietactics2.midnightconfig.can_swim": "Can swim",
-    "zombietactics2.midnightconfig.can_swim.tooltip": "Zombies can swim in water",
+    "zombietactics2.midnightconfig.can_swim.tooltip": "Zombies can swim in water. It's effective when they can float",
     "zombietactics2.midnightconfig.swim_speed": "Swimming speed",
     "zombietactics2.midnightconfig.swim_speed.tooltip": "Swimming speed of zombies",
 
