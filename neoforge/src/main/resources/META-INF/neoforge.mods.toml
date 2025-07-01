@@ -21,7 +21,7 @@ side = "BOTH"
 [[dependencies.zombietactics2]]
 modId = "minecraft"
 type = "required"
-versionRange = "1.21.6"
+versionRange = "[1.21.6,)"
 ordering = "NONE"
 side = "BOTH"
 
