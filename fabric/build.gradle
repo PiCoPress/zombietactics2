@@ -2,7 +2,7 @@ import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 plugins {
     id 'com.gradleup.shadow'
-    id 'dev.architectury.loom' version "$fabric_loom_version"
+    id 'dev.architectury.loom' version "$architectury_loom_version"
     id "com.modrinth.minotaur" version "2.+"
     id 'net.darkhax.curseforgegradle' version "$curseforge_version"
 }
