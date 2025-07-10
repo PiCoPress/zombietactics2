@@ -1,4 +1,4 @@
-package net.picopress.mc.mods.zombietactics2.goals.target;
+package net.picopress.mc.mods.zombietactics2.ai.goals.target;
 
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 

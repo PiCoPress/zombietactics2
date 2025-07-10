@@ -1,9 +1,9 @@
-package net.picopress.mc.mods.zombietactics2.goals.mining;
+package net.picopress.mc.mods.zombietactics2.ai.goals.mining;
 
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
-import net.picopress.mc.mods.zombietactics2.goals.BreakBlockGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.BreakBlockGoal;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;

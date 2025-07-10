@@ -1,4 +1,4 @@
-package net.picopress.mc.mods.zombietactics2.goals.move;
+package net.picopress.mc.mods.zombietactics2.ai.goals.move;
 
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.*;
 import net.picopress.mc.mods.zombietactics2.Config;

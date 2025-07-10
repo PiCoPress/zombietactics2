@@ -95,14 +95,14 @@ public abstract class MobMixin extends LivingEntity implements Plane {
 
     @ModifyExpressionValue(method="getMaxSpawnClusterSize", at=@At(value="CONSTANT", args="intValue=4"))
     public int cluster(int original) {
-        // increase zombie spawn size to 6
+        // increase zombie spawn size to 32
         return zombietactics2$self instanceof Zombie? 32: original;
     }
 
     @ModifyReturnValue(method="removeWhenFarAway", at=@At("RETURN"))
     public boolean removeWhenFarAway(boolean original) {
         if(zombietactics2$self instanceof Zombie) {
-            return Config.noDespawn;
+            return !Config.noDespawn;
         }
         return original;
     }

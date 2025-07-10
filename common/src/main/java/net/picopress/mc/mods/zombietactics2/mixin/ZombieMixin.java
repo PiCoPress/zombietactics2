@@ -2,15 +2,16 @@ package net.picopress.mc.mods.zombietactics2.mixin;
 
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.Config;
+import net.picopress.mc.mods.zombietactics2.ai.path.navigation.AmphibiousNavigation;
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
-import net.picopress.mc.mods.zombietactics2.goals.mining.DestroyBlockGoal;
-import net.picopress.mc.mods.zombietactics2.goals.mining.MonsterBreakBlockGoal;
-import net.picopress.mc.mods.zombietactics2.goals.move.AvoidEnemyGoal;
-import net.picopress.mc.mods.zombietactics2.goals.target.DamagedByGoal;
-import net.picopress.mc.mods.zombietactics2.goals.target.GoToWantedItemGoal;
-import net.picopress.mc.mods.zombietactics2.goals.target.FindAllTargetsGoal;
-import net.picopress.mc.mods.zombietactics2.goals.move.SelectiveFloatGoal;
-import net.picopress.mc.mods.zombietactics2.goals.move.ZombieGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.mining.DestroyBlockGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.mining.MonsterBreakBlockGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.move.AvoidEnemyGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.DamagedByGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.GoToWantedItemGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.target.FindAllTargetsGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.move.SelectiveFloatGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.move.ZombieGoal;
 import net.picopress.mc.mods.zombietactics2.impl.GoalPlane;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
@@ -24,6 +25,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -64,6 +66,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique @Nullable private MiningData zombietactics2$miningData;
     @Unique private BreakDoorGoal zombietactics2$door_goal;
     @Unique private DamagedByGoal zombietactics2$damaged_by;
+    @Unique private SelectiveFloatGoal zombietactics2$selective_float;
     @Unique private boolean zombietactics2$glowing = false;
     @Unique private boolean zombietactics2$flying = false;
     @Unique private boolean zombietactics2$target_alert = false;
@@ -71,8 +74,16 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
 
+    @Shadow private int inWaterTime;
+
     public ZombieMixin(EntityType<? extends Zombie> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    public boolean zombietactics2$floating() {
+        if(zombietactics2$selective_float != null) return zombietactics2$selective_float.floating;
+        return false;
     }
 
     @Override
@@ -101,13 +112,13 @@ public abstract class ZombieMixin extends Monster implements Plane {
     }
 
     @Override
-    public MiningData zombietactics2$getMiningData() {
-        return zombietactics2$miningData;
+    public void zombietactics2$setAlert(boolean b) {
+        zombietactics2$target_alert = b;
     }
 
     @Override
-    public void zombietactics2$setAlert(boolean b) {
-        zombietactics2$target_alert = b;
+    public MiningData zombietactics2$getMiningData() {
+        return zombietactics2$miningData;
     }
 
     @ModifyReturnValue(method="createAttributes", at=@At("RETURN"))
@@ -162,6 +173,9 @@ public abstract class ZombieMixin extends Monster implements Plane {
             this.moveControl = new FlyingMoveControl(this, 360, true);
             this.navigation = new FlyingPathNavigation(this, level);
             Objects.requireNonNull(this.getAttribute(Attributes.FLYING_SPEED)).setBaseValue(Config.flySpeed);
+        } else if(Config.canSwim) { // I can swim
+            this.navigation = new AmphibiousNavigation(this, level);
+            this.navigation.setCanFloat(true);
         }
 
         Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).setBaseValue(Config.followRange);
@@ -173,6 +187,9 @@ public abstract class ZombieMixin extends Monster implements Plane {
         // change default health
         Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(Config.defaultHealth);
         this.setHealth(Config.defaultHealth);
+
+        // ???!!!??!??!!?!!?
+        Objects.requireNonNull(this.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY)).setBaseValue(Config.swimSpeed);
     }
 
     @Inject(method="tick", at=@At("TAIL"))
@@ -199,6 +216,12 @@ public abstract class ZombieMixin extends Monster implements Plane {
         } else if(!Config.glowZombie && zombietactics2$glowing) {
             this.removeEffect(MobEffects.GLOWING);
             zombietactics2$glowing = false;
+        }
+
+        if(Config.waterBreathing) this.inWaterTime = 0; // please don't be drowned
+
+        if(this.getVehicle() instanceof Boat && this.getTarget() != null) {
+            this.stopRiding();
         }
     }
 
@@ -230,10 +253,12 @@ public abstract class ZombieMixin extends Monster implements Plane {
         // inserting a new instance of Pair in HashSet is not a good idea
         if(Config.targetAnimals && !zombietactics2$target_class.contains(Animal.class)) {
             zombietactics2$target_priority.add(new Pair<>(Animal.class, 5));
+            zombietactics2$target_priority.add(new Pair<>(AmbientCreature.class, 2));
             zombietactics2$target_class.add(Animal.class);
+            zombietactics2$target_class.add(AmbientCreature.class);
         }
         if(Config.mineBlocks) this.goalSelector.addGoal(1, new MonsterBreakBlockGoal<>(this, zombietactics2$miningData));
-        if(Config.canFloat) this.goalSelector.addGoal(5, new SelectiveFloatGoal(this));
+        if(Config.canFloat) this.goalSelector.addGoal(5, zombietactics2$selective_float = new SelectiveFloatGoal(this));
         if(Config.canFly) this.goalSelector.addGoal(10, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
         if(Config.avoidance) this.goalSelector.addGoal(0, new AvoidEnemyGoal<>(this, Mob.class, 8, 1, Config.aggressiveSpeed));
@@ -252,7 +277,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
         zombietactics2$target_priority.add(new Pair<>(AbstractVillager.class, 3));
         zombietactics2$target_priority.add(new Pair<>(IronGolem.class, 3));
         zombietactics2$target_priority.add(new Pair<>(Turtle.class, 3));
-
         zombietactics2$target_class.add(Player.class);
         zombietactics2$target_class.add(AbstractVillager.class);
         zombietactics2$target_class.add(IronGolem.class);

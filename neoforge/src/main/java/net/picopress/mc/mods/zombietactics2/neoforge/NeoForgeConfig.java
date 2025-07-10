@@ -56,11 +56,15 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue SIMULATE;
     private static ModConfigSpec.BooleanValue DISSEMINATE;
     private static ModConfigSpec.IntValue PICKUP_PRIORITY;
+    private static ModConfigSpec.BooleanValue CAN_SWIM;
+    private static ModConfigSpec.DoubleValue SWIM_SPEED;
+    private static ModConfigSpec.BooleanValue CONVERT_ZOMBIE_VILLAGER;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
     private static ModConfigSpec.BooleanValue NEVER_DIE;
     private static ModConfigSpec.BooleanValue GLOW_ZOMBIE;
+    private static ModConfigSpec.BooleanValue WATER_BREATH;
 
     static final ModConfigSpec SPEC = BUILDER.getRight();
 
@@ -116,6 +120,10 @@ public class NeoForgeConfig {
         Config.simulate = SIMULATE.get();
         Config.disseminate = DISSEMINATE.get();
         Config.pickUpPriority = PICKUP_PRIORITY.get();
+        Config.canSwim = CAN_SWIM.get();
+        Config.swimSpeed = SWIM_SPEED.get();
+        Config.waterBreathing = WATER_BREATH.get();
+        Config.convertZombieVillager = CONVERT_ZOMBIE_VILLAGER.get();
     }
 
     /*
@@ -148,6 +156,7 @@ public class NeoForgeConfig {
             MAX_THRESHOLD = b.translation(MOD_CFG + "max_threshold").defineInRange("maxThreshold", Config.maxThreshold, 0, Integer.MAX_VALUE);
             SPAWN_UNDER_SUN = b.translation(MOD_CFG + "spawn_under_sun").define("spawnUnderSun", Config.spawnUnderSun);
             NO_DESPAWN = b.translation(MOD_CFG + "no_despawn").define("noDespawn", Config.noDespawn);
+            CONVERT_ZOMBIE_VILLAGER = b.translation(MOD_CFG + "convert_zombie_villager").define("convertZombieVillager", Config.convertZombieVillager);
             b.pop();
             b.push("Attributes");
             DEFAULT_HEALTH = b.translation(MOD_CFG + "default_health").defineInRange("defaultHealth", Config.defaultHealth, 0, 1024);
@@ -167,19 +176,21 @@ public class NeoForgeConfig {
             PATH_ACCURACY = b.translation(MOD_CFG + "accuracy").defineInRange("pathAccuracy", Config.accuracy, 0, 95);
             NO_IDLE = b.translation(MOD_CFG + "no_idle").define("noIdle", Config.noIdle);
             b.pop();
-            b.push("Flying");
+            b.push("Moving");
+            AGGRESSIVE_SPEED = b.translation(MOD_CFG + "aggressive_speed").defineInRange("aggressiveSpeed", Config.aggressiveSpeed, 0.01, 128);
+            JUMP_BLOCK = b.translation(MOD_CFG + "jump_block").define("jumpBlock", Config.jumpBlock);
             CAN_FLY = b.translation(MOD_CFG + "can_fly").define("canFly", Config.canFly);
             FLY_SPEED = b.translation(MOD_CFG + "fly_speed").defineInRange("flySpeed", Config.flySpeed, 0, 32);
+            CAN_SWIM = b.translation(MOD_CFG + "can_swim").define("canSwim", Config.canSwim);
+            SWIM_SPEED = b.translation(MOD_CFG + "swim_speed").defineInRange("swimSpeed", Config.swimSpeed, 0, 128);
             b.pop();
             b.push("General");
             HEAL_AMOUNT = b.translation(MOD_CFG + "heal_amount").defineInRange("healAmount", Config.healAmount, 0, 1024);
             ATTACK_COOLDOWN = b.translation(MOD_CFG + "attack_cooldown").defineInRange("attackCooldown", Config.attackCooldown, 1, 1000);
-            AGGRESSIVE_SPEED = b.translation(MOD_CFG + "aggressive_speed").defineInRange("aggressiveSpeed", Config.aggressiveSpeed, 0.01, 128);
             SUN_SENSITIVE = b.translation(MOD_CFG + "sun_sensitive").define("sunSensitive", Config.sunSensitive);
             NO_MERCY = b.translation(MOD_CFG + "no_mercy").define("noMercy", Config.noMercy);
             CAN_FLOAT = b.translation(MOD_CFG + "can_float").define("canFloat", Config.canFloat);
             JUMP_ACCELERATION = b.translation(MOD_CFG + "jump_acceleration").defineInRange("jumpAcceleration", Config.jumpAcceleration, 0, 128);
-            JUMP_BLOCK = b.translation(MOD_CFG + "jump_block").define("jumpBlock", Config.jumpBlock);
             PICKUP_RANGE = b.translation(MOD_CFG + "pickup_range").defineInRange("pickupRange", Config.pickupRange, 0, 128);
             PICKUP_PRIORITY = b.translation(MOD_CFG + "pickup_priority").defineInRange("pickUpPriority", Config.pickUpPriority, -100, 100);
             b.pop();
@@ -188,6 +199,7 @@ public class NeoForgeConfig {
             SHOW_DELTA_MOVEMENT = b.define("showDeltaMovement", Config.showDeltaMovement);
             NEVER_DIE = b.define("neverDie", Config.neverDie);
             GLOW_ZOMBIE = b.define("glowZombie", Config.glowZombie);
+            WATER_BREATH = b.define("waterBreathing", Config.waterBreathing);
             b.pop();
         }
     }
