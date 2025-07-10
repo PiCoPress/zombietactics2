@@ -24,7 +24,9 @@ public class Config {
             noIdle = false,
             avoidance = true,
             simulate = true,
-            disseminate = false;
+            disseminate = false,
+            canSwim = true,
+            convertZombieVillager = false;
 
     public static double break_speed = 0.2,
             maxHardness = 4.5,
@@ -37,7 +39,8 @@ public class Config {
             attackRange = Math.sqrt(2.04) - 0.6, // from BoundingBox code
             persistenceChance = 0,
             jumpAcceleration = 0.3,
-            flySpeed = 0.10;
+            flySpeed = 0.10,
+            swimSpeed = 1;
 
     public static int attackCooldown = 20,
             maxThreshold = 384,
@@ -54,7 +57,8 @@ public class Config {
     public static boolean showNodes = false,
             showDeltaMovement = false,
             neverDie = false,
-            glowZombie = false;
+            glowZombie = false,
+            waterBreathing = false;
 
     public static FindTargetType findTargetType = FindTargetType.SIMPLE;
 }

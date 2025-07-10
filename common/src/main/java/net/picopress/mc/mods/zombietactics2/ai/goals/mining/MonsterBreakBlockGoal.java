@@ -1,9 +1,9 @@
-package net.picopress.mc.mods.zombietactics2.goals.mining;
+package net.picopress.mc.mods.zombietactics2.ai.goals.mining;
 
 import static net.picopress.mc.mods.zombietactics2.attachments.MiningRoutines.*;
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.getRelativeRotation;
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
-import net.picopress.mc.mods.zombietactics2.goals.BreakBlockGoal;
+import net.picopress.mc.mods.zombietactics2.ai.goals.BreakBlockGoal;
 import net.picopress.mc.mods.zombietactics2.Config;
 
 import net.minecraft.tags.BlockTags;

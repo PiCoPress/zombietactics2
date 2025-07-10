@@ -1,1 +1,1 @@
-- Severe crash fixed
+# Zombie Tactics 2.2 Changelog
