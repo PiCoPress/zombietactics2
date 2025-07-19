@@ -1,6 +1,5 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import net.minecraft.world.entity.vehicle.Boat;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.ai.path.navigation.AmphibiousNavigation;
 import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
@@ -37,6 +36,7 @@ import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
