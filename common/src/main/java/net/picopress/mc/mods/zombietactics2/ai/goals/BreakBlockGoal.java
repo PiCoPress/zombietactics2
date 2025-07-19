@@ -5,9 +5,12 @@ import net.picopress.mc.mods.zombietactics2.attachments.MiningData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.EnumSet;
 
@@ -16,6 +19,7 @@ import java.util.EnumSet;
 public abstract class BreakBlockGoal extends Goal {
     private final double hardnessMultiplier;
     private final double break_speed;
+    private int miningTicks;
     private final boolean dropBlock;
 
     protected final Mob mob;
@@ -61,6 +65,7 @@ public abstract class BreakBlockGoal extends Goal {
         progress = 0;
         hardness = getBlockHardness(mine.bp) * hardnessMultiplier;
         mine.doMining = true;
+        miningTicks = 0;
     }
 
     @Override
@@ -91,6 +96,15 @@ public abstract class BreakBlockGoal extends Goal {
             mob.getLookControl().setLookAt(mine.bp_vec3);
             progress += break_speed;
             mob.swing(InteractionHand.MAIN_HAND);
+
+            ++ miningTicks;
+            if(mob.level() instanceof ServerLevel server) {
+                if(miningTicks % 4 == 0) {
+                    SoundType sound = server.getBlockState(mine.bp).getSoundType();
+                    float pitch = 0.6F + server.random.nextFloat() * 0.4F;
+                    server.playSound(null, mine.bp, sound.getHitSound(), SoundSource.BLOCKS, 1, pitch);
+                }
+            }
         }
     }
 
