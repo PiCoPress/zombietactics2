@@ -1,2 +1,1 @@
-- Added block breaking sound
-- Translation bug for NeoForge fixed
+- Fixed server crash for NeoForge
