@@ -37,6 +37,7 @@ import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -222,8 +223,8 @@ public abstract class ZombieMixin extends Monster implements Plane {
 
         if(Config.waterBreathing) this.inWaterTime = 0; // please don't be drowned
 
-        if(this.getVehicle() instanceof Boat && this.getTarget() != null) {
-            this.stopRiding();
+        if((this.getVehicle() instanceof Boat || this.getVehicle() instanceof Minecart) && this.getTarget() != null) {
+            if(Config.allowDismount) this.stopRiding();
         }
     }
 

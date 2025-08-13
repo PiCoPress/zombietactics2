@@ -59,6 +59,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue CAN_SWIM;
     private static ModConfigSpec.DoubleValue SWIM_SPEED;
     private static ModConfigSpec.BooleanValue CONVERT_ZOMBIE_VILLAGER;
+    private static ModConfigSpec.BooleanValue ALLOW_DISMOUNT;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
@@ -124,6 +125,7 @@ public class NeoForgeConfig {
         Config.swimSpeed = SWIM_SPEED.get();
         Config.waterBreathing = WATER_BREATH.get();
         Config.convertZombieVillager = CONVERT_ZOMBIE_VILLAGER.get();
+        Config.allowDismount = ALLOW_DISMOUNT.get();
     }
 
     /*
@@ -183,6 +185,7 @@ public class NeoForgeConfig {
             FLY_SPEED = b.translation(MOD_CFG + "fly_speed").defineInRange("flySpeed", Config.flySpeed, 0, 32);
             CAN_SWIM = b.translation(MOD_CFG + "can_swim").define("canSwim", Config.canSwim);
             SWIM_SPEED = b.translation(MOD_CFG + "swim_speed").defineInRange("swimSpeed", Config.swimSpeed, 0, 128);
+            ALLOW_DISMOUNT = b.translation(MOD_CFG + "allow_dismount").define("allowDismount", Config.allowDismount);
             b.pop();
             b.push("General");
             HEAL_AMOUNT = b.translation(MOD_CFG + "heal_amount").defineInRange("healAmount", Config.healAmount, 0, 1024);

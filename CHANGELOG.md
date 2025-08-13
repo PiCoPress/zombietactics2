@@ -1,1 +1,1 @@
-- Merge the branch 1.21.1 into dev
+- Add an option to enable/disable dismounting of vehicles like boats and minecarts

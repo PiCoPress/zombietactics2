@@ -110,6 +110,8 @@
     "zombietactics2.midnightconfig.can_swim.tooltip": "좀비가 수영합니다. 물에 뜰 수 있을 때 효과적입니다",
     "zombietactics2.midnightconfig.swim_speed": "수영 속도",
     "zombietactics2.midnightconfig.swim_speed.tooltip": "좀비의 수영 속도",
+    "zombietactics2.midnightconfig.allow_dismount": "탈것에서 내리기 허용",
+    "zombietactics2.midnightconfig.allow_dismount.tooltip": "좀비가 보트와 마인카트를 내릴 수 있는지 여부",
 
     "zombietactics2.midnightconfig.category.General": "일반",
     "zombietactics2.midnightconfig.heal_amount": "공격시 체력 회복량",

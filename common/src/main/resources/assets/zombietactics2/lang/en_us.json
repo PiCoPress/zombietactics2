@@ -110,6 +110,8 @@
     "zombietactics2.midnightconfig.can_swim.tooltip": "Zombies can swim in water. It's effective when they can float",
     "zombietactics2.midnightconfig.swim_speed": "Swimming speed",
     "zombietactics2.midnightconfig.swim_speed.tooltip": "Swimming speed of zombies",
+    "zombietactics2.midnightconfig.allow_dismount": "Dismount vehicles",
+    "zombietactics2.midnightconfig.allow_dismount.tooltip": "Allow zombies to get off vehicles",
 
     "zombietactics2.midnightconfig.category.General": "General",
     "zombietactics2.midnightconfig.heal_amount": "Heal amount when attacking",

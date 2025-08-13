@@ -62,6 +62,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=MOVING, min=0, max=32) public static double fly_speed = Config.flySpeed;
     @Entry(category=MOVING) public static boolean can_swim = Config.canSwim;
     @Entry(category=MOVING, min=0, max=128) public static double swim_speed = Config.swimSpeed;
+    @Entry(category=MOVING) public static boolean allow_dismount = Config.allowDismount;
 
     @Entry(category=GENERAL, min=0, max=1024) public static double heal_amount = Config.healAmount;
     @Entry(category=GENERAL, min=1, max=1000) public static int attack_cooldown = Config.attackCooldown;
@@ -136,6 +137,7 @@ public class FabricConfig extends MidnightConfig {
         Config.swimSpeed = swim_speed;
         Config.waterBreathing = water_breathing;
         Config.convertZombieVillager = convert_zombie_villager;
+        Config.allowDismount = allow_dismount;
     }
 
     @Override

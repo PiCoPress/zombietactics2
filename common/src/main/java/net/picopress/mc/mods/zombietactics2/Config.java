@@ -58,7 +58,8 @@ public class Config {
             showDeltaMovement = false,
             neverDie = false,
             glowZombie = false,
-            waterBreathing = false;
+            waterBreathing = false,
+            allowDismount = true;
 
     public static FindTargetType findTargetType = FindTargetType.SIMPLE;
 }
