@@ -1,6 +1,7 @@
 package net.picopress.mc.mods.zombietactics2.ai.goals.move;
 
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.*;
+
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class ZombieGoal extends ZombieAttackGoal {
     final Zombie mob;
     final Plane plane;
+    final ServerLevel server;
 
     private Vec3 delta;
     private int cooldown = 0;
@@ -32,6 +35,10 @@ public class ZombieGoal extends ZombieAttackGoal {
         this.setFlags(EnumSet.of(Flag.MOVE));
         mob = zombie;
         plane = (Plane)zombie;
+
+        MinecraftServer tmp = mob.level().getServer();
+        if(tmp != null) server = tmp.getLevel(mob.level().dimension());
+        else server = null;
     }
 
     @Override
@@ -47,15 +54,12 @@ public class ZombieGoal extends ZombieAttackGoal {
         // for debugging
         if(Config.showNodes) {
             Path path = this.mob.getNavigation().getPath();
-            if(path != null && mob.getServer() != null) {
-                ServerLevel server = mob.getServer().getLevel(mob.level().dimension());
-                if(server != null)
-                    for(int i = 0; i < path.getNodeCount(); ++ i) {
-                        BlockPos pos = path.getNode(i).asBlockPos();
-                        // add particles at the node
-                        server.sendParticles(ParticleTypes.FLAME, pos.getX(), pos.getY(), pos.getZ(),
-                                0, 0, 0, 0.1, 0.1);
-                }
+            if(server != null && path != null)
+                for(int i = 0; i < path.getNodeCount(); ++ i) {
+                    BlockPos pos = path.getNode(i).asBlockPos();
+                    // add particles at the node
+                    server.sendParticles(ParticleTypes.FLAME, pos.getX(), pos.getY(), pos.getZ(),
+                            0, 0, 0, 0.1, 0.1);
             }
         }
 

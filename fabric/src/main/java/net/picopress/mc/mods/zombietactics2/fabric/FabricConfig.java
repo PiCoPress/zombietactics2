@@ -139,8 +139,8 @@ public class FabricConfig extends MidnightConfig {
     }
 
     @Override
-    public void writeChanges(String mod_id) {
-        super.writeChanges(mod_id);
+    public void writeChanges() {
+        super.writeChanges();
         updateConfig();
     }
 }

@@ -200,7 +200,7 @@ public class Tactics {
     }
 
     public static ServerLevel getSl(Mob mob) {
-        var stuff = mob.getServer();
+        var stuff = mob.level().getServer();
         return stuff != null? stuff.getLevel(mob.level().dimension()): null; // I'm not in the server
     }
 
