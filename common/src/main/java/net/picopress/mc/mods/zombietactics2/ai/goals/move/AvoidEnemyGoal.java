@@ -3,7 +3,7 @@ package net.picopress.mc.mods.zombietactics2.ai.goals.move;
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.Heuristic.needAvoid;
 import static net.picopress.mc.mods.zombietactics2.util.Tactics.Heuristic.simulate;
 
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 

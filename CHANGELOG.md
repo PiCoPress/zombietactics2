@@ -1,3 +1,3 @@
-- Supporting for the new minecraft version 1.21.10
+- Supporting for the new minecraft version 1.21.11
 # Issue
-- Neoforge integrated server(usually called single player) doesn't work (will fix)
+- Configuration menu may not be showing for NeoForge.

@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.LivingEntity;
@@ -127,7 +127,7 @@ public class Tactics {
             List<ItemAttributeModifiers.Entry> list = component.modifiers();
             ItemAttributeModifiers.Entry entry = null;
             for(var attr: list) {
-                if(attr.attribute().is(ResourceLocation.fromNamespaceAndPath(namespace, path))) {
+                if(attr.attribute().is(Identifier.fromNamespaceAndPath(namespace, path))) {
                     entry = attr;
                     break;
                 }
@@ -237,7 +237,7 @@ public class Tactics {
                 for(int y = y1; y <= y2; ++ y) {
                     for(int z = z1; z <= z2; ++ z) {
                         point.set(x, y, z);
-                        if(level.getBlockState(point).is(block) || block == null) {
+                        if(block == null || level.getBlockState(point).is(block)) {
                             list.add(point.immutable());
                         }
                     }

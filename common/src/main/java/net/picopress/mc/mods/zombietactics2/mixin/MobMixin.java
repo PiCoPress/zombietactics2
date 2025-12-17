@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
@@ -8,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
@@ -116,5 +117,14 @@ public abstract class MobMixin extends LivingEntity implements Plane {
             args.set(1, Config.attackRange);
             args.set(2, Config.attackRange);
         }
+    }
+
+    // moved from ZombieMixin.SunSensitive
+    @WrapWithCondition(method="aiStep", at=@At(value="INVOKE", target="Lnet/minecraft/world/entity/Mob;burnUndead()V"))
+    public boolean aiStepSun(Mob inst) {
+        if(inst instanceof Zombie) {
+            return Config.sunSensitive;
+        }
+        return true;
     }
 }

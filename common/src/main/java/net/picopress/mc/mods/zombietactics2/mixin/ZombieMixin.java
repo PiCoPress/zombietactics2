@@ -25,20 +25,21 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.zombie.*;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.Turtle;
-import net.minecraft.world.entity.monster.*;
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.animal.turtle.Turtle;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -122,16 +123,17 @@ public abstract class ZombieMixin extends Monster implements Plane {
         return zombietactics2$miningData;
     }
 
+    // I do not want to see that zombies burn
+    @Deprecated
+    @ModifyReturnValue(method="isSunSensitive", at=@At("RETURN"))
+    public boolean sunSensitive(boolean original) {
+        return Config.sunSensitive && original;
+    }
+
     @ModifyReturnValue(method="createAttributes", at=@At("RETURN"))
     private static AttributeSupplier.Builder createAttributes(AttributeSupplier.Builder original) {
         // if a zombie cannot fly, it is just nothing
         return original.add(Attributes.FLYING_SPEED, Config.flySpeed);
-    }
-
-    // I do not want to see that zombies burn
-    @ModifyReturnValue(method="isSunSensitive", at=@At("RETURN"))
-    public boolean isSunSensitive(boolean original) {
-        return Config.sunSensitive && original;
     }
 
     @Inject(method="wantsToPickUp", at=@At("RETURN"), cancellable=true)
