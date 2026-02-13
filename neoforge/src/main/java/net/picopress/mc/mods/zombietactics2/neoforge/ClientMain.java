@@ -14,6 +14,6 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 public class ClientMain implements IMain {
     public ClientMain(IEventBus ignoredModEventBus, ModContainer modContainer) {
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-        System.out.println("1234 1234");
+        System.out.println("Registered config screen for NeoForge");
     }
 }

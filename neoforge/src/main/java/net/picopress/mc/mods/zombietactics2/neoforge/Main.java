@@ -3,7 +3,6 @@ package net.picopress.mc.mods.zombietactics2.neoforge;
 import net.picopress.mc.mods.zombietactics2.impl.IMain;
 import net.picopress.mc.mods.zombietactics2.commands.CommandSumZ;
 
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -14,7 +13,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 
 @EventBusSubscriber(modid=Main.MOD_ID)
-@Mod(value=Main.MOD_ID, dist=Dist.DEDICATED_SERVER)
+@Mod(value=Main.MOD_ID)
 public class Main implements IMain {
     public Main(IEventBus ignoredModEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.SPEC);

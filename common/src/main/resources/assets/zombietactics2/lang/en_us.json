@@ -90,6 +90,8 @@
     "zombietactics2.midnightconfig.simulate.tooltip": "Zombies simulate the target's attack",
     "zombietactics2.midnightconfig.disseminate": "Disseminate",
     "zombietactics2.midnightconfig.disseminate.tooltip": "Zombies can spread itself target to other zombies",
+    "zombietactics2.midnightconfig.delay_to_attack": "Attack delay",
+    "zombietactics2.midnightconfig.delay_to_attack.tooltip": "Set delay ticks to chase after finding a target",
 
     "zombietactics2.midnightconfig.category.Optimize": "Optimize",
     "zombietactics2.midnightconfig.accuracy": "Path accuracy",

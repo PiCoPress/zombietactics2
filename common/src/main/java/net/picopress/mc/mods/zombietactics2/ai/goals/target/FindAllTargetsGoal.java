@@ -35,6 +35,10 @@ public class FindAllTargetsGoal extends TargetGoal {
     private int delay;
     private int idx;
 
+    private LivingEntity tmp_target;
+    private int attack_delay;
+    private boolean should_wait;
+
     /**
      * @param targets Pairs of class and priority
      */
@@ -46,6 +50,9 @@ public class FindAllTargetsGoal extends TargetGoal {
         plane = (Plane)mob;
         targetingConditions = TargetingConditions.forCombat().range(Config.followRange).selector(null);
         if(Config.attackInvisible) targetingConditions = targetingConditions.ignoreLineOfSight();
+
+        attack_delay = 0;
+        should_wait = false;
     }
 
     @Override
@@ -64,6 +71,22 @@ public class FindAllTargetsGoal extends TargetGoal {
     public void tick() {
         // I am server
         if(serverLevel == null) return;
+
+        // Feature requested by JoeSchmoe123
+        if(should_wait)
+        {
+            -- attack_delay;
+            if(attack_delay == 0) {
+                if(tmp_target.isAlive() &&
+                        tmp_target.distanceToSqr(this.mob) <= Config.followRange * Config.followRange) {
+                    mob.setTarget(tmp_target);
+                }
+                should_wait = false;
+                tmp_target = null;
+            }
+            return;
+        }
+
         if(task == Task.IDLE) {
             ++ delay;
             if(Config.findTargetType == FindTargetType.SIMPLE && delay > 4) task = Task.SEARCH;
@@ -159,7 +182,14 @@ public class FindAllTargetsGoal extends TargetGoal {
             }
 
             // set target
-            if(target != null) mob.setTarget(target);
+            if(target != null) {
+                if(Config.delayToAttack == 0) mob.setTarget(target);
+                else {
+                    tmp_target = target;
+                    attack_delay = Config.delayToAttack;
+                    should_wait = true;
+                }
+            }
             task = Task.IDLE;
         }
     }

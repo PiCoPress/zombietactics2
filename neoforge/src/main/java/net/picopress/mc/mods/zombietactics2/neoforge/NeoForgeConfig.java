@@ -59,6 +59,7 @@ public class NeoForgeConfig {
     private static ModConfigSpec.BooleanValue CAN_SWIM;
     private static ModConfigSpec.DoubleValue SWIM_SPEED;
     private static ModConfigSpec.BooleanValue CONVERT_ZOMBIE_VILLAGER;
+    private static ModConfigSpec.IntValue DELAY_TO_ATTACK;
 
     private static ModConfigSpec.BooleanValue SHOW_NODES;
     private static ModConfigSpec.BooleanValue SHOW_DELTA_MOVEMENT;
@@ -124,6 +125,7 @@ public class NeoForgeConfig {
         Config.swimSpeed = SWIM_SPEED.get();
         Config.waterBreathing = WATER_BREATH.get();
         Config.convertZombieVillager = CONVERT_ZOMBIE_VILLAGER.get();
+        Config.delayToAttack = DELAY_TO_ATTACK.get();
     }
 
     /*
@@ -171,6 +173,7 @@ public class NeoForgeConfig {
             AVOIDANCE = b.translation(MOD_CFG + "avoidance").define("avoidance", Config.avoidance);
             SIMULATE = b.translation(MOD_CFG + "simulate").define("simulate", Config.simulate);
             DISSEMINATE = b.translation(MOD_CFG + "disseminate").define("disseminate", Config.disseminate);
+            DELAY_TO_ATTACK = b.translation(MOD_CFG + "delay_to_attack").defineInRange("delayToAttack", Config.delayToAttack, 0, 2000);
             b.pop();
             b.push("Optimize");
             PATH_ACCURACY = b.translation(MOD_CFG + "accuracy").defineInRange("pathAccuracy", Config.accuracy, 0, 95);

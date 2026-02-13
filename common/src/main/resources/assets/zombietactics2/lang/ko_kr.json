@@ -90,6 +90,8 @@
     "zombietactics2.midnightconfig.simulate.tooltip": "좀비가 목표의 공격을 시뮬레이션합니다",
     "zombietactics2.midnightconfig.disseminate": "전파",
     "zombietactics2.midnightconfig.disseminate.tooltip": "좀비가 목표를 다른 좀비에게 알립니다",
+    "zombietactics2.midnightconfig.delay_to_attack": "공격 지연",
+    "zombietactics2.midnightconfig.delay_to_attack.tooltip": "목표를 추격하기 전에 대기하는 시간",
 
     "zombietactics2.midnightconfig.category.Optimize": "최적화",
     "zombietactics2.midnightconfig.accuracy": "경로 정확도",

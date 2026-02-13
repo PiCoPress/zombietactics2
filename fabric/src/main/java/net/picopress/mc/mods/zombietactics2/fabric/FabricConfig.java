@@ -52,6 +52,7 @@ public class FabricConfig extends MidnightConfig {
     @Entry(category=TARGETING) public static boolean avoidance = Config.avoidance;
     @Entry(category=TARGETING) public static boolean simulate = Config.simulate;
     @Entry(category=TARGETING) public static boolean disseminate = Config.disseminate;
+    @Entry(category=TARGETING) public static int delay_to_attack = Config.delayToAttack;
 
     @Entry(category=OPTIMIZE, min=0, max=16, isSlider=true) public static int accuracy = Config.accuracy;
     @Entry(category=OPTIMIZE) public static boolean no_idle = Config.noIdle;
@@ -136,6 +137,7 @@ public class FabricConfig extends MidnightConfig {
         Config.swimSpeed = swim_speed;
         Config.waterBreathing = water_breathing;
         Config.convertZombieVillager = convert_zombie_villager;
+        Config.delayToAttack = delay_to_attack;
     }
 
     @Override
