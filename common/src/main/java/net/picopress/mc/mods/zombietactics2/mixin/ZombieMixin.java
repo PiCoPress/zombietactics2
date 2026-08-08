@@ -66,9 +66,6 @@ public abstract class ZombieMixin extends Monster implements Plane {
     @Unique private boolean zombietactics2$flying = false;
     @Unique private boolean zombietactics2$target_alert = false;
 
-    @Unique private List<Pair<Class<? extends LivingEntity>, Integer>> zombietactics2$target_priority_ref;
-    @Unique private Set<Class<? extends LivingEntity>> zombietactics2$target_class_ref;
-
     @Final @Shadow private static Predicate<Difficulty> DOOR_BREAKING_PREDICATE;
     @Shadow public abstract boolean canBreakDoors(); // This just makes path finding
 
@@ -155,11 +152,12 @@ public abstract class ZombieMixin extends Monster implements Plane {
             return;
         }
         Entity who = source.getEntity();
+        var server = (Plane)sl.getServer();
         // new target list
-        // below *_ref != null when serverLevel.getSerger() != null. serverLevel.getServer() is not @Nullable
-        if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !zombietactics2$target_class_ref.contains(who.getClass())) {
-            zombietactics2$target_priority_ref.add(new Pair<>(mob.getClass(), 3));
-            zombietactics2$target_class_ref.add(mob.getClass());
+        // below *_ref != null when serverLevel.getServer() != null. serverLevel.getServer() is not @Nullable
+        if(who instanceof PathfinderMob mob && !(who instanceof Monster) && !server.zombietactics2$getTargetClass().contains(who.getClass())) {
+            server.zombietactics2$getTargetPriority().add(new Pair<>(mob.getClass(), 3));
+            server.zombietactics2$getTargetClass().add(mob.getClass());
         }
     }
 
@@ -249,16 +247,16 @@ public abstract class ZombieMixin extends Monster implements Plane {
         var mc_server = (Plane)level().getServer();
         if(mc_server == null) return;
 
-        zombietactics2$target_class_ref = mc_server.zombietactics2$getTargetClass();
-        zombietactics2$target_priority_ref = mc_server.zombietactics2$getTargetPriority();
+        var target_class = mc_server.zombietactics2$getTargetClass();
+        var target_priority = mc_server.zombietactics2$getTargetPriority();
 
         zombietactics2$miningData = new MiningData();
         // inserting a new instance of Pair in HashSet is not a good idea
-        if(Config.targetAnimals && !zombietactics2$target_class_ref.contains(Animal.class)) {
-            zombietactics2$target_priority_ref.add(new Pair<>(Animal.class, 5));
-            zombietactics2$target_priority_ref.add(new Pair<>(AmbientCreature.class, 2));
-            zombietactics2$target_class_ref.add(Animal.class);
-            zombietactics2$target_class_ref.add(AmbientCreature.class);
+        if(Config.targetAnimals && !target_class.contains(Animal.class)) {
+            target_priority.add(new Pair<>(Animal.class, 5));
+            target_priority.add(new Pair<>(AmbientCreature.class, 2));
+            target_class.add(Animal.class);
+            target_class.add(AmbientCreature.class);
         }
         if(Config.mineBlocks) this.goalSelector.addGoal(1, new MonsterBreakBlockGoal<>(this, zombietactics2$miningData));
         if(Config.canFloat) this.goalSelector.addGoal(5, zombietactics2$selective_float = new SelectiveFloatGoal(this));
@@ -266,7 +264,7 @@ public abstract class ZombieMixin extends Monster implements Plane {
         else this.goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1.0));
         if(Config.avoidance) this.goalSelector.addGoal(0, new AvoidEnemyGoal<>(this, Mob.class, 8, 1, Config.aggressiveSpeed));
 
-        this.targetSelector.addGoal(3, new FindAllTargetsGoal(zombietactics2$target_priority_ref, this, false));
+        this.targetSelector.addGoal(3, new FindAllTargetsGoal(target_priority, this, false));
         this.goalSelector.addGoal(1, new ZombieGoal((Zombie)(Monster)this, Config.aggressiveSpeed, true));
         this.goalSelector.addGoal(7, new MoveThroughVillageGoal(this, 1.0, false, 4, this::canBreakDoors));
         this.targetSelector.addGoal(1, zombietactics2$damaged_by = (DamagedByGoal)(new DamagedByGoal(this)).setAlertOthers(ZombifiedPiglin.class));
