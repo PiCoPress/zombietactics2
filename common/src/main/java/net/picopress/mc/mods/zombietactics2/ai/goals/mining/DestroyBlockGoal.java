@@ -62,7 +62,7 @@ public class DestroyBlockGoal extends BreakBlockGoal {
         }
         // this cannot be null, but the ide warns
         // move and check Manhattan distance
-        Path p = mob.getNavigation().createPath(mine.bp, 0);
+        Path p = mob.getNavigation().createPath(Objects.requireNonNull(mine.bp), 0);
         if(p != null && p.getEndNode() != null && p.getEndNode().distanceManhattan(mine.bp) < 3) {
             mob.getNavigation().moveTo(p, 1);
         } else return false;

@@ -24,6 +24,8 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
+import java.util.Objects;
+
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements Plane {
@@ -57,7 +59,8 @@ public abstract class LivingEntityMixin extends Entity implements Plane {
             // die -> remove(=killed)
             // despawn/transform() -> remove(=discarded)
             if(zombietactics2$plane.zombietactics2$isDigging())
-                this.level().destroyBlockProgress(this.getId(), zombietactics2$plane.zombietactics2$getMiningData().bp, -1);
+                this.level().destroyBlockProgress(this.getId(),
+                        Objects.requireNonNull(zombietactics2$plane.zombietactics2$getMiningData().bp), -1);
         }
     }
 

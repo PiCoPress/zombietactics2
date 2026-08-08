@@ -1,6 +1,5 @@
 package net.picopress.mc.mods.zombietactics2.mixin;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.picopress.mc.mods.zombietactics2.Config;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
@@ -28,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 
 
 @Mixin(Mob.class)

@@ -13,7 +13,8 @@
         "ServerLevelMixin",
         "ZombieMisc",
         "ZombieMixin",
-        "ZombieVillagerMixin"
+        "ZombieVillagerMixin",
+        "MinecraftServerMixin"
     ],
     "client": [
     ],

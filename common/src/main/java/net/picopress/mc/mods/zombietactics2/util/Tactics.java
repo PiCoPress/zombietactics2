@@ -59,7 +59,7 @@ public class Tactics {
         /**
          * calculates the power of the mob
          * @param target the target entity
-         * @return the power of the mob, which is calculated as (attack + 1) * (health / 5) * speed + 1
+         * @return the power of the mob, which is calculated as (attack / 2) * (health / 5) * speed + 1
          */
         public static int getEnemyPower(LivingEntity target) {
             var attack = target.getAttribute(Attributes.ATTACK_DAMAGE);
