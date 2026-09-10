@@ -1,5 +1,6 @@
 package net.picopress.mc.mods.zombietactics2.ai.goals.target;
 
+import net.minecraft.world.entity.ambient.Bat;
 import net.picopress.mc.mods.zombietactics2.util.Tactics;
 import net.picopress.mc.mods.zombietactics2.impl.Plane;
 import net.picopress.mc.mods.zombietactics2.attachments.FindTargetType;
@@ -72,15 +73,20 @@ public class FindAllTargetsGoal extends TargetGoal {
         if(Config.findTargetType == FindTargetType.SIMPLE) {
             LivingEntity target;
             var clazz = list.get(finding_index);
-            if (clazz.getA() != Player.class && clazz.getA() != ServerPlayer.class) {
+
+            //  Find an entity
+            if(clazz.getA() != Player.class && clazz.getA() != ServerPlayer.class) {
                 target = sl.getNearestEntity(clazz.getA(), targetingConditions, mob,
                         mob.getX(), mob.getEyeY(), mob.getZ(), followBox());
             } else {
+                // Find a player
                 target = sl.getNearestPlayer(targetingConditions, mob,
                         mob.getX(), mob.getEyeY(), mob.getZ());
             }
+
             if(mob.getTarget() == null || isFartherThanMe(target, mob.getTarget())) {
-                mob.setTarget(target);
+                if(target != null && !Bat.class.isAssignableFrom(target.getClass()))
+                    mob.setTarget(target);
             }
             ++ finding_index;
             finding_index %= list.size();
@@ -90,7 +96,7 @@ public class FindAllTargetsGoal extends TargetGoal {
             enemies = mob.level().getEntitiesOfClass(LivingEntity.class, followBox(), (t) -> {
                 for(var sus: list) {
                     if(sus.getA().isAssignableFrom(t.getClass()) && targetingConditions.test(sl, mob, t)) {
-                        return true;
+                        return !Bat.class.isAssignableFrom(t.getClass());
                     }
                 }
                 return false;

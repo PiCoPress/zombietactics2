@@ -99,9 +99,10 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     mainFile.changelog = change_log
     mainFile.changelogType = 'markdown'
     mainFile.releaseType = 'release'
+    mainFile.displayName = "neoforge-$mod_version"
     mainFile.addModLoader('NeoForge')
     mainFile.addGameVersion(minecraft_version)
     mainFile.addRequirement('architectury-api')
-    mainFile.displayName = "neoforge-$mod_version"
+    mainFile.addEnvironment('Server')
     //debugMode = true
 }

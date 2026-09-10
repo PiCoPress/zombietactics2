@@ -1,2 +1,2 @@
-- Added: Option to delay chase when zombies find a target.
-- Fixed: May not show configuration screen on NeoForge.
+- Zombies will not attack bats
+- A few bug fixes
